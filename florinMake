@@ -1,0 +1,72 @@
+#	Project Florin Makefile
+#	D. Scott Nettleton
+#
+#	This is the C++ makefile for the Whipstitch Game Engine,
+#	codenamed Project Florin.
+#	For more information, email:
+# 		dsnettleton at whipstitchgames dot com
+
+#     Copyright D. Scott Nettleton, 2013
+#     This software is released under the terms of the
+#     Lesser GNU Public License (LGPL).
+
+COMPILER_BIN=g++
+COMPILER_NAME=GNU G++
+REMOVAL_BIN=/bin/rm -f
+
+PROJECT_NAME=Florin
+DEBUG_NAME=$(PROJECT_NAME)_dbg
+RELEASE_NAME=$(PROJECT_NAME)
+RELEASE_OPTIONS= -Wall -O3 -fmessage-length=0 -DNDEBUG
+DEBUG_OPTIONS= -Wall -O0 -g3 -fmessage-length=0 -DDEBUG
+#INCLUDE_DIRS = -I . ./wsAssets ./wsGameFlow ./wsGraphics ./wsUtils
+INCLUDE_DIRS = 
+
+DEPS_ASSETS = ./wsAssets/wsAnimation.h ./wsAssets/wsAsset.h ./wsAssets/wsMesh.h ./wsAssets/wsModel.h
+DEPS_GAME_FLOW = ./wsGameFlow/wsGameLoop.h ./wsGameFlow/wsInputManager.h ./wsGameFlow/wsTask.h ./wsGameFlow/wsThreadPool.h
+DEPS_GRAPHICS = ./wsGraphics/wsColors.h ./wsGraphics/wsRenderSystem.h ./wsGraphics/wsScreen.h ./wsGraphics/wsScreenManager.h ./wsGraphics/wsShader.h
+DEPS_UTILS = ./wsUtils/mat4.h ./wsUtils/quat.h ./wsUtils/vec4.h ./wsUtils/wsHashMap.h ./wsUtils/wsLog.h ./wsUtils/wsMemoryPool.h ./wsUtils/wsMemoryStack.h ./wsUtils/wsOperations.h ./wsUtils/wsPlatform.h ./wsUtils/wsProfileManager.h ./wsUtils/wsProfiling.h ./wsUtils/wsQueue.h ./wsUtils/wsStack.h ./wsUtils/wsString.h ./wsUtils/wsTime.h ./wsUtils/wsTransform.h ./wsUtils/wsTrig.h ./wsUtils/wsTypes.h
+DEPS_WHIPSTITCH = ws.h wsAssets.h wsGameFlow.h wsGraphics.h wsUtils.h
+DEPENDENCIES = $(DEPS_WHIPSTITCH) $(DEPS_UTILS) $(DEPS_GRAPHICS) $(DEPS_GAME_FLOW) $(DEPS_ASSETS)
+
+SRC_ASSETS = ./wsAssets/wsAnimation.cpp ./wsAssets/wsAsset.cpp ./wsAssets/wsMesh.cpp ./wsAssets/wsModel.cpp
+SRC_GAME_FLOW = ./wsGameFlow/wsGameLoop.cpp ./wsGameFlow/wsInputManager.cpp ./wsGameFlow/wsThreadPool.cpp
+SRC_GRAPHICS = ./wsGraphics/wsRenderSystem.cpp ./wsGraphics/wsScreen.cpp ./wsGraphics/wsScreenManager.cpp ./wsGraphics/wsShader.cpp
+SRC_UTILS = ./wsUtils/mat4.cpp ./wsUtils/quat.cpp ./wsUtils/vec4.cpp ./wsUtils/wsLog.cpp ./wsUtils/wsMemoryStack.cpp ./wsUtils/wsOperations.cpp ./wsUtils/wsProfileManager.cpp ./wsUtils/wsTime.cpp ./wsUtils/wsTransform.cpp ./wsUtils/wsTrig.cpp ./wsUtils/wsTypes.cpp
+SRC_WHIPSTITCH = ws.cpp
+SOURCES = $(SRC_UTILS) $(SRC_GRAPHICS) $(SRC_GAME_FLOW) $(SRC_ASSETS) $(SRC_WHIPSTITCH) main.cpp
+
+OBJ_ASSETS = ./wsAssets/wsAnimation.o ./wsAssets/wsAsset.o ./wsAssets/wsMesh.o ./wsAssets/wsModel.o
+OBJ_GAME_FLOW = ./wsGameFlow/wsGameLoop.o ./wsGameFlow/wsInputManager.o ./wsGameFlow/wsThreadPool.o
+OBJ_GRAPHICS = ./wsGraphics/wsRenderSystem.o ./wsGraphics/wsScreen.o ./wsGraphics/wsScreenManager.o ./wsGraphics/wsShader.o
+OBJ_UTILS = ./wsUtils/mat4.o ./wsUtils/quat.o ./wsUtils/vec4.o ./wsUtils/wsLog.o ./wsUtils/wsMemoryStack.o ./wsUtils/wsOperations.o ./wsUtils/wsProfileManager.o ./wsUtils/wsTime.o ./wsUtils/wsTransform.o ./wsUtils/wsTrig.o ./wsUtils/wsTypes.o
+OBJ_WHIPSTITCH = ws.o
+OBJECTS = $(OBJ_UTILS) $(OBJ_GRAPHICS) $(OBJ_GAME_FLOW) $(OBJ_ASSETS) $(OBJ_WHIPSTITCH) main.o
+RELEASE_OBJECTS = ./Release_Objects/wsAnimation.o ./Release_Objects/wsAsset.o ./Release_Objects/wsMesh.o ./Release_Objects/wsModel.o ./Release_Objects/wsGameLoop.o ./Release_Objects/wsInputManager.o ./Release_Objects/wsThreadPool.o ./Release_Objects/wsRenderSystem.o ./Release_Objects/wsScreen.o ./Release_Objects/wsScreenManager.o ./Release_Objects/wsShader.o ./Release_Objects/mat4.o ./Release_Objects/quat.o ./Release_Objects/vec4.o ./Release_Objects/wsLog.o ./Release_Objects/wsMemoryStack.o ./Release_Objects/wsOperations.o ./Release_Objects/wsProfileManager.o ./Release_Objects/wsTime.o ./Release_Objects/wsTransform.o ./Release_Objects/wsTrig.o ./Release_Objects/wsTypes.o ./Release_Objects/ws.o ./Release_Objects/main.o
+
+LIBS = -lgomp -lpthread -lboost_system -lboost_filesystem -lGL -lGLEW -lglfw -lGLU -lSOIL
+
+#Rules for Building Object Files
+%.o: %.cpp %.h
+	#$(COMPILER_NAME) Compiler - Building: $<
+	$(COMPILER_BIN) -o "$@" -c "$<" $(INCLUDE_DIRS)
+	#    Finished building: $<
+
+# Debug Target
+debug: $(OBJECTS)
+	#Building Target: $@
+	$(COMPILER_BIN) $(OBJECTS) -o $(DEBUG_NAME) $(INCLUDE_DIRS) $(DEBUG_OPTIONS) $(LIBS)
+	#Target $@ Built
+
+# Release Target
+release: $(OBJECTS)
+	#Building Target: $@
+	/bin/mkdir -p ./Release_Objects
+	$(COMPILER_BIN) $(OBJECTS) -o $(RELEASE_NAME) $(INCLUDE_DIRS) $(RELEASE_OPTIONS) $(LIBS)
+	#Target $@ Built
+
+#	Clean Command
+clean:
+	#Cleaning Build
+	$(REMOVAL_BIN) $(OBJECTS) $(RELEASE_OBJECTS) $(DEBUG_NAME) $(RELEASE_NAME) ./Release_Objects -r
+	#Cleaned
