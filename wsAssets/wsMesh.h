@@ -40,6 +40,7 @@ struct wsVert {
     vec4 norm;
     f32 tex[2]; //  UV texture coordinates
     vec4 originalPos;
+    vec4 originalNorm;
     wsWeight* weights;
     u32 numWeights;
 };
@@ -57,6 +58,8 @@ struct wsMaterial {
     u32 shininess;
     u32 colorMap;
     u32 numTriangles;
+    wsHashMap<f32> *properties;
+    u32 numProperties;
 };
 
 struct wsJoint {
@@ -71,6 +74,9 @@ struct wsJoint {
 struct wsTag {
     vec4 pos;
     quat rot;
+    vec4 originalPos;
+    quat originalRot;
+    i32 parentJoint;
 };
 
 class wsMesh: public wsAsset {
@@ -79,7 +85,8 @@ class wsMesh: public wsAsset {
         wsMaterial* mats;
         wsJoint* joints;
         wsJoint* baseSkel;
-        wsTag* tags;
+        //wsTag* tags;
+        wsHashMap<wsTag*>* tags;
         u32 numVerts;
         u32 numMaterials;
         u32 numJoints;
@@ -93,7 +100,8 @@ class wsMesh: public wsAsset {
         const wsMaterial* getMats() const { return mats; }
         const wsJoint* getJoints() const { return joints; }
         const wsJoint* getBaseSkel() const { return baseSkel; }
-        const wsTag* getTags() const { return tags; }
+        const wsHashMap<wsTag*>* getTags() const { return tags; }
+        const wsTag* getTag(const char* tagName) const { return tags->retrieve(wsHash(tagName)); }
         u32 getNumVerts() const { return numVerts; }
         u32 getNumMaterials() const { return numMaterials; }
         u32 getNumJoints() const { return numJoints; }

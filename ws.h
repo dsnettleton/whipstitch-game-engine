@@ -35,6 +35,7 @@
 #include "wsGraphics.h"
 #include "wsAssets.h"
 #include "wsGameFlow.h"
+#include "wsAudio.h"
 
 void wsInit(const char* title, const i32 width, const i32 height, bool fullscreen,
                 u64 mainMem, u32 frameStackMem);

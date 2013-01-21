@@ -30,6 +30,7 @@
 #include "../wsGraphics.h"
 
 wsMesh::wsMesh(const char* filepath) {
+    u32 hasSkelton = 0;
     assetType = WS_ASSET_TYPE_MESH;
     wsLog(WS_LOG_GRAPHICS, "Loading Mesh from file \"%s\"\n", filepath);
     FILE* pFile;
@@ -45,51 +46,59 @@ wsMesh::wsMesh(const char* filepath) {
     //errorCheck( fscanf( pFile, "numTriangles %u\n", &numTriangles) );
     errorCheck( fscanf( pFile, "numMaterials %u\n", &numMaterials) );
     errorCheck( fscanf( pFile, "numTags %u\n\n", &numTags) );
+    errorCheck( fscanf( pFile, "hasSkeleton %u\n\n", &hasSkelton) );
     //  Generate object arrays and place them on the current stack
     mats = wsNewArray(wsMaterial, numMaterials);
     verts = wsNewArray(wsVert, numVerts);
-    tags = wsNewArray(wsTag, numTags);
-    errorCheck( fscanf( pFile, "skeleton {\n" ) );
-    errorCheck( fscanf( pFile, "    numJoints %u\n", &numJoints) );
-    //  Initialize joint array for this skeleton
-    joints = wsNewArray(wsJoint, numJoints);
-    baseSkel = wsNewArray(wsJoint, numJoints);
-    u32 currentJ;
-    for (u32 j = 0; j < numJoints; ++j) {
-        errorCheck( fscanf( pFile, "  joint %u {\n", &currentJ) );
-        wsAssert( (currentJ == j), "Current index does not relate to current joint.");
-        errorCheck( fscanf( pFile, "    parent %d\n", &joints[j].parent) );
-        errorCheck( fscanf( pFile, "    pos_start { %f %f %f }\n",
-                        &joints[j].start.x,
-                        &joints[j].start.y,
-                        &joints[j].start.z ) );
-        errorCheck( fscanf( pFile, "    pos_end { %f %f %f }\n",
-                        &joints[j].end.x,
-                        &joints[j].end.y,
-                        &joints[j].end.z ) );
-        errorCheck( fscanf( pFile, "    rotation { %f %f %f %f }\n",
-                        &joints[j].rot.x,
-                        &joints[j].rot.y,
-                        &joints[j].rot.z,
-                        &joints[j].rot.w ) );
-        errorCheck( fscanf( pFile, "  }\n") );
-        /// TEMPORARY?  /////////////////////////////////////////////////////////////////////
-        if (j >= 0) {
-            //  Align to model rotation/location
-            baseSkel[j] = joints[j];
-            joints[j].end -= joints[j].start;
-            if (joints[j].parent >= 0) {
-                joints[j].startRel = joints[j].start - joints[joints[j].parent].start;
-                joints[j].startRel.rotate(joints[joints[j].parent].rot.getInverse());
+    //tags = wsNewArray(wsTag, numTags);
+    tags = wsNew(wsHashMap<wsTag*>, wsHashMap<wsTag*>(numTags));
+    if (hasSkelton > 0) {
+        errorCheck( fscanf( pFile, "skeleton {\n" ) );
+        errorCheck( fscanf( pFile, "    numJoints %u\n", &numJoints) );
+        //  Initialize joint array for this skeleton
+        joints = wsNewArray(wsJoint, numJoints);
+        baseSkel = wsNewArray(wsJoint, numJoints);
+        u32 currentJ;
+        for (u32 j = 0; j < numJoints; ++j) {
+            errorCheck( fscanf( pFile, "  joint %u {\n", &currentJ) );
+            wsAssert( (currentJ == j), "Current index does not relate to current joint.");
+            errorCheck( fscanf( pFile, "    parent %d\n", &joints[j].parent) );
+            errorCheck( fscanf( pFile, "    pos_start { %f %f %f }\n",
+                            &joints[j].start.x,
+                            &joints[j].start.y,
+                            &joints[j].start.z ) );
+            errorCheck( fscanf( pFile, "    pos_end { %f %f %f }\n",
+                            &joints[j].end.x,
+                            &joints[j].end.y,
+                            &joints[j].end.z ) );
+            errorCheck( fscanf( pFile, "    rotation { %f %f %f %f }\n",
+                            &joints[j].rot.x,
+                            &joints[j].rot.y,
+                            &joints[j].rot.z,
+                            &joints[j].rot.w ) );
+            errorCheck( fscanf( pFile, "  }\n") );
+            if (j >= 0) {
+                //  Align to model rotation/location
+                baseSkel[j] = joints[j];
+                joints[j].end -= joints[j].start;
+                if (joints[j].parent >= 0) {
+                    joints[j].startRel = joints[j].start - joints[joints[j].parent].start;
+                    joints[j].startRel.rotate(joints[joints[j].parent].rot.getInverse());
+                }
+                else {
+                    joints[j].startRel = joints[j].start;
+                }
+                joints[j].end.rotate(joints[j].rot.getInverse());
             }
-            else {
-                joints[j].startRel = joints[j].start;
-            }
-            joints[j].end.rotate(joints[j].rot.getInverse());
         }
+        errorCheck( fscanf( pFile, "}\n\n") );
+    }// End if (hasSkeleton)
+    else {
+        joints = NULL;
+        baseSkel = NULL;
+        numJoints = 0;
     }
-
-    errorCheck( fscanf( pFile, "}\n\nvertices {\n") );
+    errorCheck( fscanf( pFile, "vertices {\n") );
     u32 currentIndex;
     for (u32 v = 0; v < numVerts; ++v) {
         errorCheck( fscanf( pFile, "  vert %u {\n", &currentIndex) );
@@ -107,6 +116,7 @@ wsMesh::wsMesh(const char* filepath) {
         errorCheck( fscanf( pFile, "    }\n") );
         errorCheck( fscanf( pFile, "  }\n") );
         verts[v].originalPos = verts[v].pos;
+        verts[v].originalNorm = verts[v].norm;
     }
     errorCheck( fscanf( pFile, "}\n\nmaterials {\n") );
     for (u32 m = 0; m < numMaterials; ++m) {
@@ -155,23 +165,48 @@ wsMesh::wsMesh(const char* filepath) {
             errorCheck( fscanf( pFile, "        }\n") );
             errorCheck( fscanf( pFile, "      }\n") );
         }
-        errorCheck( fscanf( pFile, "    }\n  }\n") );
+        errorCheck( fscanf( pFile, "    }\n" ) );
+        errorCheck( fscanf( pFile, "    properties {\n") );
+        errorCheck( fscanf( pFile, "      numProperties %u\n", &mats[m].numProperties) );
+        if (mats[m].numProperties > 0) {
+            mats[m].properties = wsNew(wsHashMap<f32>, wsHashMap<f32>(wsNextPrime(mats[m].numProperties)));
+            f32 value = 0.0f;
+            u32 propNum = 0;
+            for (u32 p = 0; p < mats[m].numProperties; ++p) {
+                errorCheck( fscanf( pFile, "      property %u {\n", &propNum) );
+                wsAssert( (propNum == p), "Current Index does not relate to current property.");
+                errorCheck( fscanf( pFile, "        name %[^\t\n]\n", nameBuffer) );
+                errorCheck( fscanf( pFile, "        value %f\n", &value) );
+                errorCheck( fscanf( pFile, "      }\n") );
+                mats[m].properties->insert(wsHash(nameBuffer), value);
+            }
+        }
+        else {
+            mats[m].properties = NULL;
+        }
+        errorCheck( fscanf( pFile, "    }\n") );
+        errorCheck( fscanf( pFile, "  }\n") );
     }
     errorCheck( fscanf( pFile, "}\n\ntags {\n") );
     for (u32 t = 0; t < numTags; ++t) {
+        wsTag* myTag = wsNew(wsTag, wsTag());
         errorCheck( fscanf( pFile, "  tag %u {\n", &currentIndex) );
         wsAssert( (currentIndex == t), "Current index does not relate to current tag.");
         errorCheck( fscanf( pFile, "    name %[^\t\n]\n", nameBuffer) );
+        errorCheck( fscanf( pFile, "    parentJoint %d\n", &myTag->parentJoint));
         errorCheck( fscanf( pFile, "    pos { %f %f %f }\n",
-                        &tags[t].pos.x,
-                        &tags[t].pos.y,
-                        &tags[t].pos.z ) );
+                        &myTag->pos.x,
+                        &myTag->pos.y,
+                        &myTag->pos.z ) );
         errorCheck( fscanf( pFile, "    dir { %f %f %f %f }\n",
-                        &tags[t].rot.x,
-                        &tags[t].rot.y,
-                        &tags[t].rot.z,
-                        &tags[t].rot.w ) );
+                        &myTag->rot.x,
+                        &myTag->rot.y,
+                        &myTag->rot.z,
+                        &myTag->rot.w ) );
+        myTag->originalPos = myTag->pos;
+        myTag->originalRot = myTag->rot;
         errorCheck( fscanf( pFile, "  }\n") );
+        tags->insert(wsHash(nameBuffer), myTag);
     }
     errorCheck( fscanf( pFile, "}\n") );
     if (fclose(pFile) == EOF) {

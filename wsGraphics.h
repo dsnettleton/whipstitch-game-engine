@@ -27,6 +27,7 @@
 #ifndef WS_GRAPHICS_H_
 #define WS_GRAPHICS_H_
 
+#include "wsGraphics/wsCamera.h"
 #include "wsGraphics/wsColors.h"
 #include "wsGraphics/wsRenderSystem.h"
 #include "wsGraphics/wsScreenManager.h"

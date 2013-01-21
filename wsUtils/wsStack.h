@@ -39,7 +39,9 @@ class wsStack {
         u32 getMaxElements() { return maxElements; }
         u32 getLength() { return length; }
         bool isEmpty() { return (length == 0); }
+        bool isNotEmpty() { return (length > 0); }
         bool isFull() { return (length == maxElements); }
+        bool isNotFull() { return (length != maxElements); }
         /*  Operational Methods */
         void clear();   //  Removes all items from the stack
         u32 push(ClassType object); //  Adds the item and returns the new length

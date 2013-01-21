@@ -45,6 +45,7 @@
 #define WS_HASHMAP_H_
 
 #include "wsMemoryStack.h"
+#include "wsOperations.h"
 
 template <class ClassType>
 class wsHashMap {
@@ -73,15 +74,15 @@ class wsHashMap {
             /*  Member Functions    */
             iterator(wsHashMap<ClassType>* myParent); //  Constructor
             //  Retrieve the item from the hashmap
-            ClassType* get();
+            ClassType get();
             //  Return the next item in the hashmap
-            ClassType* next();
+            ClassType getNext();
             //  Return the previous item in the hashmap
-            ClassType* prev();
+            ClassType getPrev();
             //  Go to the next item in the hashmap
-            ClassType* operator++();    //  preincrement operator
+            ClassType operator++();    //  preincrement operator
             //  Go to the previous item in the hashmap
-            ClassType* operator--();    //  predecrement operator
+            ClassType operator--();    //  predecrement operator
         };
         /*  Constructor and Deconstructor   */
         wsHashMap(u32 maxElements = 53);
@@ -120,34 +121,41 @@ wsHashMap<ClassType>::iterator::iterator(wsHashMap<ClassType>* myParent) {
 }
 
 template <class ClassType>
-inline ClassType* wsHashMap<ClassType>::iterator::get() {
-    if (mCurrentElement < 0 || (u32)mCurrentElement < parent->maxElements) { return WS_NULL; }
-    return &parent->array[mCurrentElement].object;
+inline ClassType wsHashMap<ClassType>::iterator::get() {
+    if (mCurrentElement < 0 || (u32)mCurrentElement >= parent->maxElements) { return WS_NULL; }
+    return parent->array[mCurrentElement].object;
 }
 
 template <class ClassType>
-inline ClassType* wsHashMap<ClassType>::iterator::next() {
+inline ClassType wsHashMap<ClassType>::iterator::getNext() {
     if (parent->array[mCurrentElement].next < 0) { return WS_NULL; }   //  There is no next element
-    return &parent->array[ parent->array[mCurrentElement].next ].object;
+    return parent->array[ parent->array[mCurrentElement].next ].object;
 }
 
 template <class ClassType>
-inline ClassType* wsHashMap<ClassType>::iterator::prev() {
+inline ClassType wsHashMap<ClassType>::iterator::getPrev() {
     if (parent->array[mCurrentElement].prev < 0) { return WS_NULL; }
-    return &parent->array[ parent->array[mCurrentElement].prev ].object;
+    return parent->array[ parent->array[mCurrentElement].prev ].object;
 }
 
 template <class ClassType>
-inline ClassType* wsHashMap<ClassType>::iterator::operator++() { return next(); }
+inline ClassType wsHashMap<ClassType>::iterator::operator++() {
+    mCurrentElement = parent->array[mCurrentElement].next;
+    return parent->array[ mCurrentElement ].object;
+}
 
 template <class ClassType>
-inline ClassType* wsHashMap<ClassType>::iterator::operator--() { return prev();}
+inline ClassType wsHashMap<ClassType>::iterator::operator--() {
+    mCurrentElement = parent->array[mCurrentElement].next;
+    return parent->array[ mCurrentElement ].object;
+}
 
 
 /*  Member Functions for wsHashMap  */
 //  Constructor
 template <class ClassType>
 wsHashMap<ClassType>::wsHashMap(u32 maxElements) {
+    maxElements = wsNextPrime(maxElements);
     wsLog(WS_LOG_UTIL, "Creating %u element hashmap\n", maxElements);
     wsAssert((maxElements > 0), "wsHashMap must have more than 0 elements.");
     length = 0;
@@ -184,7 +192,7 @@ typename wsHashMap<ClassType>::iterator wsHashMap<ClassType>::end() {
 
 template <class ClassType>
 u32 wsHashMap<ClassType>::insert(u32 hashIndex, const ClassType& element) {
-    wsLog(WS_LOG_UTIL, "Inserting item\n");
+    //wsLog(WS_LOG_UTIL, "Inserting item\n");
     u32 moddedHash = hashIndex % maxElements;
     if (length != maxElements) {    //  If the hashMap is not full already
         u32 probeCount = 0, offset = 1;
@@ -202,7 +210,7 @@ u32 wsHashMap<ClassType>::insert(u32 hashIndex, const ClassType& element) {
             array[moddedHash].object = element;
             ++length;
             //  Update linked list
-            if (first < 0) {
+            if (first < 0) {    //  The list is empty
                 first = last = moddedHash;
                 array[moddedHash].next = array[moddedHash].prev = -1;
             }
@@ -225,7 +233,7 @@ u32 wsHashMap<ClassType>::insert(u32 hashIndex, const ClassType& element) {
                         array[moddedHash].prev = -1;
                     }
                     else {
-                        //  Iterate to the begiining of the hashmap and find the previous element
+                        //  Iterate to the beginning of the hashmap and find the previous element
                         for (u32 i = moddedHash-1; i >= 0; --i) {
                             if (array[i].hashKey != WS_NULL) {  //  The index is taken; this will be our prev
                                 array[moddedHash].prev = i;
@@ -285,7 +293,6 @@ u32 wsHashMap<ClassType>::insert(u32 hashIndex, const ClassType& element) {
         wsLog(WS_LOG_UTIL, "Hashmap is full.\n");
         return WS_FAIL;
     }
-    wsLog(WS_LOG_UTIL, "Done inserting item\n");
     return WS_SUCCESS;
 }
 

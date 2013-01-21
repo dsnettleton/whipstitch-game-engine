@@ -117,6 +117,8 @@ void wsInit(const char* title, const i32 width, const i32 height, bool fullscree
     wsThreads.startUp();
     wsScreens.startUp(title, width, height, fullscreen);
     wsRenderer.startUp();
+    wsSounds.startUp();
+    wsEvents.startUp();
     wsInputs.startUp();
     wsGame.startUp();
 }
@@ -126,6 +128,8 @@ void wsQuit() {
     /*  Shut Down Engine Subsystems in reverse order of StartUp  */
     wsGame.shutDown();
     wsInputs.shutDown();
+    wsEvents.shutDown();
+    wsSounds.shutDown();
     wsRenderer.shutDown();
     wsScreens.shutDown();
     wsThreads.shutDown();

@@ -28,5 +28,6 @@
 #include "wsGameFlow/wsThreadPool.h"
 #include "wsGameFlow/wsGameLoop.h"
 #include "wsGameFlow/wsInputManager.h"
+#include "wsGameFlow/wsEventManager.h"
 
 #endif  //  WS_GAME_FLOW_H_

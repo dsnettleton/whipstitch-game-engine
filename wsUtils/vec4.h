@@ -62,6 +62,12 @@ struct vec4 {
                 f32 b;
                 f32 a;
             };
+            struct {
+                f32 rectX;
+                f32 rectY;
+                f32 rectW;
+                f32 rectH;
+            };
         }
     );
     //  Default constructor uses SSE to initialize all values to zero
@@ -76,6 +82,7 @@ struct vec4 {
     union {
         struct { f32 x, y, z, w; };
         struct { f32 r, g, b, a; };
+        struct { f32 rectX, rectY, rectW, rectH; };
     };
     //  Default constructor allows explicit setting of values
     vec4(f32 myX = 0.0f, f32 myY = 0.0f, f32 myZ = 0.0f, f32 myW = 1.0f) :
@@ -90,6 +97,7 @@ struct vec4 {
     vec4& set4(const f32 data[]);
     vec4& set(const quat& quaternion);
     // Arithmetic Operators
+    vec4 operator-() const;
     vec4 operator+(const vec4& other) const;// {return _mm_add_ps(mReg, other.mReg);}
     vec4 operator-(const vec4& other) const;// {return _mm_sub_ps(mReg, other.mReg);}
     vec4 operator*(const vec4& other) const;// {return _mm_mul_ps(mReg, other.mReg);}
@@ -116,6 +124,7 @@ struct vec4 {
     vec4 blend(const vec4& other, f32 blendFactor); //  Linear interpolation
     vec4& toBlend(const vec4& other, f32 blendFactor);   //  Sets this to the blended vector
     bool isZero() const;
+    f32 distance(const vec4& other) const;
     f32 dotProduct(const vec4& other) const;
     f32 magnitude() const;
     f32 magnitudeSquared() const;
@@ -128,6 +137,9 @@ struct vec4 {
     bool perpendicular(const vec4& other) const;
     vec4 getRotate(const quat& quaternion) const;
     vec4& rotate(const quat& quaternion);
+    vec4 getRotate(const vec4& axis, f32 degrees) const;
+    vec4& rotate(const vec4& axis, f32 degrees);
+    vec4& rotatePlane(const vec4& dir, vec4 upDir); //  Rotates X and Y coordinates to the specified 3d view
     bool isPositional();
     bool isDirectional();
     void print(u16 printLog = WS_LOG_MAIN) const;

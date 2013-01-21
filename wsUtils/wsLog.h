@@ -36,6 +36,9 @@
 #define WS_LOG_GRAPHICS     0x0100
 #define WS_LOG_THREADS      0x0200
 #define WS_LOG_HID          0x0400
+#define WS_LOG_EVENTS       0x0800
+#define WS_LOG_SHADER       0x1000
+#define WS_LOG_SOUND        0x2000
 
 #define WS_MAX_LOG_CHARS 511
 

@@ -34,23 +34,32 @@
 */
 
 #include "wsTime.h"
+ /*
+#include <time.h>
+
+t64 wsGetTime() {
+    timespec myTime;
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &myTime);
+    //  Convert nanoseconds to seconds (decimal)
+    return t64(myTime.tv_sec + (f64)myTime.tv_nsec/1000);
+}
+/*/
 #include <omp.h>
 
 t64 wsGetTime() {
     return omp_get_wtime();
 }
+//*/
 
 void wsWait(t64 waitTime) {
-    t64 startTime = omp_get_wtime();
-    while (omp_get_wtime() - startTime < waitTime) {}
+    t64 startTime = wsGetTime();
+    while (wsGetTime() - startTime < waitTime) {}   //  Do nothing
 }
 
 t64 wsBenchmark_time = 0.0;
 void wsBenchmarkBegin() {
-  //  Use OpenMP's wallclock to get the current time
-  //  (very useful for multithreaded environments)
-  wsBenchmark_time = omp_get_wtime();
+    wsBenchmark_time = wsGetTime();
 }
 t64 wsBenchmarkEnd() {
-  return omp_get_wtime() - wsBenchmark_time;
+    return wsGetTime() - wsBenchmark_time;
 }

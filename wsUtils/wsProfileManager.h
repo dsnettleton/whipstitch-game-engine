@@ -47,9 +47,10 @@ class wsProfileManager {
             const char* mName;
         };
         wsHashMap<_wsProfileManager_item> *mMap;
+        bool _mInitialized;
     public:
         /*  Override Constructor and Deconstructor  */
-        wsProfileManager() {}
+        wsProfileManager() { _mInitialized = false; }
         ~wsProfileManager() {}
         /*  Accessor */
         //  Returns the total amount of time that has been spent in the specified function

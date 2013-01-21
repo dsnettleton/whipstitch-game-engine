@@ -37,6 +37,10 @@
 #include <stdint.h>//  Custom reliably-sized data types
 #include "boost/filesystem.hpp"
 
+#define wsKB    1024
+#define wsMB    1048576
+#define wsGB    1073741824
+
 typedef int8_t    i8;   //  8-bit signed integer
 typedef uint8_t   u8;   //  8-bit unsigned integer
 typedef int16_t   i16;  //  16-bit signed integer

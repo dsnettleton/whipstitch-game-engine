@@ -35,10 +35,12 @@
 
 #ifdef _PROFILE
 #include "wsProfileManager.h"
+#include "wsMemoryStack.h"
 
 /*  Define the startUp(...) function for this Engine Subsystem */
 void wsProfileManager::startUp(u32 maxFunctions) {
     wsLog(WS_LOG_PROFILING, "Profile Manager Starting Up\n");
+    _mInitialized = true;
     //mMap = new wsHashMap<_wsProfileManager_item>(maxFunctions);
     mMap = wsNew< wsHashMap<_wsProfileManager_item>(maxFunctions) >();
 }
@@ -50,6 +52,7 @@ void wsProfileManager::shutDown() {
 
 /*  Operational Member Functions    */
 void wsProfileManager::add(const char* functionName, t64 functionTime) {
+    wsAssert(_mInitialized, "The Profile Manager must first be intialized.");
     _wsProfileManager_item myItem;
     if (mMap->retrieve(wsHash(functionName), myItem)) {
         myItem.mTotalTime += functionTime;
@@ -61,6 +64,7 @@ void wsProfileManager::add(const char* functionName, t64 functionTime) {
 }
 
 void wsProfileManager::print(u16 printLog) {
+    wsAssert(_mInitialized, "The Profile Manager must first be intialized.");
     wsLog( printLog, "Profiling Results:\n");
     //TODO: Print profiling results
 }

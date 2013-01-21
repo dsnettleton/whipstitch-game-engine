@@ -75,6 +75,22 @@
 #include "wsPlatform.h"
 #include "wsLog.h"
 
+/// Shortcuts for Primary Stack Allocations
+//  Used to pass custom constructors into the macro
+#define wsNew(classtype, constructor) \
+    new (wsMem.allocatePrimary( sizeof(classtype) )) constructor
+//  Another one to be used for arrays
+#define wsNewArray(classtype, arraySize) \
+    (classtype*)wsMem.allocatePrimary( sizeof(classtype) * arraySize )
+
+/// Shortcuts for Frame Stack Allocations
+//  Used to pass custom constructors into the macro
+#define wsNewTmp(classtype, constructor) \
+    new (wsMem.allocateFrame_current( sizeof(classtype) )) constructor
+//  Another one to be used for arrays
+#define wsNewArrayTmp(classtype, arraySize) \
+    (classtype*)wsMem.allocateFrame_current( sizeof(classtype) * arraySize )
+
 class wsMemoryStack {
     public:
         /*  Enumerated Memory Stack tiers */
@@ -164,21 +180,5 @@ inline void wsNewHandler() {
                     __FILE__, __LINE__);
     WS_DEBUG_BREAK();
 }
-
-/// Shortcuts for Primary Stack Allocations
-//  Used to pass custom constructors into the macro
-#define wsNew(classtype, constructor) \
-    new (wsMem.allocatePrimary( sizeof(classtype) )) constructor
-//  Another one to be used for arrays
-#define wsNewArray(classtype, arraySize) \
-    (classtype*)wsMem.allocatePrimary( sizeof(classtype) * arraySize )
-
-/// Shortcuts for Frame Stack Allocations
-//  Used to pass custom constructors into the macro
-#define wsNewTmp(classtype, constructor) \
-    new (wsMem.allocateFrame_current( sizeof(classtype) )) constructor
-//  Another one to be used for arrays
-#define wsNewArrayTmp(classtype, arraySize) \
-    (classtype*)wsMem.allocateFrame_current( sizeof(classtype) * arraySize )
 
 #endif /* WS_MEMORYSTACK_H_ */

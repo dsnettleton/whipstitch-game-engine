@@ -145,7 +145,7 @@ inline f64 wsEndianSwap(f64 val) {
 //  Prime numbers are important for efficient hashmaps
 inline u32 wsNextPrime(u32 val) {
     for (int i = 0; i <= WS_PRIME_TABLE_SIZE; ++i) {
-        if (val < wsPrimeTable[i]) {
+        if (val <= wsPrimeTable[i]) {
             return wsPrimeTable[i];
         }
     }

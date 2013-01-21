@@ -14,14 +14,15 @@ varying vec2 texCoords;
 uniform int lightingEnabled;
 uniform int renderMode;
 
+invariant gl_Position;
+
 const int WS_RENDER_MODE_LIT = 1;    //  Per-fragment lighting
 const int WS_RENDER_MODE_CEL = 2;    //  Cel shading
 const int WS_RENDER_MODE_INV = 3;    //  Invisible (refracted) shading
 
 void main() {
-  vec4 eyeCoordPosition = gl_ModelViewMatrix*gl_Vertex;
-  vertPos = vec3(eyeCoordPosition) / eyeCoordPosition.w;
-  vertNorm = normalize(gl_NormalMatrix * gl_Normal);
+  vertPos = vec3(gl_ModelViewMatrix*gl_Vertex);
+  vertNorm = gl_NormalMatrix * gl_Normal;
   texCoords = gl_MultiTexCoord0.st;
   gl_Position = ftransform();
 }

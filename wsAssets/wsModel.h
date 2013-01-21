@@ -40,6 +40,8 @@ struct wsIndexArray {
 };
 #endif
 
+#define WS_DEFAULT_MAX_ANIMATIONS   11
+
 class wsModel: public wsAsset {
     private:
         wsMesh* mesh;
@@ -49,9 +51,11 @@ class wsModel: public wsAsset {
             u32 numIndexArrays;
             u32 vertexArray;
         #endif
-        t64 animTime;
         wsHashMap<wsAnimation*> *animations;
         wsAnimation* currentAnimation;
+        wsTag* attachment;  //  Tag, if any, that this model is attached to
+        wsTransform transform;  //  Position, direction, and scale
+        t64 animTime;
         f32 timeScale;
         u16 defaultAnimation;
         bool looping;
@@ -62,6 +66,7 @@ class wsModel: public wsAsset {
         wsModel(const char* myName, wsMesh* myMesh, const u32 myMaxAnimations);
         ~wsModel();
         /// Setters and Getters
+        wsTag* getAttachment() { return attachment; }
         wsIndexArray* getIndexArrays() { return indexArrays; }
         u16 getMaxAnimations() { return animations->getMaxElements(); }
         wsMesh* getMesh() { return mesh; }
@@ -70,21 +75,19 @@ class wsModel: public wsAsset {
         u16 getNumAnimations() { return animations->getLength(); }
         u32 getNumIndexArrays() { return numIndexArrays; }
         f32 getTimeScale() { return timeScale; }
+        const wsTransform& getTransform() { return transform; }
         u32 getVertexArray() { return vertexArray; }
-        void setFrame(f32 newFrame) {
-            wsAssert( (currentAnimation != NULL), "Cannot set frame for NULL animation.");
-            while (newFrame > currentAnimation->getLength()) {
-                newFrame -= currentAnimation->getLength();
-            }
-            animTime = (t64)newFrame / (t64)currentAnimation->getFramesPerSecond();
-        }
+        void setFrame(f32 newFrame);
         void setMesh(wsMesh* my) { mesh = my; }
         void setTimeScale(f32 my) { timeScale = my; }
+        void setScale(f32 my) { transform.scale = my; }
+        void setPos(const vec4& my) { transform.setTranslation(my); }
+        void setRotation(const quat& my) { transform.rotation = my; }
         /// Operational Methods
         void addAnimation(wsAnimation* anim);
         void applyAnimation();  //  Applies the current animation to the mesh vertices
+        void attachModel(wsModel* myModel, const char* meshTag);
         void beginAnimation(const char* animName);
-        //u32 computeJointMod(const wsJointMod* myMod, const u32 jointIndex); //  Applies the mod recursively until no parent exists
         void continueAnimation();// Continues a paused animation
         void draw();
         void incrementAnimationTime(t32 increment);

@@ -29,60 +29,72 @@ void wsLog(u16 channels, const char* str, va_list args) {
     wsLogBuffer[WS_MAX_LOG_CHARS] = '\0';
 
     printf("Log:");
-    if ((channels & WS_LOG_MAIN) != 0) {
+    if (channels & WS_LOG_MAIN) {
         printf("  MAIN");
     }
-    if ((channels & WS_LOG_PLATFORM) != 0) {
+    if (channels & WS_LOG_PLATFORM) {
         printf("  PLATFORM");
     }
-    if ((channels & WS_LOG_UTIL) != 0) {
+    if (channels & WS_LOG_UTIL) {
         printf("  UTIL");
     }
-    if ((channels & WS_LOG_PROFILING) != 0) {
+    if (channels & WS_LOG_PROFILING) {
         printf("  PROFILING");
     }
-    if ((channels & WS_LOG_ASSERTIONS) != 0) {
+    if (channels & WS_LOG_ASSERTIONS) {
         printf("  ASSERTIONS");
     }
-    if ((channels & WS_LOG_INFO) != 0) {
+    if (channels & WS_LOG_INFO) {
         printf("  INFO");
     }
-    if ((channels & WS_LOG_ERROR) != 0) {
+    if (channels & WS_LOG_ERROR) {
         printf("  ERROR");
     }
-    if ((channels & WS_LOG_MEMORY) != 0) {
+    if (channels & WS_LOG_MEMORY) {
         printf("  MEMORY");
     }
-    if ((channels & WS_LOG_GRAPHICS) != 0) {
+    if (channels & WS_LOG_GRAPHICS) {
         printf("  GRAPHICS");
     }
-    if ((channels & WS_LOG_THREADS) != 0) {
+    if (channels & WS_LOG_THREADS) {
         printf("  THREADS");
     }
-    if ((channels & WS_LOG_HID) != 0) {
+    if (channels & WS_LOG_HID) {
         printf("  HID");
     }
+    if (channels & WS_LOG_EVENTS) {
+        printf("  EVENTS");
+    }
+    if (channels & WS_LOG_SHADER) {
+        printf("  SHADER");
+    }
+    if (channels & WS_LOG_SOUND) {
+        printf("  SOUND");
+    }
     printf("\n  %s", wsLogBuffer);
+    fflush(stdout); // Will now print everything in the stdout buffer
 }
 
 void wsLog(const char* str, ...) {
-    if ((wsActiveLogs & WS_LOG_MAIN) != 0) {
+    if (wsActiveLogs & WS_LOG_MAIN) {
         va_list args;
         va_start(args, str);
         wsLog(WS_LOG_MAIN, str, args);
         va_end(args);
         printf("\n");
     }
+    fflush(stdout); // Will now print everything in the stdout buffer
 }
 
 void wsLog(u16 channels, const char*str, ...) {
-    if ((wsActiveLogs & channels) != 0) {
+    if (wsActiveLogs & channels) {
         va_list args;
         va_start(args, str);
         wsLog(channels, str, args);
         va_end(args);
         printf("\n");
     }
+    fflush(stdout); // Will now print everything in the stdout buffer
 }
 
 void wsLogAssertionFailure(const char* expr, const char* file, u32 line) {
@@ -93,6 +105,7 @@ void wsLogAssertionFailure(const char* expr, const char* file, u32 line) {
         printf("    Line:        %u\n", line);
         printf("\n");
     }
+    fflush(stdout); // Will now print everything in the stdout buffer
 }
 
 void wsLogAssertionFailure(const char* expr, const char* file, u32 line, const char* msg) {
@@ -104,4 +117,5 @@ void wsLogAssertionFailure(const char* expr, const char* file, u32 line, const c
         printf("    Line:        %u\n", line);
         printf("\n");
     }
+    fflush(stdout); // Will now print everything in the stdout buffer
 }
