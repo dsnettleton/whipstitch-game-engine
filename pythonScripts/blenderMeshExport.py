@@ -8,7 +8,7 @@ from mathutils import Matrix, Vector, Quaternion
 
 workingDirectory = os.path.split(bpy.data.filepath)[0] + "/"
 MAJOR_VERSION = 0
-MINOR_VERSION = 8
+MINOR_VERSION = 9
 BLENDER_FPS = 24
 
 class wsJointMod:
@@ -20,25 +20,25 @@ class wsJointMod:
     self.initialRot = Quaternion((1,0,0,0))
     #end jointModification constructor
   def swap(self, curveIndex, value):
-    if curveIndex == 0:
+    if (curveIndex == 0):
       # Blender Location X value
       self.location.x = value
-    elif curveIndex == 1:
+    elif (curveIndex == 1):
       # Blender Location Y value
       self.location.z = -value
-    elif curveIndex == 2:
+    elif (curveIndex == 2):
       # Blender Location Z value
       self.location.y = value
-    elif curveIndex == 3:
+    elif (curveIndex == 3):
       # Blender Rotation W value
       self.rotation.w = value
-    elif curveIndex == 4:
+    elif (curveIndex == 4):
       # Blender Rotation X value
       self.rotation.x = value
-    elif curveIndex == 5:
+    elif (curveIndex == 5):
       # Blender Rotation Y value
       self.rotation.z = -value
-    elif curveIndex == 6:
+    elif (curveIndex == 6):
       # Blender Rotation Z value
       self.rotation.y = value
   #end class jointModification
@@ -119,12 +119,19 @@ class wsMaterial:
     self.tris = []
     self.shininess = 0
     self.colorMap = ""
+    self.properties = []
+
+class wsCustomProperty:
+  def __init__(self, name, value):
+    self.name = name
+    self.value = value
 
 class wsTag:
   def __init__(self, name):
     self.name = name
     self.pos = Vector((0,0,0))
     self.rot = Quaternion((1,0,0,0))
+    self.parent = -1
 
 class wsFileBuffer:
   def __init__(self, filename, ext):
@@ -143,21 +150,12 @@ animSkelName = ""
 mesh = None
 animations = []
 tags  = []
+hasSkeleton = 0
 
-#   Calculate Skeletal and Tag data
+#   Calculate Skeletal data
 for my in bpy.data.objects:
-  if my.type == "EMPTY":
-    tag = wsTag(my.name)
-    tag.pos.x = my.location[0]
-    tag.pos.y = my.location[2]
-    tag.pos.z = -my.location[1]
-    tag.rot.x = my.rotation_quaternion[1]
-    tag.rot.y = my.rotation_quaternion[3]
-    tag.rot.z = -my.rotation_quaternion[2]
-    tag.rot.w = my.rotation_quaternion[0]
-    tags.append( tag )
-    #end if type == "EMPTY"
-  elif my.type == "ARMATURE":
+  if (my.type == "ARMATURE"):
+    hasSkeleton = 1
     animSkel =  wsSkeleton(my.name)
     animSkelName = my.name
     jointNum = 0
@@ -177,7 +175,7 @@ for my in bpy.data.objects:
       joint.rot.y = tmpZ
       parentNum = 0
       for bone2 in my.data.bones:
-        if bone2 == bone.parent:
+        if (bone2 == bone.parent):
           joint.parent = parentNum
           break
         parentNum += 1
@@ -193,59 +191,63 @@ for my in bpy.data.objects:
     animSkel.rotation.z = -my.rotation_quaternion[2]
     animSkel.rotation.w = my.rotation_quaternion[0]
     animSkel.scale = Vector([ my.scale[0], my.scale[2], my.scale[1] ])
-    #end if type == "ARMATURE"
+    #end if (type == "ARMATURE")
   #end for each object
 
 #   Calculate Animation Data
 for my in bpy.data.actions:
-  anim = wsAnimation(my.name, animSkel)
-  keyFrames = []
-  for curve in my.fcurves:
-    for kPoint in curve.keyframe_points:
-      inList = 0
-      for key in keyFrames:
-        if key == kPoint.co.x:
-          inList = 1
-          break
-        #end for each key in keyFrames
-      if inList == 0:
-        keyFrames.append(kPoint.co.x)
-  anim.numKeyframes = len(keyFrames)
-  anim.length = keyFrames[len(keyFrames)-1] / BLENDER_FPS
-  for index in keyFrames:
-    key = wsKeyframe(index)
-    key.jointMods = [None]*len(animSkel.joints)
-    for group in my.groups:
-      modified = 0
-      mod = wsJointMod(group.name)
-      for j in range( len(animSkel.joints) ):
-        if animSkel.joints[j].name == group.name:
-          mod.jointIndex = j
-          break
+  if (my.id_root == 'OBJECT'):
+    anim = wsAnimation(my.name, animSkel)
+    keyFrames = []
+    for curve in my.fcurves:
+      for kPoint in curve.keyframe_points:
+        inList = 0
+        for key in keyFrames:
+          if (key == kPoint.co.x):
+            inList = 1
+            break
+          #end for each key in keyFrames
+        if (inList == 0):
+          keyFrames.append(kPoint.co.x)
+    anim.numKeyframes = len(keyFrames)
+    if (anim.numKeyframes <= 1):
+      continue
+    anim.length = keyFrames[len(keyFrames)-1] / BLENDER_FPS
+    for index in keyFrames:
+      key = wsKeyframe(index)
+      key.jointMods = [None]*len(animSkel.joints)
+      for group in my.groups:
+        modified = 0
+        mod = wsJointMod(group.name)
+        for j in range( len(animSkel.joints) ):
+          if (animSkel.joints[j].name == group.name):
+            mod.jointIndex = j
+            break
 
-      # mod.jointIndex = index
-      curveIndex = 0
-      for curve in group.channels:
-        for kPoint in curve.keyframe_points:
-          if kPoint.co.x == index:
-            modified = 1
-            mod.swap(curveIndex, kPoint.co.y)
-          #end for each keyframe_point
-        curveIndex += 1
-        #end for each fcurve
-      if modified == 1:
-        # key.jointMods.append(mod)
-        key.jointMods[mod.jointIndex] = mod
-      #end for each action group
-    key.numJointMods = len(key.jointMods)
-    anim.keyframes.append(key)
-    #end for each keyframe
-  animations.append(anim)
+        # mod.jointIndex = index
+        curveIndex = 0
+        for curve in group.channels:
+          for kPoint in curve.keyframe_points:
+            if (kPoint.co.x == index):
+              modified = 1
+              mod.swap(curveIndex, kPoint.co.y)
+            #end for each keyframe_point
+          curveIndex += 1
+          #end for each fcurve
+        if (modified == 1):
+          # key.jointMods.append(mod)
+          key.jointMods[mod.jointIndex] = mod
+        #end for each action group
+      key.numJointMods = len(key.jointMods)
+      anim.keyframes.append(key)
+      #end for each keyframe
+    animations.append(anim)
+    #end if this action applies to an object
   #end for each animation
 
 #   Calculate Mesh Data
 for my in bpy.data.objects:
-  if my.type == "MESH":
+  if (my.type == "MESH"):
     my.data.calc_tessface()
     mesh = wsMesh(my.name, animSkel)
     location = my.matrix_world.to_translation()
@@ -265,45 +267,48 @@ for my in bpy.data.objects:
       faceNum = 0
       mat = wsMaterial(myMat.name)
       for face in my.data.tessfaces:
-        if face.material_index == matCount:
+        if (face.material_index == matCount):
           for v in range( len(face.vertices) ):
             vert = wsVert()
             bVert = my.data.vertices[face.vertices[v]]
             vert.pos = Vector([ bVert.co[0], bVert.co[2], -bVert.co[1] ])
             vert.norm = Vector([ bVert.normal[0], bVert.normal[2], -bVert.normal[1] ])
-            if v == 0:
+            if (v == 0):
               vert.texCoords = [ my.data.tessface_uv_textures[0].data[faceNum].uv1[0], \
                                               my.data.tessface_uv_textures[0].data[faceNum].uv1[1] ]
-            elif v == 1:
+            elif (v == 1):
               vert.texCoords = [ my.data.tessface_uv_textures[0].data[faceNum].uv2[0], \
                                               my.data.tessface_uv_textures[0].data[faceNum].uv2[1] ]
-            elif v == 2:
+            elif (v == 2):
               vert.texCoords = [ my.data.tessface_uv_textures[0].data[faceNum].uv3[0], \
                                               my.data.tessface_uv_textures[0].data[faceNum].uv3[1] ]
-            elif v == 3:
+            elif (v == 3):
               vert.texCoords = [ my.data.tessface_uv_textures[0].data[faceNum].uv4[0], \
                                               my.data.tessface_uv_textures[0].data[faceNum].uv4[1] ]
             for g in range(len(bVert.groups)):
               vertGroup = my.vertex_groups[bVert.groups[g].group]
               jointid = -1
               boneCount = 0
+              foundOne = 0
               for thisBone in animSkel.joints:
-                if thisBone.name == vertGroup.name:
+                if (thisBone.name == vertGroup.name):
                   jointid = boneCount
+                  foundOne = 1
                   break
                 boneCount += 1
-              vert.weights.append( wsWeight(jointid, bVert.groups[g].weight) )
-              vert.numWeights += 1
-              vert.weightSum += bVert.groups[g].weight
+              if (foundOne == 1):
+                vert.weights.append( wsWeight(jointid, bVert.groups[g].weight) )
+                vert.numWeights += 1
+                vert.weightSum += bVert.groups[g].weight
               #end for each vertex group
             mesh.verts.append(vert)
             #end for each vertex
           mat.tris.append( wsTri(vertIndexCount, vertIndexCount+1, vertIndexCount+2) )
-          if len(face.vertices) == 4:
+          if (len(face.vertices) == 4):
             mat.tris.append( wsTri(vertIndexCount, vertIndexCount+2, vertIndexCount+3) )
             vertIndexCount += 1
           vertIndexCount += 3
-          #end if this face uses the current material
+          #end if (this face uses the current materia)l
         faceNum += 1
         #end for each face
 
@@ -326,6 +331,11 @@ for my in bpy.data.objects:
                                   myMat.emit * myMat.alpha ]
       mat.shininess = myMat.specular_hardness
       mat.colorMap = myMat.active_texture.image.filepath
+      # Check for custom material properties
+      for prop in myMat.items():
+        if prop[0] != "_RNA_UI":
+          mat.properties.append(wsCustomProperty(prop[0], prop[1]))
+        # End for each custom property
       mesh.materials.append( mat )
       matCount += 1
       #end for each material
@@ -333,23 +343,76 @@ for my in bpy.data.objects:
       mesh.numVerts = len(mesh.verts)
     #end for each mesh object
 
+#   Calculate Tag Data
+for my in bpy.data.objects:
+  if (my.type == "EMPTY"):
+    if (my.parent_type == "BONE"):
+      tag = wsTag(my.name)
+      parentBone = my.parent.data.bones[my.parent_bone]
+      worldMatrix = my.parent.matrix_world * parentBone.matrix_local * my.matrix_basis
+      tagPos = worldMatrix.to_translation()
+      tagQuat = worldMatrix.to_quaternion()
+
+      tag.pos.x = tagPos.x
+      tag.pos.y = tagPos.z
+      tag.pos.z = -tagPos.y
+      tag.rot.x = tagQuat.x
+      tag.rot.y = tagQuat.z
+      tag.rot.z = -tagQuat.y
+      tag.rot.w = tagQuat.w
+
+      # Find the parent bone
+      jointNum = 0
+      for joint in animSkel.joints:
+        if (joint.name == my.parent_bone):
+          tag.parent = jointNum
+          break
+        jointNum += 1
+        #end for each joint in animSkel
+      tags.append( tag )
+      #end if (parent_type == "BONE")
+    elif (my.parent_type == "OBJECT" and my.parent != None and mesh != None):
+      if (my.parent.name == mesh.name):
+        tag = wsTag(my.name)
+        tag.pos.x = my.location[0]
+        tag.pos.y = my.location[2]
+        tag.pos.z = -my.location[1]
+        tag.rot.x = my.rotation_quaternion[1]
+        tag.rot.y = my.rotation_quaternion[3]
+        tag.rot.z = -my.rotation_quaternion[2]
+        tag.rot.w = my.rotation_quaternion[0]
+        tag.parent = -1
+        tag.pos.x *= mesh.scale.x
+        tag.pos.y *= mesh.scale.y
+        tag.pos.z *= mesh.scale.z
+        tag.pos += mesh.location
+        tag.pos.rotate(mesh.rotation)
+        tags.append( tag )
+        #end if my.parent.name == mesh.name
+      #end if (parent_type == "OBJECT")
+    #end if (type == "EMPTY")
+  #end for each object
+
 #   ADJUST DATA FOR PARENT OBJECT TRANSFORMATIONS
-if animSkel != None:
+if (animSkel != None):
   animSkel.numJoints = len(animSkel.joints)
   for joint in animSkel.joints:
     joint.start.rotate(animSkel.rotation)
     joint.end.rotate(animSkel.rotation)
+
     joint.start.x *= animSkel.scale.x
     joint.start.y *= animSkel.scale.y
     joint.start.z *= animSkel.scale.z
     joint.end.x *= animSkel.scale.x
     joint.end.y *= animSkel.scale.y
     joint.end.z *= animSkel.scale.z
+
     joint.start += animSkel.location
     joint.end += animSkel.location
+
     joint.initialRot = joint.rot
     joint.rot = animSkel.rotation * joint.initialRot
-if mesh != None:
+if (mesh != None):
   mesh.numVerts = len(mesh.verts)
   mesh.numTags = len(mesh.tags)
   mesh.numMaterials = len(mesh.materials)
@@ -372,18 +435,16 @@ for anim in animations:
       key.jointMods[j].location.x *= animSkel.scale.x
       key.jointMods[j].location.y *= animSkel.scale.y
       key.jointMods[j].location.z *= animSkel.scale.z
-      #key.jointMods[j].location.rotate(animSkel.rotation)
       key.jointMods[j].initialRot = key.jointMods[j].rotation
       key.jointMods[j].rotation = animSkel.rotation * animSkel.joints[j].initialRot * key.jointMods[j].initialRot
       key.jointMods[j].location.rotate(key.jointMods[j].rotation)
       par = animSkel.joints[j].parent
-      if par >= 0:
+      if (par >= 0):
         diffRot = animSkel.joints[par].initialRot.inverted() * animSkel.joints[j].initialRot
         key.jointMods[j].rotation = key.jointMods[par].rotation * diffRot * key.jointMods[j].initialRot
         
-
 #   NOW WE WRITE!
-if mesh != None:
+if (mesh != None):
   output = wsFileBuffer(mesh.name, "wsMesh")
   output.write("//  Whipstitch Mesh File\n")
   output.write("//  This mesh is for use with the Whipstitch Game Engine\n")
@@ -393,19 +454,22 @@ if mesh != None:
   output.write("numVertices "+ str(mesh.numVerts) +"\n")
   output.write("numMaterials "+ str(mesh.numMaterials) +"\n")
   output.write("numTags "+ str(mesh.numTags) +"\n\n")
-  output.write("skeleton {\n")
-  skel = mesh.skeleton
-  output.write("  numJoints "+ str(skel.numJoints) +"\n") #add one for the root location
-  for j in range( skel.numJoints ):
-    output.write("  joint "+ str(j) +" {\n")
-    output.write("    parent "+ str(skel.joints[j].parent) +"\n")
-    output.write("    pos_start { %f %f %f }\n" % (skel.joints[j].start.x, skel.joints[j].start.y, skel.joints[j].start.z))
-    output.write("    pos_end { %f %f %f }\n" % (skel.joints[j].end.x, skel.joints[j].end.y, skel.joints[j].end.z))
-    output.write("    rotation { %f %f %f %f }\n" % (skel.joints[j].rot.x, skel.joints[j].rot.y, skel.joints[j].rot.z, \
-      skel.joints[j].rot.w))
-    output.write("  }\n")
-    #end for each joint
-  output.write("}\n\n")
+  output.write("hasSkeleton %u\n\n" % hasSkeleton)
+  if (hasSkeleton > 0):
+    output.write("skeleton {\n")
+    skel = mesh.skeleton
+    output.write("  numJoints "+ str(skel.numJoints) +"\n") #add one for the root location
+    for j in range( skel.numJoints ):
+      output.write("  joint "+ str(j) +" {\n")
+      output.write("    parent "+ str(skel.joints[j].parent) +"\n")
+      output.write("    pos_start { %f %f %f }\n" % (skel.joints[j].start.x, skel.joints[j].start.y, skel.joints[j].start.z))
+      output.write("    pos_end { %f %f %f }\n" % (skel.joints[j].end.x, skel.joints[j].end.y, skel.joints[j].end.z))
+      output.write("    rotation { %f %f %f %f }\n" % (skel.joints[j].rot.x, skel.joints[j].rot.y, skel.joints[j].rot.z, \
+        skel.joints[j].rot.w))
+      output.write("  }\n")
+      #end for each joint
+    output.write("}\n\n")
+    #End if hasSkeleton > 0
   output.write("vertices {\n")
   for v in range( mesh.numVerts ):
     vert = mesh.verts[v]
@@ -418,7 +482,7 @@ if mesh != None:
     output.write("      numWeights "+ str(mesh.verts[v].numWeights) +"\n")
     for w in range( mesh.verts[v].numWeights):
       weightVal = mesh.verts[v].weights[w].influence
-      if mesh.verts[v].weightSum != 0:
+      if (mesh.verts[v].weightSum != 0):
         weightVal /= mesh.verts[v].weightSum
       output.write("      joint { %d %f }\n" % \
         (mesh.verts[v].weights[w].jointIndex, weightVal))
@@ -433,22 +497,22 @@ if mesh != None:
     output.write("  mat "+ str(m) +" {\n")
     output.write("    name "+ mat.name +"\n")
     output.write("    shine "+ str(mat.shininess) +"\n")
-    output.write("    ambient {"+ \
+    output.write("    ambient { "+ \
       str(mat.ambient[0]) +" "+ \
       str(mat.ambient[1]) +" "+ \
       str(mat.ambient[2]) +" "+ \
       str(mat.ambient[3]) +" }\n")
-    output.write("    diffuse {"+ \
+    output.write("    diffuse { "+ \
       str(mat.diffuse[0]) +" "+ \
       str(mat.diffuse[1]) +" "+ \
       str(mat.diffuse[2]) +" "+ \
       str(mat.diffuse[3]) +" }\n")
-    output.write("    specular {"+ \
+    output.write("    specular { "+ \
       str(mat.specular[0]) +" "+ \
       str(mat.specular[1]) +" "+ \
       str(mat.specular[2]) +" "+ \
       str(mat.specular[3]) +" }\n")
-    output.write("    emissive {"+ \
+    output.write("    emissive { "+ \
       str(mat.emissive[0]) +" "+ \
       str(mat.emissive[1]) +" "+ \
       str(mat.emissive[2]) +" "+ \
@@ -469,6 +533,17 @@ if mesh != None:
       output.write("      }\n")
       #end for each triangle
     output.write("    }\n")
+    output.write("    properties {\n")
+    output.write("      numProperties "+ str(len(mat.properties)) +"\n")
+    propCount = 0
+    for prop in mat.properties:
+      output.write("      property "+ str(propCount) +" {\n")
+      output.write("        name "+ prop.name +"\n")
+      output.write("        value "+ str(prop.value) +"\n")
+      output.write("      }\n")
+      propCount += 1
+      #end for each property
+    output.write("    }\n")
     output.write("  }\n")
     #end for each material
   output.write("}\n\n")
@@ -476,6 +551,7 @@ if mesh != None:
   for t in range(mesh.numTags):
     output.write("  tag "+ str(t) +" {\n")
     output.write("    name "+ mesh.tags[t].name +"\n")
+    output.write("    parentJoint %d\n" % mesh.tags[t].parent)
     output.write("    pos { "+ \
       str(mesh.tags[t].pos.x) +" "+ \
       str(mesh.tags[t].pos.y) +" "+ \
@@ -489,7 +565,7 @@ if mesh != None:
     #end for each tag
   output.write("}\n\n")
   output.apply()
-  #end if mesh exists
+  #end if (mesh exist)s
 
 for a in range( len(animations) ):
   anim = animations[a]
@@ -545,7 +621,7 @@ for a in range( len(animations) ):
   #end for each animation
 
 
-if mesh != None:
+if (mesh != None):
   output = wsFileBuffer(mesh.name, "wsModel")
   output.write("//  Whipstitch Model File\n")
   output.write("//  This model is for use with the Whipstitch Game Engine\n")
