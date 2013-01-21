@@ -1,11 +1,10 @@
-/*
- *  wsTask.h
+/**
+ *  wsAudio.h
+ *  Jan 20, 2013
+ *  D. Scott Nettleton
  *
- *  Created on: Dec 25, 2012
- *      Author: dsnettleton
- *
- *      This file declares the class wsTask, which is the base class for
- *      a task to be run on the Whipstitch Engine's thread pool.
+ *  This file contains all the includes necessary for audio functionality
+ *  in the Whipstitch Game Engine.
  *
  *  Copyright D. Scott Nettleton, 2013
  *  This software is released under the terms of the
@@ -23,24 +22,11 @@
  *  along with The Whipstitch Game Engine.
  *  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef WS_AUDIO_H_
+#define WS_AUDIO_H_
 
-#ifndef WS_TASK_H_
-#define WS_TASK_H_
+#include "./wsAudio/wsMusic.h"
+#include "./wsAudio/wsSound.h"
+#include "./wsAudio/wsSoundManager.h"
 
-#include "../wsUtils.h"
-
-class wsTask {
-    private:
-    public:
-        virtual ~wsTask() {}
-        virtual void run(u32 threadNum) = 0;//{ wsLog(WS_LOG_THREADS, "NULL Task Running."); }
-};
-
-class wsTask_test : public wsTask {
-    public:
-        void run(u32 threadNum) {
-            wsLog(WS_LOG_MAIN, "Running thread %u", threadNum);
-        }
-};
-
-#endif  /*  WS_TASK_H_  */
+#endif //  WS_AUDIO_H_

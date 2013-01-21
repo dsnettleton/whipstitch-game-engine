@@ -42,44 +42,42 @@ void wsScreenManager::startUp(const char* title, const i32 width, const i32 heig
     //  Initialize our screen array on the primary memory stack
     mScreens = wsNewArray(wsScreen*, MAX_SCREENS);
     mCurrentScreen = mNumScreens = 0;
-    if (WS_SCREEN_BACKEND == WS_BACKEND_GLFW) {
-        //  Only backend currently supported
+    #if (WS_SCREEN_BACKEND == WS_BACKEND_X11)
+    #elif (WS_SCREEN_BACKEND == WS_BACKEND_GLFW)
         glfwInit();
-    }
+    #endif
     create(title, width, height, fullscreen);
 }
 
 void wsScreenManager::shutDown() {
-    if (WS_SCREEN_BACKEND == WS_BACKEND_GLFW) {
-        //  Only backend currently supported
+    #if (WS_SCREEN_BACKEND == WS_BACKEND_X11)
+    #elif (WS_SCREEN_BACKEND == WS_BACKEND_GLFW)
         glfwTerminate();
-    }
+    #endif
 }
 
 i32 wsScreenManager::create(const char* title, const i32 width, const i32 height, bool fullscreen) {
-    wsAssert(_mInitialized,
-            "A screen cannot be created until the screen manager has been initialized.");
-    wsAssert( (mNumScreens < MAX_SCREENS),
-            "Cannot create another screen. Max screens reached");
+    wsAssert(_mInitialized, "A screen cannot be created until the screen manager has been initialized.");
+    wsAssert( (mNumScreens < MAX_SCREENS), "Cannot create another screen. Max screens reached");
     mCurrentScreen = mNumScreens++;
 
     wsScreenSettings settings(title, width, height, fullscreen);
     //mScreens[mCurrentScreen] = wsNew wsScreen(settings);
     //  Placement new
-    mScreens[mCurrentScreen] =
-                    new (wsMem.allocatePrimary( sizeof(wsScreen) )) wsScreen(settings);
+    mScreens[mCurrentScreen] = new (wsMem.allocatePrimary( sizeof(wsScreen) )) wsScreen(settings);
     return mCurrentScreen;
 }
 
 i32 wsScreenManager::create(const wsScreenSettings& settings) {
-    wsAssert(_mInitialized,
-            "A screen cannot be created until the screen manager has been initialized.");
-    wsAssert( (mNumScreens < MAX_SCREENS),
-            "Cannot create another screen. Max screens reached");
+    wsAssert(_mInitialized, "A screen cannot be created until the screen manager has been initialized.");
+    wsAssert( (mNumScreens < MAX_SCREENS), "Cannot create another screen. Max screens reached");
     mCurrentScreen = mNumScreens++;
     //  Placement new
-    mScreens[mCurrentScreen] =
-                    new (wsMem.allocatePrimary( sizeof(wsScreen) )) wsScreen(settings);
+    mScreens[mCurrentScreen] = new (wsMem.allocatePrimary( sizeof(wsScreen) )) wsScreen(settings);
     return mCurrentScreen;
 }
 
+void wsScreenManager::swapBuffers() {
+    //  Swap the buffers on the current screen
+    mScreens[mCurrentScreen]->swapBuffers();
+}

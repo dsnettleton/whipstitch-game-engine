@@ -57,15 +57,32 @@ class wsScreenManager {
         //  uninitialized via the shutDown() function.
         wsScreenManager() : _mInitialized(false) {}
         ~wsScreenManager() {}
+        //  Uninitializes the screen manager
+        void shutDown();
+        //  Initializes the screen manager
+        void startUp(const char* title, const i32 width, const i32 height, bool fullscreen);
+        /*  Setters and Getters */
+        #if (WS_SCREEN_BACKEND == WS_BACKEND_X11)
+            Display* getDisplay(i32 index = -1) {
+                wsAssert(_mInitialized, "You must first initialize the screen manager.");
+                if (index < 0 || index >= mNumScreens) {
+                    index = (i32)mCurrentScreen;
+                }
+                return mScreens[index]->getDisplay();
+            }
+        #endif
+        bool closed() {
+            #if (WS_SCREEN_BACKEND == WS_BACKEND_GLFW)
+                return !glfwGetWindowParam(GLFW_OPENED);
+            #endif
+        }
         /*  Operational Methods */
         //  Creates a new screen using the given title and dimensions
         i32 create(const char* title, const i32 width, const i32 height, bool fullscreen);
         //  Creates a new screen using the given settings
         i32 create(const wsScreenSettings& settings);
-        //  Uninitializes the screen manager
-        void shutDown();
-        //  Initializes the screen manager
-        void startUp(const char* title, const i32 width, const i32 height, bool fullscreen);
+        //  Swap the buffers on the current screen
+        void swapBuffers();
 };
 
 extern wsScreenManager wsScreens;

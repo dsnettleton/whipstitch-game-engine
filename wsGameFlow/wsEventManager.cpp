@@ -1,11 +1,9 @@
-/*
- *  wsTask.h
+/**
+ *    wsEvents.cpp
+ *    Jan 9, 2013
+ *    D. Scott Nettleton
  *
- *  Created on: Dec 25, 2012
- *      Author: dsnettleton
- *
- *      This file declares the class wsTask, which is the base class for
- *      a task to be run on the Whipstitch Engine's thread pool.
+ *    This file declares the event queue.
  *
  *  Copyright D. Scott Nettleton, 2013
  *  This software is released under the terms of the
@@ -22,25 +20,17 @@
  *  You should have received a copy of the GNU Lesser Public License
  *  along with The Whipstitch Game Engine.
  *  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-#ifndef WS_TASK_H_
-#define WS_TASK_H_
+#include "wsEventManager.h"
 
-#include "../wsUtils.h"
+wsEventManager wsEvents;
 
-class wsTask {
-    private:
-    public:
-        virtual ~wsTask() {}
-        virtual void run(u32 threadNum) = 0;//{ wsLog(WS_LOG_THREADS, "NULL Task Running."); }
-};
+void wsEventManager::startUp() {
+    _mInitialized = true;
+    events = wsNew(wsStack<wsEvent>, wsStack<wsEvent>(WS_EVENT_QUEUE_SIZE));
+}
 
-class wsTask_test : public wsTask {
-    public:
-        void run(u32 threadNum) {
-            wsLog(WS_LOG_MAIN, "Running thread %u", threadNum);
-        }
-};
-
-#endif  /*  WS_TASK_H_  */
+void wsEventManager::shutDown() {
+    //  Nothin' here
+}

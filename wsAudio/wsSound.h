@@ -1,11 +1,10 @@
-/*
- *  wsTask.h
+/**
+ *  wsSound.h
+ *  Jan 19, 2013
+ *  D. Scott Nettleton
  *
- *  Created on: Dec 25, 2012
- *      Author: dsnettleton
- *
- *      This file declares the class wsTask, which is the base class for
- *      a task to be run on the Whipstitch Engine's thread pool.
+ *  This file declares the struct wsSound, which is used to store
+ *  information for a single sound object.
  *
  *  Copyright D. Scott Nettleton, 2013
  *  This software is released under the terms of the
@@ -23,24 +22,32 @@
  *  along with The Whipstitch Game Engine.
  *  If not, see <http://www.gnu.org/licenses/>.
 */
-
-#ifndef WS_TASK_H_
-#define WS_TASK_H_
+#ifndef WS_SOUND_H_
+#define WS_SOUND_H_
 
 #include "../wsUtils.h"
 
-class wsTask {
-    private:
-    public:
-        virtual ~wsTask() {}
-        virtual void run(u32 threadNum) = 0;//{ wsLog(WS_LOG_THREADS, "NULL Task Running."); }
+#define WS_BACKEND_OPENAL 1
+
+//  Default (preferred) backend is OpenAL
+#define WS_SOUND_BACKEND WS_BACKEND_OPENAL
+#include <AL/alut.h>
+
+struct wsSound {
+  vec4 pos; //  w value indicates volume
+  vec4 vel; //  velocity of the sound source
+  f32 refDistance;  //  Distance at which the sound becomes half as loud
+  f32 rolloff;  //  factor by which the sound is attenuated over distance
+  f32 pitch;
+  static f32 gain;
+  u32 soundBuffer;
+  u32 soundSource;
+  bool looping;
+  bool relative;
+  wsSound(const char* filePath);
+  ~wsSound();
+  void play();
+  void update();
 };
 
-class wsTask_test : public wsTask {
-    public:
-        void run(u32 threadNum) {
-            wsLog(WS_LOG_MAIN, "Running thread %u", threadNum);
-        }
-};
-
-#endif  /*  WS_TASK_H_  */
+#endif //  WS_SOUND_H_

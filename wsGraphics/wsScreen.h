@@ -4,7 +4,18 @@
  *  Created on: Sep 7, 2012
  *      Author: dsnettleton
  *
+ *  This file declares the class wsScreen, which contains the necessary
+ *  methods required for defining a screen object. A screen in the Whipstitch
+ *  game engine is considered to be anything which may be drawn upon. This
+ *  could be a single window or a physical screen, depending upon the platform.
  *
+ *  Onscreen coordinates in the Whipstitch Game Engine are given using
+ *  a scale 1600 units wide by 900 units tall. This is for consistency
+ *  across many window sizes, and may or may not translate directly into
+ *  pixels, depending on the resolution. If the window ratio is not 16:9
+ *  (widescreen), the shortened dimension (either height or width) is
+ *  clipped from the right or top. The windowspace origin (0,0) is at
+ *  the lower left corner of the screen, in order to be sensible.
  *
  *  Copyright D. Scott Nettleton, 2013
  *  This software is released under the terms of the
@@ -27,15 +38,25 @@
 #define WS_SCREEN_H_
 
 #include "../wsUtils.h"
-#include "GL/glfw.h"
 
 #define WS_BACKEND_GLFW     0x01
-#define WS_BACKEND_GTK      0x02    //  For potential future use
+#define WS_BACKEND_X11      0x02
+#define WS_BACKEND_GTK      0x03    //  For potential future use
 #define WS_BACKEND_WINAPI   0x04    //  For potential future use
-#define WS_BAKCEND_FREEGLUT 0x08    //  For potential future use
+#define WS_BACKEND_FREEGLUT 0x05    //  For potential future use
 
 //  Default Backend is GLFW
-#define WS_SCREEN_BACKEND   WS_BACKEND_GLFW
+#ifndef WS_SCREEN_BACKEND
+    #define WS_SCREEN_BACKEND   WS_BACKEND_GLFW
+#endif
+
+#if (WS_SCREEN_BACKEND == WS_BACKEND_X11)
+    #include "X11/X.h"
+    #include "X11/Xlib.h"
+    #include "GL/glx.h"
+#elif (WS_SCREEN_BACKEND == WS_BACKEND_GLFW)
+    #include "GL/glfw.h"
+#endif
 
 struct wsScreenSettings {
     public:
@@ -75,10 +96,19 @@ struct wsScreenSettings {
 class wsScreen {
     private:
         wsScreenSettings settings;
+        #if (WS_SCREEN_BACKEND == WS_BACKEND_X11)
+            Display* xDisp;
+            Window win;
+            GLXContext context;
+        #endif
     public:
         /** Constructor **/
         //  Creates a new screen with the given settings and opens it
         wsScreen(wsScreenSettings mySettings);
+        /** Setters and Getters **/
+        #if (WS_SCREEN_BACKEND == WS_BACKEND_X11)
+            Display* getDisplay() { return xDisp; }
+        #endif
         /** Operational Methods **/
         //  Clears the screen
         void clear();
@@ -86,6 +116,8 @@ class wsScreen {
         void close();
         //  Draws the screen
         void draw();
+        //  Swap the front and back buffers
+        void swapBuffers();
 };
 
 #endif /* WS_SCREEN_H_ */

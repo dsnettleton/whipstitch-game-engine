@@ -2,15 +2,15 @@
  * wsRenderSystem.h
  *
  *  Created on: Sep 10, 2012
- *      Author: dsnettleton
+ *  Author: dsnettleton
  *
- *      This file declares the class wsRenderSystem, which loads the OpenGL context using
- *      GLEW (GL Extension Wrangler) to initialize all available extensions on the given
- *      platform.
+ *  This file declares the class wsRenderSystem, which loads the OpenGL context using
+ *  GLEW (GL Extension Wrangler) to initialize all available extensions on the given
+ *  platform.
  *
- *      wsRenderSystem is an engine subsytem, and must be initialized via the startUp()
- *      function before it may be used. This is done through the engine startup command
- *      wsInit().
+ *  wsRenderSystem is an engine subsytem, and must be initialized via the startUp()
+ *  function before it may be used. This is done through the engine startup command
+ *  wsInit().
  *
  *  Copyright D. Scott Nettleton, 2013
  *  This software is released under the terms of the
@@ -35,101 +35,108 @@
 #include "wsShader.h"
 #include "../wsUtils.h"
 #include "../wsAssets.h"
+#include "wsCamera.h"
 
 #define WS_BACKEND_OPENGL   0x10
-#define WS_BACKEND_SDL      0x20    //  For potential future use
-#define WS_BACKEND_DIRECTX  0x40    //  For potential future use
+#define WS_BACKEND_SDL  0x20  //  For potential future use
+#define WS_BACKEND_DIRECTX  0x40  //  For potential future use
 
 //  Default (preferred) backend is OpenGL
 #define WS_GRAPHICS_BACKEND WS_BACKEND_OPENGL
 
-//  Rendering Features
-#define WS_RENDER_CULL_FACE 0x00000001
-#define WS_RENDER_LIGHTING  0x00000002
-#define WS_RENDER_DEPTH     0x00000004
-#define WS_RENDER_BONES     0x00000008
-#define WS_RENDER_SHADER    0x00000010
-
-#define WS_RENDER_MODE_LIT  1    //  Per-fragment lighting
-#define WS_RENDER_MODE_CEL  2    //  Cel shading
-#define WS_RENDER_MODE_INV  3    //  Invisible (refracted) shading
+//  Drawing Features
+#define WS_DRAW_CULL_FACE 0x00000001
+#define WS_DRAW_LIGHTING  0x00000002
+#define WS_DRAW_DEPTH     0x00000004
+#define WS_DRAW_BONES     0x00000008
+#define WS_DRAW_SHADER    0x00000010
+#define WS_DRAW_TAGS      0x00000020
+#define WS_DRAW_AXES      0x00000040
+#define WS_DRAW_TEXTURES  0x00000080
 
 struct wsMeshContainer {
-    const wsMesh* mesh;
-#if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
+  const wsMesh* mesh;
+  #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
     wsIndexArray* indexArrays;
     u32 numIndexArrays;
     u32 vertexArray;
-#endif
-    wsMeshContainer(const wsMesh* my);
-    ~wsMeshContainer();
+  #endif
+  wsMeshContainer(const wsMesh* my);
+  ~wsMeshContainer();
 };
 
 class wsRenderSystem {
-    private:
-        i32 versionMajor;
-        i32 versionMinor;
-        i32 numExtensions;
-        //  Shader Variables
-        u32 primaryShader;  //  Handle for the primary shader (wsShader.glslv, wsShader.glslf)
-        u32 primaryVert;
-        u32 primaryFrag;
-        u32 renderMode;
-        bool lightingEnabled;
-        bool drawBones;
-        //  Drawing components
-        wsHashMap<wsModel*>* models;
-        wsHashMap<wsMeshContainer*>* meshes;
-        //  True only when the startUp function has been called
-        bool _mInitialized;
-        //  Private Methods
-        void drawMesh(u32 meshIndex);
-        void drawModel(u32 modelIndex);
-    public:
-        /*  Default Constructor and Deconstructor */
-        //  As an engine subsystem, the renderer takes no action until explicitly
-        //  initialized via the startUp(...) function.
-        //  uninitialized via the shutDown() function.
-        wsRenderSystem() : _mInitialized(false) {}
-        ~wsRenderSystem() {}
-        /*  Setters and Getters */
-        bool getDrawBones() { return drawBones; }
-        u32 getRenderMode() { return renderMode; }
-        void setRenderMode(const u32 my) {
-            renderMode = my;
-            glUniform1i(glGetUniformLocation(primaryShader, "renderMode"), renderMode);
-        }
-        wsModel* getModel(const char* modelName) { return models->retrieve(wsHash(modelName)); }
-        /*  Operational Methods */
-        void addAnimation(wsAnimation* myAnim, const char* modelName);
-        u32 addMesh(const char* filepath);  //  Adds a mesh and return the mesh's index
-        u32 addModel(const char* filepath); //  Adds a 3D model and returns its index
-        u32 addModel(const char* modelName, wsMesh* myMesh, u32 maxAnimations = 7);
-        void beginAnimation(const char* modelName, const char* animName);
-        void checkExtensions();
-        void clearScreen();
-        void continueAnimation(const char* modelName);
-        void continueAnimations();
-        void disable(u32 renderingFeatures);
-        void drawMeshes();
-        void drawModels();
-        void enable(u32 renderingFeatures);
-        void loadIdentity();
-        void loadTexture(u32* index, const char* filename);
-        void modelviewMatrix();
-        void pauseAnimation(const char* modelName);
-        void pauseAnimations();
-        void projectionMatrix();
-        void setClearColor(const vec4& clearColor);
-        void setClearColor(f32 r, f32 g, f32 b, f32 a);
-        void setMaterial(const wsMaterial& mat);
-        void swapBuffers();
-        void updateAnimation(const char* modelName, t32 increment);
-        void updateAnimations(t32 increment);
-        //  Uninitializes the renderer
-        void shutDown();
-        //  Initializes the renderer
-        void startUp();
+  private:
+    i32 versionMajor;
+    i32 versionMinor;
+    i32 numExtensions;
+    u32 drawFeatures;
+    //  Shader Variables
+    wsShader* shader;
+    u32 renderMode;
+    //  Drawing components
+    wsHashMap<wsCamera*>* cameras;
+    wsHashMap<wsModel*>* models;
+    wsHashMap<wsMeshContainer*>* meshes;
+    //  True only when the startUp function has been called
+    bool _mInitialized;
+    //  Private Methods
+    void drawMesh(u32 meshIndex);
+    void drawModel(u32 modelIndex);
+  public:
+    /*  Default Constructor and Deconstructor */
+    //  As an engine subsystem, the renderer takes no action until explicitly
+    //  initialized via the startUp(...) function.
+    //  uninitialized via the shutDown() function.
+    wsRenderSystem() : _mInitialized(false) {}
+    ~wsRenderSystem() {}
+    /*  Setters and Getters */
+    bool getDrawBones() { return (drawFeatures & WS_DRAW_BONES); }
+    bool getDrawTags() { return (drawFeatures & WS_DRAW_TAGS); }
+    u32 getRenderMode() { return renderMode; }
+    void setRenderMode(const u32 my) {
+    renderMode = my;
+    shader->setUniformInt("renderMode", renderMode);
+    //glUniform1i(glGetUniformLocation(primaryShader, "renderMode"), renderMode);
+    }
+    wsCamera* getCamera(const char* cameraName) { return cameras->retrieve(wsHash(cameraName)); }
+    wsModel* getModel(const char* modelName) { return models->retrieve(wsHash(modelName)); }
+    /*  Operational Methods */
+    void addAnimation(wsAnimation* myAnim, const char* modelName);
+    u32 addCamera(wsCamera* myCam);
+    u32 addMesh(const char* filepath);  //  Adds a mesh and return the mesh's index
+    u32 addModel(const char* filepath); //  Adds a 3D model and returns its index
+    u32 addModel(const char* modelName, wsMesh* myMesh, u32 maxAnimations = 7);
+    u32 addModel(wsModel* myModel);
+    void beginAnimation(const char* modelName, const char* animName);
+    void checkExtensions();
+    void clearScreen();
+    void continueAnimation(const char* modelName);
+    void continueAnimations();
+    void disable(u32 renderingFeatures);
+    void drawMeshes();
+    void drawModels();
+    void enable(u32 renderingFeatures);
+    void loadIdentity();
+    void loadTexture(u32* index, const char* filename);
+    void modelviewMatrix();
+    void pauseAnimation(const char* modelName);
+    void pauseAnimations();
+    void projectionMatrix();
+    void setCameraMode(const char* cameraName, u32 cameraMode);
+    void setClearColor(const vec4& clearColor);
+    void setClearColor(f32 r, f32 g, f32 b, f32 a);
+    void setMaterial(const wsMaterial& mat);
+    void setPos(const char* modelName, const vec4& pos);
+    void setRotation(const char* modelName, const quat& rot);
+    void setScale(const char* modelName, const f32 scale);
+    void swapBuffers();
+    void updateAnimation(const char* modelName, t32 increment);
+    void updateAnimations(t32 increment);
+    //  Uninitializes the renderer
+    void shutDown();
+    //  Initializes the renderer
+    void startUp();
 };
 
 extern wsRenderSystem wsRenderer;

@@ -1,9 +1,9 @@
 //  wsShader.h
 //  D. Scott Nettleton
 /*
-    This file implements the class wsShader.
-    The wsShader class loads, stores, and operates OpenGL
-    shaders using the GLSL framework.
+ *  This file implements the class wsShader.
+ *  The wsShader class loads, stores, and operates OpenGL
+ *  shaders using the GLSL framework.
  *
  *  Copyright D. Scott Nettleton, 2013
  *  This software is released under the terms of the
@@ -38,24 +38,25 @@ class wsShader {
   public:
     /// Constructor
     wsShader();
+    wsShader(const char* vertexShaderPath, const char* fragmentShaderPath);
     ~wsShader();
     /// Getters
     u32 getProgram() { return shaderProgram; }
     void setTextureSampler2D(const char* varName, const u32 textureIndex);
-    void setUniform(const char*  varName, const f32 value);
-    void setUniformArray(const char*  varName, const i32 numItems, const f32* array);
-    void setUniformInt(const char*  varName, const i32 value);
-    void setUniformVec2(const char*  varName, const f32 valueX, const f32 valueY);
-    void setUniformVec3(const char*  varName, const f32 valueX, const f32 valueY, const f32 valueZ);
-    void setUniformVec3(const char*  varName, const vec4& values);
-    //void setUniformVec3(const char*  varName, const Color values);
-    void setUniformVec4(const char*  varName, const f32 valueX, const f32 valueY, const f32 valueZ, const f32 valueW);
-    void setUniformVec4(const char*  varName, const vec4& values);
-    //void setUniformVec4(const char*  varName, Color values);
-    void setVertexAttribute(const char*  varName, const u32 attributeIndex);
+    void setUniform(const char* varName, const f32 value);
+    void setUniformArray(const char* varName, const f32* array, const u32 numItems);
+    void setUniformInt(const char* varName, const i32 value);
+    void setUniformVec2(const char* varName, const f32 valueX, const f32 valueY);
+    void setUniformVec2(const char* varName, const vec4& values);
+    void setUniformVec3(const char* varName, const f32 valueX, const f32 valueY, const f32 valueZ);
+    void setUniformVec3(const char* varName, const vec4& values);
+    void setUniformVec4(const char* varName, const f32 valueX, const f32 valueY, const f32 valueZ, const f32 valueW);
+    void setUniformVec4(const char* varName, const vec4& values);
+    void setUniformMat4(const char* varName, const mat4& values);
+    void setVertexAttribute(const char* varName, const u32 attributeIndex);
     /// Operational Member Functions
-    bool addVertexShader(const char*  shaderName, const char*  shaderFilePath);
-    bool addFragmentShader(const char*  shaderName, const char*  shaderFilePath);
+    bool addVertexShader(const char* shaderFilePath);
+    bool addFragmentShader(const char* shaderFilePath);
     bool install();
     void use(); //  For using pairs (vertex and fragment shaders) given the same name
     void end();

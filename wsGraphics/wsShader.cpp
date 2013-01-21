@@ -23,235 +23,259 @@
 */
 
 #include "wsShader.h"
-/*
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <stdlib.h>
-
-wsShader::wsShader() {
-  shaderProgram = glCreateProgram();
-}
-
-wsShader::~wsShader() {
-  while (!vertShaders.empty()) {
-    glDeleteShader(vertShaders.back());
-    vertShaders.pop_back();
+#include "wsRenderSystem.h"
+//*
+// #include <fstream>
+// #include <iostream>
+// #include <sstream>
+// #include <stdlib.h>
+#if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
+  wsShader::wsShader() {
+    shaderProgram = glCreateProgram();
+    vertShader = 0;
+    fragShader = 0;
   }
-  while (!fragShaders.empty()) {
-    glDeleteShader(fragShaders.back());
-    fragShaders.pop_back();
+
+  wsShader::wsShader(const char* vertexShaderPath, const char* fragmentShaderPath) {
+    shaderProgram = glCreateProgram();
+    wsAssert(addVertexShader(vertexShaderPath), "Problem adding vertex shader.");
+    wsAssert(addFragmentShader(fragmentShaderPath), "Problem adding fragment shader.");
+    wsAssert(install(), "Problem installing shader program.");
   }
-  glDeleteProgram(shaderProgram);
-}
 
-bool wsShader::addVertexShader(std::string shaderName, std::string shaderFilePath) {
-  /// Open File
-  std::ifstream file;
-  file.open(shaderFilePath.c_str());
-  if (!file) {
-    printf("ERROR: file %s does not exist\n", shaderFilePath.c_str());
-    return false;
+  wsShader::~wsShader() {
+    if (vertShader) { glDeleteShader(vertShader); }
+    if (fragShader) { glDeleteShader(fragShader); }
+    glDeleteProgram(shaderProgram);
   }
-  std::stringstream stream;
-  stream << file.rdbuf();
-  file.close();
-  std::string fileContents;
-  const char* convertedString;
-  fileContents = stream.str() + "\0";
-  convertedString = fileContents.c_str();
 
-  GLuint myShader;
-  GLint compiled;
-  myShader = glCreateShader(GL_VERTEX_SHADER);
-  vertShaders.push_back(myShader);
-  glShaderSource(myShader, 1, &convertedString, NULL);
-  glCompileShader(myShader);
-  glGetObjectParameterivARB(myShader, GL_COMPILE_STATUS, &compiled);
-  if (!compiled) {
-    printf("Vertex Shader did not compile\n");
-    GLint logSize, charsWritten;
-    glGetShaderiv(myShader, GL_INFO_LOG_LENGTH, &logSize);
-    GLchar* shaderLog;
-    shaderLog = (GLchar*)malloc(logSize);
-    glGetShaderInfoLog(myShader, logSize, &charsWritten, shaderLog);
-    printf("%s\n", shaderLog);
-    vertShaders.pop_back();
-    delete[] shaderLog;
-    return false;
+  bool wsShader::addVertexShader(const char* filePath) {
+    /// Open File
+    FILE* pFile;
+    wsAssert( (pFile = fopen(filePath, "r")), "Error Loading file." );
+    fseek(pFile, 0, SEEK_END);
+    u32 fileLength = ftell(pFile);
+    rewind(pFile);
+    const char* fileContents = wsNewArrayTmp(char, fileLength);
+    u32 resultingLength = fread((void*)fileContents, 1, fileLength, pFile);
+    wsAssert(resultingLength == fileLength, "Problem reading shader file.");
+
+    i32 compiled;
+    vertShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertShader, 1, &fileContents, NULL);
+    glCompileShader(vertShader);
+    glGetObjectParameterivARB(vertShader, GL_COMPILE_STATUS, &compiled);
+    if (!compiled) {
+      wsLog(WS_LOG_SHADER, "Vertex Shader did not compile\n");
+      i32 logSize, charsWritten;
+      glGetShaderiv(vertShader, GL_INFO_LOG_LENGTH, &logSize);
+      char* shaderLog = wsNewArrayTmp(char, logSize);
+      glGetShaderInfoLog(vertShader, logSize, &charsWritten, shaderLog);
+      wsLog(WS_LOG_SHADER, "%s\n", shaderLog);
+      vertShader = 0;
+      return false;
+    }
+    glAttachShader(shaderProgram, vertShader);
+
+    fclose(pFile);
+    return true;
   }
-  glAttachShader(shaderProgram, vertShaders.back());
-  return true;
-}
 
-bool wsShader::addFragmentShader(std::string shaderName, std::string shaderFilePath) {
-  /// Open File
-  std::ifstream file;
-  file.open(shaderFilePath.c_str());
-  if (!file) {
-    printf("ERROR: file %s does not exist\n", shaderFilePath.c_str());
-    return false;
+  bool wsShader::addFragmentShader(const char* filePath) {
+    /// Open File
+    FILE* pFile;
+    wsAssert( (pFile = fopen(filePath, "r")), "Error Loading file." );
+    fseek(pFile, 0, SEEK_END);
+    u32 fileLength = ftell(pFile);
+    rewind(pFile);
+    const char* fileContents = wsNewArrayTmp(char, fileLength);
+    u32 resultingLength = fread((void*)fileContents, 1, fileLength, pFile);
+    wsAssert(resultingLength == fileLength, "Problem reading shader file.");
+
+    i32 compiled;
+    fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragShader, 1, &fileContents, NULL);
+    glCompileShader(fragShader);
+    glGetObjectParameterivARB(fragShader, GL_COMPILE_STATUS, &compiled);
+    if (!compiled) {
+      wsLog(WS_LOG_SHADER, "Fragment Shader did not compile\n");
+      i32 logSize, charsWritten;
+      glGetShaderiv(fragShader, GL_INFO_LOG_LENGTH, &logSize);
+      char* shaderLog = wsNewArrayTmp(char, logSize);
+      glGetShaderInfoLog(fragShader, logSize, &charsWritten, shaderLog);
+      wsLog(WS_LOG_SHADER, "%s\n", shaderLog);
+      fragShader = 0;
+      return false;
+    }
+    glAttachShader(shaderProgram, fragShader);
+
+    fclose(pFile);
+    return true;
   }
-  std::stringstream stream;
-  stream << file.rdbuf();
-  file.close();
-  std::string fileContents;
-  const char* convertedString;
-  fileContents = stream.str() + "\0";
-  convertedString = fileContents.c_str();
 
-  GLuint myShader;
-  GLint compiled;
-  myShader = glCreateShader(GL_FRAGMENT_SHADER);
-  fragShaders.push_back(myShader);
-  glShaderSource(fragShaders.back(), 1, &convertedString, NULL);
-  glCompileShader(fragShaders.back());
-  glGetShaderiv(fragShaders.back(), GL_COMPILE_STATUS, &compiled);
-  if (!compiled) {
-    printf("Fragment Shader did not compile\n");
-    GLint logSize, charsWritten;
-    glGetShaderiv(fragShaders.back(), GL_INFO_LOG_LENGTH, &logSize);
-    GLchar* shaderLog;
-    shaderLog = (GLchar*)malloc(logSize);
-    glGetShaderInfoLog(fragShaders.back(), logSize, &charsWritten, shaderLog);
-    printf("%s\n", shaderLog);
-    fragShaders.pop_back();
-    delete[] shaderLog;
-    return false;
+  bool wsShader::install() {
+    wsLog(WS_LOG_SHADER, "Installing Shader Program.\n");
+    glLinkProgram(shaderProgram);
+    wsLog(WS_LOG_SHADER, "  Shader linked\n");
+    i32 linked;
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linked);
+    wsLog(WS_LOG_SHADER, "  Link status retrieved...\n");
+    if (!linked) {
+      wsLog(WS_LOG_SHADER, "  Shader failed to link.\n");
+      i32 logSize, charsWritten;
+      glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logSize);
+      char* shaderLog = wsNewArrayTmp(char, logSize);
+      glGetProgramInfoLog(shaderProgram, logSize, &charsWritten, shaderLog);
+      wsLog(WS_LOG_SHADER, "  %s\n", shaderLog);
+      return false;
+    }
+    wsLog(WS_LOG_SHADER, "Shader installed.\n");
+    return true;
   }
-  glAttachShader(shaderProgram, fragShaders.back());
-  return true;
-}
 
-bool wsShader::install() {
-  printf("Installing Shader Program.\n");
-  glLinkProgram(shaderProgram);
-  printf("  Shader linked\n");
-  GLint linked;
-  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linked);
-  printf("  Link status retrieved...\n");
-  if (!linked) {
-    printf("  Shader failed to link.\n");
-    GLint logSize, charsWritten;
-    glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logSize);
-    GLchar* shaderLog;
-    shaderLog = (GLchar*)malloc(logSize);
-    glGetProgramInfoLog(shaderProgram, logSize, &charsWritten, shaderLog);
-    printf("  %s\n", shaderLog);
-    delete[] shaderLog;
-    //glGetProgramInfoLog();
-    return false;
+  void wsShader::setTextureSampler2D(const char* varName, const u32 textureIndex) {
+    i32 currentProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(shaderProgram);
+    }
+    glUniform1i(glGetUniformLocation(shaderProgram, varName), textureIndex);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(currentProgram);
+    }
   }
-  printf("Shader installed.\n");
-  return true;
-}
 
-void wsShader::setTextureSampler2D(std::string varName, GLuint textureIndex) {
-  GLint currentProgram;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-  glUseProgram(shaderProgram);
-  glUniform1i(glGetUniformLocation(shaderProgram, varName.c_str()), textureIndex);
-  glUseProgram(currentProgram);
-}
+  void wsShader::setUniform(const char* varName, const f32 value) {
+    i32 currentProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(shaderProgram);
+    }
+    glUniform1f(glGetUniformLocation(shaderProgram, varName), value);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(currentProgram);
+    }
+  }
 
-void wsShader::setUniform(std::string varName, GLfloat value) {
-  //  Suspend Current Shader (in case it's different from this one)
-  GLint currentProgram;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-  glUseProgram(shaderProgram);
-  glUniform1f(glGetUniformLocation(shaderProgram, varName.c_str()), value);
-  glUseProgram(currentProgram);
-}
+  void wsShader::setUniformArray(const char* varName, const f32* array, const u32 numItems) {
+    i32 currentProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(shaderProgram);
+    }
+    glUniform1fv(glGetUniformLocation(shaderProgram, varName), numItems, array);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(currentProgram);
+    }
+  }
 
-void wsShader::setUniformArray(std::string varName, GLint numItems, GLfloat* array) {
-  //  Suspend Current Shader (in case it's different from this one)
-  GLint currentProgram;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-  glUseProgram(shaderProgram);
-  glUniform1fv(glGetUniformLocation(shaderProgram, varName.c_str()), numItems, array);
-  glUseProgram(currentProgram);
-}
+  void wsShader::setUniformInt(const char* varName, const i32 value) {
+    i32 currentProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(shaderProgram);
+    }
+    glUniform1i(glGetUniformLocation(shaderProgram, varName), value);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(currentProgram);
+    }
+  }
 
-void wsShader::setUniformInt(std::string varName, GLint value) {
-  GLint currentProgram;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-  glUseProgram(shaderProgram);
-  glUniform1i(glGetUniformLocation(shaderProgram, varName.c_str()), value);
-  glUseProgram(currentProgram);
-}
+  void wsShader::setUniformVec2(const char* varName, const f32 valueX, const f32 valueY) {
+    i32 currentProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(shaderProgram);
+    }
+    glUniform2f(glGetUniformLocation(shaderProgram, varName), valueX, valueY);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(currentProgram);
+    }
+  }
 
-void wsShader::setUniformVec2(std::string varName, GLfloat valueX, GLfloat valueY) {
-  //  Suspend Current Shader (in case it's different from this one)
-  GLint currentProgram;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-  glUseProgram(shaderProgram);
-  glUniform2f(glGetUniformLocation(shaderProgram, varName.c_str()), valueX, valueY);
-  glUseProgram(currentProgram);
-}
+  void wsShader::setUniformVec2(const char* varName, const vec4& values) {
+    i32 currentProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(shaderProgram);
+    }
+    glUniform2f(glGetUniformLocation(shaderProgram, varName), values.x, values.y);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(currentProgram);
+    }
+  }
 
-void wsShader::setUniformVec3(std::string varName, GLfloat valueX, GLfloat valueY, GLfloat valueZ) {
-  //  Suspend Current Shader (in case it's different from this one)
-  GLint currentProgram;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-  glUseProgram(shaderProgram);
-  glUniform3f(glGetUniformLocation(shaderProgram, varName.c_str()), valueX, valueY, valueZ);
-  glUseProgram(currentProgram);
-}
+  void wsShader::setUniformVec3(const char* varName, const f32 valueX, const f32 valueY, const f32 valueZ) {
+    i32 currentProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(shaderProgram);
+    }
+    glUniform3f(glGetUniformLocation(shaderProgram, varName), valueX, valueY, valueZ);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(currentProgram);
+    }
+  }
 
-void wsShader::setUniformVec3(std::string varName, cogVector values) {
-  //  Suspend Current Shader (in case it's different from this one)
-  GLint currentProgram;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-  glUseProgram(shaderProgram);
-  glUniform3f(glGetUniformLocation(shaderProgram, varName.c_str()), values.x, values.y, values.z);
-  glUseProgram(currentProgram);
-}
+  void wsShader::setUniformVec3(const char* varName, const vec4& values) {
+    i32 currentProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(shaderProgram);
+    }
+    glUniform3f(glGetUniformLocation(shaderProgram, varName), values.x, values.y, values.z);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(currentProgram);
+    }
+  }
 
-void wsShader::setUniformVec3(std::string varName, Color values) {
-  //  Suspend Current Shader (in case it's different from this one)
-  GLint currentProgram;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-  glUseProgram(shaderProgram);
-  glUniform3f(glGetUniformLocation(shaderProgram, varName.c_str()), values.getRf(), values.getGf(), values.getBf());
-  glUseProgram(currentProgram);
-}
+  void wsShader::setUniformVec4(const char* varName, const f32 valueX, const f32 valueY, const f32 valueZ, const f32 valueW) {
+    i32 currentProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(shaderProgram);
+    }
+    glUniform4f(glGetUniformLocation(shaderProgram, varName), valueX, valueY, valueZ, valueW);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(currentProgram);
+    }
+  }
 
-void wsShader::setUniformVec4(std::string varName, GLfloat valueX, GLfloat valueY, GLfloat valueZ, GLfloat valueW) {
-  //  Suspend Current Shader (in case it's different from this one)
-  GLint currentProgram;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-  glUseProgram(shaderProgram);
-  glUniform4f(glGetUniformLocation(shaderProgram, varName.c_str()), valueX, valueY, valueZ, valueW);
-  glUseProgram(currentProgram);
-}
+  void wsShader::setUniformVec4(const char* varName, const vec4& values) {
+    i32 currentProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(shaderProgram);
+    }
+    glUniform4f(glGetUniformLocation(shaderProgram, varName), values.x, values.y, values.z, values.w);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(currentProgram);
+    }
+  }
 
-void wsShader::setUniformVec4(std::string varName, cogVector values, GLfloat valueW) {
-  //  Suspend Current Shader (in case it's different from this one)
-  GLint currentProgram;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-  glUseProgram(shaderProgram);
-  glUniform4f(glGetUniformLocation(shaderProgram, varName.c_str()), values.x, values.y, values.z, valueW);
-  glUseProgram(currentProgram);
-}
+  void wsShader::setUniformMat4(const char* varName, const mat4& values) {
+    i32 currentProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(shaderProgram);
+    }
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, varName), 16, false, values.data);
+    if (currentProgram != shaderProgram) {
+      glUseProgram(currentProgram);
+    }
+  }
 
-void wsShader::setUniformVec4(std::string varName, Color values) {
-  //  Suspend Current Shader (in case it's different from this one)
-  GLint currentProgram;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-  glUseProgram(shaderProgram);
-  glUniform4f(glGetUniformLocation(shaderProgram, varName.c_str()), values.getRf(), values.getGf(), values.getBf(), values.getAf());
-  glUseProgram(currentProgram);
-}
+  void wsShader::setVertexAttribute(const char* varName, const u32 attributeIndex) {
+    glBindAttribLocation(shaderProgram, attributeIndex, varName);
+  }
 
-void wsShader::setVertexAttribute(std::string varName, GLuint attributeIndex) {
-  glBindAttribLocation(shaderProgram, attributeIndex, varName.c_str());
-}
+  void wsShader::use() {
+    glUseProgram(shaderProgram);
+  }
 
-void wsShader::use() {
-  glUseProgram(shaderProgram);
-}
+  void wsShader::end() {
+    glUseProgram(0);
+  }
 
-void wsShader::end() {
-  glUseProgram(0);
-}
+#endif
 //*/

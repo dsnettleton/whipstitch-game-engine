@@ -34,29 +34,35 @@
 wsThreadPool wsThreads;
 
 #ifdef WS_OS_FAMILY_UNIX
+void wsThreadPool::lockMutex(wsMutex* myMutex) {
+    pthread_mutex_lock(myMutex);
+}
+void wsThreadPool::unlockMutex(wsMutex* myMutex) {
+    pthread_mutex_unlock(myMutex);
+}
 void* wsRunThread(void* threadID) {
     wsAssert(wsThreads.isInitialized(), "The object wsTasks must be initialized via the startUp() method before use.");
     //  Create a single thread and begin running...
     wsQueue<wsTask*>* tasks = wsThreads.getTaskList();
     u32 threadNum = *(u32*)threadID;
     wsTask* myTask = NULL;
-    pthread_mutex_t* listMutex = wsThreads.getListMutex();
-    pthread_mutex_t* logMutex = wsThreads.getLogMutex();
+    wsMutex* listMutex = wsThreads.getListMutex();
+    wsMutex* logMutex = wsThreads.getLogMutex();
     while (!wsThreads.killSignalReceived()) {
-        pthread_mutex_lock(listMutex);
+        wsThreads.lockMutex(listMutex);
         if (tasks->isNotEmpty()) {
             wsLog(WS_LOG_THREADS, "Removing task from front of queue; running on thread number %u", threadNum);
             myTask = tasks->pop();
         }
-        pthread_mutex_unlock(listMutex);
+        wsThreads.unlockMutex(listMutex);
         if (myTask != NULL) {
             myTask->run(threadNum);
             myTask = NULL;
         }
     }
-    pthread_mutex_lock(logMutex);
+    wsThreads.lockMutex(logMutex);
     wsLog(WS_LOG_THREADS, "Exiting thread number %u", threadNum);
-    pthread_mutex_unlock(logMutex);
+    wsThreads.unlockMutex(logMutex);
     pthread_exit(NULL);
 }
 #elif defined(WS_OS_FAMILY_WINDOWS)
@@ -73,16 +79,16 @@ void wsThreadPool::startUp() {
     for (u32 i = 0; i < numThreads; ++i) {
         threadIndices[i] = i;
     }
-#ifdef WS_OS_FAMILY_UNIX
-    threadAttributes = wsNew(pthread_attr_t, pthread_attr_t());
-    pthread_attr_init(threadAttributes);
-    pthread_attr_setdetachstate(threadAttributes, PTHREAD_CREATE_JOINABLE);
-    listMutex = wsNew(pthread_mutex_t, pthread_mutex_t());
-    pthread_mutex_init(listMutex, NULL);
-    logMutex = wsNew(pthread_mutex_t, pthread_mutex_t());
-    pthread_mutex_init(logMutex, NULL);
-#elif defined(WS_OS_FAMILY_WINDOWS)
-#endif  /*  Whipstitch OS families  */
+    #ifdef WS_OS_FAMILY_UNIX
+        threadAttributes = wsNew(pthread_attr_t, pthread_attr_t());
+        pthread_attr_init(threadAttributes);
+        pthread_attr_setdetachstate(threadAttributes, PTHREAD_CREATE_JOINABLE);
+    #elif defined(WS_OS_FAMILY_WINDOWS)
+    #endif  /*  Whipstitch OS families  */
+    listMutex = wsNew(wsMutex, wsMutex());
+    logMutex = wsNew(wsMutex, wsMutex());
+    wsInitMutex(listMutex);
+    wsInitMutex(logMutex);
     taskList = wsNew(wsQueue<wsTask*>, wsQueue<wsTask*>(WS_MAX_TASK_QUEUE_SIZE));
     tasksRunning = 0;
     wsLog(WS_LOG_THREADS, "Initializing %u Worker Threads", numThreads);
@@ -93,23 +99,20 @@ void wsThreadPool::startUp() {
 
 void wsThreadPool::shutDown() {
     _mKillThreads = true;
-#ifdef WS_OS_FAMILY_UNIX
-    /*  Allow All Currently Running Threads to End Safely   */
-    void* status;
-    for (u32 i = 0; i < numThreads; ++i) {
-        pthread_join(threads[i], &status);
-    }
-#elif defined(WS_OS_FAMILY_WINDOWS)
-#endif
+    #ifdef WS_OS_FAMILY_UNIX
+        /*  Allow All Currently Running Threads to End Safely   */
+        void* status;
+        for (u32 i = 0; i < numThreads; ++i) {
+            pthread_join(threads[i], &status);
+        }
+    #elif defined(WS_OS_FAMILY_WINDOWS)
+    #endif
 }
 
 void wsThreadPool::pushTask(wsTask* task) {
     wsAssert(_mInitialized, "The object wsTasks must be initialized via the startUp() method before use.");
     /*  Get a Mutex Lock for the task list  */
-#ifdef WS_OS_FAMILY_UNIX
-    pthread_mutex_lock(listMutex);
-#elif defined(WS_OS_FAMILY_WINDOWS)
-#endif
+    lockMutex(listMutex);
 
     if (numThreads <= 0) {
         task->run(0);
@@ -119,10 +122,7 @@ void wsThreadPool::pushTask(wsTask* task) {
     taskList->push(task);
 
     /*  Unlock the mutex    */
-#ifdef WS_OS_FAMILY_UNIX
-    pthread_mutex_unlock(listMutex);
-#elif defined(WS_OS_FAMILY_WINDOWS)
-#endif
+    unlockMutex(listMutex);
 }
 
 void wsThreadPool::runThread(const u32 threadNum) {

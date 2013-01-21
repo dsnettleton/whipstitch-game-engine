@@ -37,6 +37,7 @@
 #include "../wsUtils.h"
 #include "../wsAssets.h"
 #include "../wsGraphics.h"
+#include "wsEventManager.h"
 
 #define WS_DEFAULT_FPS 60.0
 #define WS_MAX_FRAME_SKIPS 5
@@ -46,6 +47,7 @@ class wsGameLoop {
         u32 maxFrameSkips;
         f32 fps;
         t32 frameDuration;
+        wsCamera* cam;
         bool quit;
         bool paused;
         bool animationsPaused;
@@ -71,9 +73,16 @@ class wsGameLoop {
         void beginLoop();
         void continueLoop();
         void drawGameState();
+        void handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 action, f32 analogVal);
+        void handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action);
+        void handleMouseButtonEvents(u64 action, u64 btnIndex);
+        void handleMouseMotionEvents(i32 posX, i32 posY, f32 dx, f32 dy);
+        //void handleMouseEvents();
+        void handleEvents();
         void handleInputs();    //  Temporary until full HID subsystem is in place
         void iterateLoop();
         void pauseLoop();
+        void pushEvent(const wsEvent& myEvent) { wsEvents.push(myEvent); }
         void updateGameState();
 };
 

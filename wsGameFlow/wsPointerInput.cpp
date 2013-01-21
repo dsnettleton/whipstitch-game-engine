@@ -1,11 +1,11 @@
-/*
- *  wsTask.h
+/**
+ *    wsPointerInput.cpp
+ *    Jan 8, 2013
+ *    D. Scott Nettleton
  *
- *  Created on: Dec 25, 2012
- *      Author: dsnettleton
- *
- *      This file declares the class wsTask, which is the base class for
- *      a task to be run on the Whipstitch Engine's thread pool.
+ *    This file declares the class wsPointerInput, which handles pointer
+ *    controls, such as from a mouse, touchscreen, or (possibly) Wii
+ *    remote pointer.
  *
  *  Copyright D. Scott Nettleton, 2013
  *  This software is released under the terms of the
@@ -24,23 +24,28 @@
  *  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef WS_TASK_H_
-#define WS_TASK_H_
+#include "wsPointerInput.h"
 
-#include "../wsUtils.h"
+wsPointerInput::wsPointerInput() : dx(0.0f), dy(0.0f), posX(-1.0f), posY(-1.0f), _mInitialized(false) {
+    analogMask = WS_NO_BUTTONS;
+}
 
-class wsTask {
-    private:
-    public:
-        virtual ~wsTask() {}
-        virtual void run(u32 threadNum) = 0;//{ wsLog(WS_LOG_THREADS, "NULL Task Running."); }
-};
+void wsPointerInput::pressButton(u32 btnIndex) {
+    buttonStates |= btnIndex;
+}
 
-class wsTask_test : public wsTask {
-    public:
-        void run(u32 threadNum) {
-            wsLog(WS_LOG_MAIN, "Running thread %u", threadNum);
-        }
-};
+void wsPointerInput::releaseButton(u32 btnIndex) {
+    if (buttonStates & btnIndex) { buttonStates ^= btnIndex; }
+}
 
-#endif  /*  WS_TASK_H_  */
+void wsPointerInput::setPos(i32 newPosX, i32 newPosY) {
+    _mInitialized = true;
+    dx = newPosX - posX;
+    dy = newPosY - posY;
+    posX = newPosX;
+    posY = newPosY;
+}
+
+void wsPointerInput::swapFrames() {
+    prevButtonStates = buttonStates;
+}

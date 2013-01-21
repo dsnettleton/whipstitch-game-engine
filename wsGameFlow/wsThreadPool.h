@@ -37,8 +37,11 @@
 #include "wsTask.h"
 
 #ifdef WS_OS_FAMILY_UNIX
-#include <pthread.h>
+    #include <pthread.h>
+    #define wsMutex pthread_mutex_t
+    #define wsInitMutex(myMutex) pthread_mutex_init(myMutex, NULL)
 #elif defined(WS_OS_FAMILY_WINDOWS)
+    #define wsMutex
 #endif  /*  Whipstitch OS families  */
 
 class wsThreadPool {
@@ -46,10 +49,10 @@ class wsThreadPool {
 #ifdef WS_OS_FAMILY_UNIX
         pthread_t* threads;
         pthread_attr_t* threadAttributes;
-        pthread_mutex_t* listMutex;
-        pthread_mutex_t* logMutex;
 #elif defined(WS_OS_FAMILY_WINDOWS)
 #endif  /*  Whipstitch OS families  */
+        wsMutex* listMutex;
+        wsMutex* logMutex;
         wsQueue<wsTask*>* taskList;
         u32* threadIndices;
         u32 maxThreads;
@@ -73,11 +76,11 @@ class wsThreadPool {
         void startUp();
         /*  Setters and Getters */
 #ifdef WS_OS_FAMILY_UNIX
-        pthread_mutex_t* getListMutex() { return listMutex; }
-        pthread_mutex_t* getLogMutex() { return logMutex; }
         pthread_attr_t* getThreadAttributes() { return threadAttributes; }
 #elif defined(WS_OS_FAMILY_WINDOWS)
 #endif  /*  Whipstitch OS families  */
+        wsMutex* getListMutex() { return listMutex; }
+        wsMutex* getLogMutex() { return logMutex; }
         u32 getMaxThreads() { return maxThreads; }
         u32 getNumThreads() { return numThreads; }
         wsQueue<wsTask*>* getTaskList() { return taskList; }
@@ -87,6 +90,8 @@ class wsThreadPool {
         bool killSignalReceived() { return _mKillThreads; }
         void setNumThreads(u32 myNumThreads) { numThreads = myNumThreads; }
         /*  Operational Methods */
+        void lockMutex(wsMutex* myMutex);
+        void unlockMutex(wsMutex* myMutex);
         void pushTask(wsTask* task);
         void runThread(const u32 threadNum);
         void waitForCompletion();
