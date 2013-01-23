@@ -41,7 +41,6 @@
 
 wsCamera::wsCamera(const char* myName, u32 myCameraMode) :
   cameraMode(myCameraMode),
-  renderMode(WS_DEFAULT_RENDER_MODE),
   pos(0.0f, 0.0f, 10.0f),
   dir(0.0f, 0.0f, 1.0f),
   upDir(0.0f, 1.0f, 0.0f),
@@ -55,13 +54,11 @@ wsCamera::wsCamera(const char* myName, u32 myCameraMode) :
 }
 
 wsCamera::wsCamera(const char* myName, const vec4& myPos, const vec4& myDir, const vec4& myUpDir, const vec4& myScreenCoords,
-  const u32 myRenderMode, const u32 myCameraMode, const f32 myFov, const f32 myAspectRatio, const f32 myZNear,
-  const f32 myZFar) :
+  const u32 myCameraMode, const f32 myFov, const f32 myAspectRatio, const f32 myZNear, const f32 myZFar) :
   pos(myPos),
   dir(myDir),
   upDir(myUpDir),
   screenCoords(myScreenCoords),
-  renderMode(myRenderMode),
   cameraMode(myCameraMode),
   fov(myFov),
   aspectRatio(myAspectRatio),
@@ -73,9 +70,9 @@ wsCamera::wsCamera(const char* myName, const vec4& myPos, const vec4& myDir, con
 
 void wsCamera::draw() {
   #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
-    glViewport(screenCoords.rectX, screenCoords.rectY, screenCoords.rectW, screenCoords.rectH);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
+    glViewport(screenCoords.rectX, screenCoords.rectY, screenCoords.rectW, screenCoords.rectH);
     switch (cameraMode) {
       default:
       case WS_CAMERA_MODE_INACTIVE:
@@ -98,6 +95,7 @@ void wsCamera::draw() {
         break;
     }
   #endif
+  //shader->setUniformVec3("eyePos", pos);
 }
 
 const vec4 wsCamera::getWorldCoords(const f32 myX, const f32 myY) const {

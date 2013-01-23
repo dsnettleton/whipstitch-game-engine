@@ -47,7 +47,7 @@ void wsGameLoop::startUp(f32 framesPerSecond) {
   maxFrameSkips = WS_MAX_FRAME_SKIPS;
   frameDuration = 1.0f / fps;
   cam = wsNew(wsCamera, wsCamera("MainCam", vec4(9.0f, 17.0f, 9.0f), vec4(0.0f, 0.0f, 1.0f), vec4(0.0f, 1.0f, 0.0f),
-    vec4(0.0f, 0.0f, 1280.0f, 720.0f), WS_RENDER_MODE_CEL, WS_CAMERA_MODE_PERSP, 60.0f, 1280.0f/720.0f, 0.01f, 100.0f));
+    vec4(0.0f, 0.0f, 1280.0f, 720.0f), WS_CAMERA_MODE_PERSP, 60.0f, 1280.0f/720.0f, 0.01f, 100.0f));
   cam->lookAt(vec4(0.0f, 9.0f, 0.0f));
   wsRenderer.addCamera(cam);
 }
@@ -75,9 +75,11 @@ void wsGameLoop::continueLoop() {
 
 void wsGameLoop::drawGameState() {
   wsAssert(_mInitialized, "The object wsGame must be initialized via the startUp() method before use.");
+  /*
   wsRenderer.clearScreen();
   wsRenderer.drawModels();
   wsRenderer.swapBuffers();
+  //*/
 }
 
 void wsGameLoop::handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 action, f32 analogVal) {
@@ -85,12 +87,13 @@ void wsGameLoop::handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 act
     switch (btnIndex) {
       case WS_BUTTON_BOTTOM:
         if (action  == WS_PRESS) {
-          if (wsRenderer.getRenderMode() == WS_RENDER_MODE_CEL) {
-            wsRenderer.setRenderMode(WS_RENDER_MODE_LIT);
-          }
-          else {
-            wsRenderer.setRenderMode(WS_RENDER_MODE_CEL);
-          }
+          wsRenderer.nextRenderMode();
+          // if (wsRenderer.getRenderMode() == WS_RENDER_MODE_CEL) {
+          //   wsRenderer.setRenderMode(WS_RENDER_MODE_LIT);
+          // }
+          // else {
+          //   wsRenderer.setRenderMode(WS_RENDER_MODE_CEL);
+          // }
         }
         break;
       case WS_BUTTON_RIGHT:
@@ -143,7 +146,15 @@ void wsGameLoop::handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 act
       case WS_ANALOG_L_AXIS_X:
         if (analogVal) {
           f32 rotationSpeed = 4.0f;
-          glRotatef(-analogVal*rotationSpeed, 0.0f, 1.0f, 0.0f);
+          //glRotatef(-analogVal*rotationSpeed, 0.0f, 1.0f, 0.0f);
+          cam->orbit(vec4(0.0f, 9.0f), Y_AXIS, -analogVal*rotationSpeed);
+        }
+        break;
+      case WS_ANALOG_L_AXIS_Y:
+        if (analogVal) {
+          f32 rotationSpeed = 4.0f;
+          //glRotatef(-analogVal*rotationSpeed, 0.0f, 1.0f, 0.0f);
+          cam->orbit(vec4(0.0f, 9.0f), cam->getRightDir(), -analogVal*rotationSpeed);
         }
         break;
       default:
@@ -200,12 +211,13 @@ void wsGameLoop::handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action) {
           break;
         case WS_KEY_R:
           if (action == WS_PRESS) {
-            if (wsRenderer.getRenderMode() == WS_RENDER_MODE_CEL) {
-              wsRenderer.setRenderMode(WS_RENDER_MODE_LIT);
-            }
-            else {
-              wsRenderer.setRenderMode(WS_RENDER_MODE_CEL);
-            }
+            wsRenderer.nextRenderMode();
+            // if (wsRenderer.getRenderMode() == WS_RENDER_MODE_CEL) {
+            //   wsRenderer.setRenderMode(WS_RENDER_MODE_LIT);
+            // }
+            // else {
+            //   wsRenderer.setRenderMode(WS_RENDER_MODE_CEL);
+            // }
           }
           break;
         case WS_KEY_T:
@@ -217,6 +229,18 @@ void wsGameLoop::handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action) {
               wsRenderer.enable(WS_DRAW_TAGS);
             }
           }
+          break;
+        case WS_KEY_LEFT:
+          cam->orbit(vec4(0.0f, 9.0f, 0.0f), Y_AXIS, -3.0f);
+          break;
+        case WS_KEY_RIGHT:
+          cam->orbit(vec4(0.0f, 9.0f, 0.0f), Y_AXIS, 3.0f);
+          break;
+        case WS_KEY_DOWN:
+          cam->orbit(vec4(0.0f, 9.0f, 0.0f), cam->getRightDir(), 3.0f);
+          break;
+        case WS_KEY_UP:
+          cam->orbit(vec4(0.0f, 9.0f, 0.0f), cam->getRightDir(), -3.0f);
           break;
         default:
           break;
@@ -242,12 +266,13 @@ void wsGameLoop::handleMouseButtonEvents(u64 action, u64 btnIndex) {
   switch (btnIndex) {
     case WS_MOUSE_BUTTON_LEFT:
       if (action  == WS_PRESS) {
-        if (wsRenderer.getRenderMode() == WS_RENDER_MODE_CEL) {
-          wsRenderer.setRenderMode(WS_RENDER_MODE_LIT);
-        }
-        else {
-          wsRenderer.setRenderMode(WS_RENDER_MODE_CEL);
-        }
+        wsRenderer.nextRenderMode();
+        // if (wsRenderer.getRenderMode() == WS_RENDER_MODE_CEL) {
+        //   wsRenderer.setRenderMode(WS_RENDER_MODE_LIT);
+        // }
+        // else {
+        //   wsRenderer.setRenderMode(WS_RENDER_MODE_CEL);
+        // }
       }
       break;
     case WS_MOUSE_BUTTON_RIGHT:
@@ -334,7 +359,8 @@ void wsGameLoop::iterateLoop() {
   u32 framesSkipped = 0;
   //  Update the gamestate and draw the game
   updateGameState();
-  drawGameState();
+  //drawGameState();
+  wsRenderer.drawScene();
   //  Get the ending time of our state update
   t32 timeDiff = wsGetTime() - beginTime;
   t32 sleepTime = frameDuration - timeDiff;

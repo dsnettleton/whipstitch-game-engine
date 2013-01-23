@@ -59,7 +59,7 @@ class wsShader {
     bool addFragmentShader(const char* shaderFilePath);
     bool install();
     void use(); //  For using pairs (vertex and fragment shaders) given the same name
-    void end();
+    static void end();
 };
 
 #endif // WS_SHADER_H_

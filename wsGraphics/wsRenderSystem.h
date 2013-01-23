@@ -72,8 +72,12 @@ class wsRenderSystem {
     i32 numExtensions;
     u32 drawFeatures;
     //  Shader Variables
-    wsShader* shader;
+    wsShader** shaders;
+    u32* shaderBuffers;
+    u32* frameBufferObjects;
+    u32* frameBufferTextures;
     u32 renderMode;
+    i32 shaderWidth, shaderHeight;
     //  Drawing components
     wsHashMap<wsCamera*>* cameras;
     wsHashMap<wsModel*>* models;
@@ -83,6 +87,7 @@ class wsRenderSystem {
     //  Private Methods
     void drawMesh(u32 meshIndex);
     void drawModel(u32 modelIndex);
+    void initializeShaders(u32 width, u32 height);
   public:
     /*  Default Constructor and Deconstructor */
     //  As an engine subsystem, the renderer takes no action until explicitly
@@ -95,9 +100,9 @@ class wsRenderSystem {
     bool getDrawTags() { return (drawFeatures & WS_DRAW_TAGS); }
     u32 getRenderMode() { return renderMode; }
     void setRenderMode(const u32 my) {
-    renderMode = my;
-    shader->setUniformInt("renderMode", renderMode);
-    //glUniform1i(glGetUniformLocation(primaryShader, "renderMode"), renderMode);
+      renderMode = my;
+      // shader->setUniformInt("renderMode", renderMode);
+      //glUniform1i(glGetUniformLocation(primaryShader, "renderMode"), renderMode);
     }
     wsCamera* getCamera(const char* cameraName) { return cameras->retrieve(wsHash(cameraName)); }
     wsModel* getModel(const char* modelName) { return models->retrieve(wsHash(modelName)); }
@@ -116,10 +121,13 @@ class wsRenderSystem {
     void disable(u32 renderingFeatures);
     void drawMeshes();
     void drawModels();
+    void drawPost();    //  Post-processing effects
+    void drawScene();
     void enable(u32 renderingFeatures);
     void loadIdentity();
     void loadTexture(u32* index, const char* filename);
     void modelviewMatrix();
+    void nextRenderMode();
     void pauseAnimation(const char* modelName);
     void pauseAnimations();
     void projectionMatrix();

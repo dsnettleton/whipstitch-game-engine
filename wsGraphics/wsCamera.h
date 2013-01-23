@@ -39,20 +39,21 @@
 #define WS_CAMERA_H_
 
 #include "../wsUtils.h"
+// #include "wsShader.h"
 
-#define WS_RENDER_MODE_LIT          1 //  Per-fragment lighting
-#define WS_RENDER_MODE_CEL          2 //  Cel shading
-#define WS_RENDER_MODE_INV          3 //  Invisible (refracted) shading
-#define WS_RENDER_MODE_CEL_OUTLINED 4 //  Cel Shading with black outline
-#define WS_RENDER_MODE_WIRE         5 //  Wireframe
+// #define WS_RENDER_MODE_LIT          1 //  Per-fragment lighting
+// #define WS_RENDER_MODE_CEL          2 //  Cel shading
+// #define WS_RENDER_MODE_INV          3 //  Invisible (refracted) shading
+// #define WS_RENDER_MODE_CEL_OUTLINED 4 //  Cel Shading with black outline
+// #define WS_RENDER_MODE_WIRE         5 //  Wireframe
 
 #define WS_CAMERA_MODE_INACTIVE     0 //  Don't draw
 #define WS_CAMERA_MODE_PERSP        1 //  Perspective Mode
 #define WS_CAMERA_MODE_ORTHO        2 //  Orthographic Mode
 
-#ifndef WS_DEFAULT_RENDER_MODE
-  #define WS_DEFAULT_RENDER_MODE   WS_RENDER_MODE_LIT
-#endif
+// #ifndef WS_DEFAULT_RENDER_MODE
+//   #define WS_DEFAULT_RENDER_MODE   WS_RENDER_MODE_LIT
+// #endif
 
 #define WS_DEFAULT_FOV            60.0f
 #define WS_DEFAULT_ASPECT_RATIO   (16.0 / 9.0)
@@ -78,8 +79,7 @@ class wsCamera {
     //  Constructors and Deconstructors
     wsCamera(const char* myName, u32 myCameraMode = WS_CAMERA_MODE_PERSP);
     wsCamera(const char* myName, const vec4& myPos, const vec4& myDir, const vec4& myUpDir, const vec4& myScreenCoords,
-        const u32 myRenderMode, const u32 myCameraMode, const f32 myFov, const f32 myAspectRatio, const f32 myZNear,
-        const f32 myZFar);
+     const u32 myCameraMode, const f32 myFov, const f32 myAspectRatio, const f32 myZNear, const f32 myZFar);
     //  Setters and Getters
     const vec4& getPos() const { return pos; }
     const vec4& getDir() { return dir; }

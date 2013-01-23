@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     wsActiveLogs = (WS_LOG_PROFILING | WS_LOG_MAIN | WS_LOG_UTIL | WS_LOG_ERROR);
   #else
     //wsActiveLogs = (WS_LOG_MAIN | WS_LOG_MEMORY | WS_LOG_ERROR);
-    wsActiveLogs = (WS_LOG_DEBUG | WS_LOG_ERROR | WS_LOG_UTIL | WS_LOG_SOUND);
+    wsActiveLogs = (WS_LOG_DEBUG | WS_LOG_ERROR | WS_LOG_UTIL | WS_LOG_SHADER);
     // wsActiveLogs = WS_LOG_ALL;
     // wsActiveLogs = WS_LOG_MAIN;
   #endif

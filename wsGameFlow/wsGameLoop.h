@@ -77,7 +77,6 @@ class wsGameLoop {
         void handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action);
         void handleMouseButtonEvents(u64 action, u64 btnIndex);
         void handleMouseMotionEvents(i32 posX, i32 posY, f32 dx, f32 dy);
-        //void handleMouseEvents();
         void handleEvents();
         void handleInputs();    //  Temporary until full HID subsystem is in place
         void iterateLoop();
