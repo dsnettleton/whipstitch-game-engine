@@ -1,0 +1,47 @@
+# Project Florin Makefile
+# D. Scott Nettleton
+#
+# This is the C++ makefile for the Whipstitch Game Engine,
+# codenamed Project Florin.
+# For more information, email:
+#     dsnettleton at whipstitchgames dot com
+
+#     Copyright D. Scott Nettleton, 2013
+#     This software is released under the terms of the
+#     Lesser GNU Public License (LGPL).
+
+CC = g++
+DEBUG = -g3 -DDEBUG -O0
+RELEASE = -O3 -DNDEBUG
+CFLAGS = -Wall -fmessage-length=0 -I/usr/include/freetype2 $(DEBUG)
+LFLAGS = -Wall -fmessage-length=0 -I/usr/include/freetype2 -lfreetype -lgomp -lpthread -lboost_system -lboost_filesystem -lglfw -lGL -lGLEW -lGLU -lSOIL -lalut -lopenal -lvorbisfile $(DEBUG)
+
+PROJECT_NAME = Florin
+DEBUG_NAME = $(PROJECT_NAME)_dbg
+PROFILE_NAME = $(PROJECT_NAME)_profile
+RELEASE_NAME = $(PROJECT_NAME)
+REMOVAL_BIN=/bin/rm -f
+
+OBJ_ASSETS = ./wsAssets/wsAnimation.o ./wsAssets/wsAsset.o ./wsAssets/wsFont.o ./wsAssets/wsMesh.o ./wsAssets/wsModel.o ./wsAssets/wsPanel.o ./wsAssets/wsPanelElement.o
+OBJ_AUDIO = ./wsAudio/wsSoundManager.o ./wsAudio/wsSound.o ./wsAudio/wsMusic.o
+OBJ_GAME_FLOW = ./wsGameFlow/wsController.o ./wsGameFlow/wsEventManager.o ./wsGameFlow/wsGameLoop.o ./wsGameFlow/wsInputManager.o ./wsGameFlow/wsKeyboardInput.o ./wsGameFlow/wsPointerInput.o ./wsGameFlow/wsThreadPool.o
+OBJ_GRAPHICS = ./wsGraphics/wsCamera.o ./wsGraphics/wsRenderSystem.o ./wsGraphics/wsScreen.o ./wsGraphics/wsScreenManager.o ./wsGraphics/wsShader.o
+OBJ_UTILS = ./wsUtils/mat4.o ./wsUtils/quat.o ./wsUtils/vec4.o ./wsUtils/wsLog.o ./wsUtils/wsMemoryStack.o ./wsUtils/wsOperations.o ./wsUtils/wsProfileManager.o ./wsUtils/wsTime.o ./wsUtils/wsTransform.o ./wsUtils/wsTrig.o ./wsUtils/wsTypes.o
+OBJ_WHIPSTITCH = ws.o
+OBJS = $(OBJ_UTILS) $(OBJ_GRAPHICS) $(OBJ_GAME_FLOW) $(OBJ_ASSETS) $(OBJ_WHIPSTITCH) $(OBJ_AUDIO) ./main.o
+
+$(DEBUG_NAME): $(OBJS)
+	$(CC) $(LFLAGS) $^ -o $@
+
+main.o: ./main.cpp ./ws.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o: ./%.cpp ./%.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+
+#	Clean Command
+clean:
+	#Cleaning Build
+	$(REMOVAL_BIN) $(OBJS) $(DEBUG_NAME) $(RELEASE_NAME) $(PROFILE_NAME) -r
+	#Cleaned
