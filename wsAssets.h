@@ -29,7 +29,11 @@
 
 #include "wsAssets/wsAnimation.h"
 #include "wsAssets/wsAsset.h"
+#include "wsAssets/wsFont.h"
 #include "wsAssets/wsMesh.h"
 #include "wsAssets/wsModel.h"
+#include "wsAssets/wsPanel.h"
+#include "wsAssets/wsPanelElement.h"
+#include "wsAssets/wsText.h"
 
 #endif /* WS_ASSETS_H_ */

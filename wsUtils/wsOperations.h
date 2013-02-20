@@ -42,38 +42,41 @@
 #include <math.h>
 
 #if WS_SUPPORTS_SSE4 == WS_TRUE
-#include <smmintrin.h>
+  #include <smmintrin.h>
 
-//  Macros for shuffling SSE register values
-//  Shuffles x,y,z,w values across the register
-#define WS_SSE_SHUFF_VALS(x, y, z, w) \
-    ( ((w) << 6) | ((z) << 4) | ((y) << 2) | (x) )
-//  Generic shuffle macro
-#define ws_sseShuffle(v, x, y, z, w) \
-    _mm_shuffle_ps((v), (v), WS_SSE_SHUFF_VALS((x), (y), (z), (w)))
-//  Distribute the x value across the entire register
-#define ws_sseDistributeX(v) \
-    ws_sseShuffle((v), 0, 0, 0, 0)
-//  Distribute the y value across the entire register
-#define ws_sseDistributeY(v) \
-    ws_sseShuffle((v), 1, 1, 1, 1)
-//  Distribute the z value across the entire register
-#define ws_sseDistributeZ(v) \
-    ws_sseShuffle((v), 2, 2, 2, 2)
-//  Distribute the w value across the entire register
-#define ws_sseDistributeW(v) \
-    ws_sseShuffle((v), 3, 3, 3, 3)
-//  Multiply-and-Add instruction (multiply a and b, then add to c)
-#define ws_sseMadd(a, b, c) \
-    _mm_add_ps(_mm_mul_ps((a), (b)), (c))
+  //  Macros for shuffling SSE register values
+  //  Shuffles x,y,z,w values across the register
+  #define WS_SSE_SHUFF_VALS(x, y, z, w) \
+      ( ((w) << 6) | ((z) << 4) | ((y) << 2) | (x) )
+  //  Generic shuffle macro
+  #define ws_sseShuffle(v, x, y, z, w) \
+      _mm_shuffle_ps((v), (v), WS_SSE_SHUFF_VALS((x), (y), (z), (w)))
+  //  Distribute the x value across the entire register
+  #define ws_sseDistributeX(v) \
+      ws_sseShuffle((v), 0, 0, 0, 0)
+  //  Distribute the y value across the entire register
+  #define ws_sseDistributeY(v) \
+      ws_sseShuffle((v), 1, 1, 1, 1)
+  //  Distribute the z value across the entire register
+  #define ws_sseDistributeZ(v) \
+      ws_sseShuffle((v), 2, 2, 2, 2)
+  //  Distribute the w value across the entire register
+  #define ws_sseDistributeW(v) \
+      ws_sseShuffle((v), 3, 3, 3, 3)
+  //  Multiply-and-Add instruction (multiply a and b, then add to c)
+  #define ws_sseMadd(a, b, c) \
+      _mm_add_ps(_mm_mul_ps((a), (b)), (c))
 
-//  Macro to align data types for SIMD Registers
-#ifdef _MSC_VER //  For Visual Studio
-#define sseAlign(X) __declspec(align(16)) X
-#else //  For everything else
-#define sseAlign(X) X __attribute__((aligned(16)))
-#endif
+  //  Macro to align data types for SIMD Registers
+  #ifdef _MSC_VER //  For Visual Studio
+    #define sseAlign(X) __declspec(align(16)) X
+  #else //  For everything else
+    #define sseAlign(X) X __attribute__((aligned(16)))
+  #endif
 #endif  /* WS_SUPPORTS_SSE4 */
+
+extern u32 wsScreenWidth;
+extern u32 wsScreenHeight;
 
 extern u32 wsCRC32HashFuncTable[256];
 extern bool wsCRC32HashTableGenerated;

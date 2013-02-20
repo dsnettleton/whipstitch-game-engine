@@ -32,6 +32,7 @@
 #define WS_ASSET_TYPE_MESH  0x0001
 #define WS_ASSET_TYPE_ANIM  0x0002
 #define WS_ASSET_TYPE_MODEL 0x0003
+#define WS_ASSET_TYPE_FONT  0x0004
 
 class wsAsset {
     private:

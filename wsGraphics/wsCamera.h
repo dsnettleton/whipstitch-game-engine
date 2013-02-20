@@ -39,21 +39,10 @@
 #define WS_CAMERA_H_
 
 #include "../wsUtils.h"
-// #include "wsShader.h"
-
-// #define WS_RENDER_MODE_LIT          1 //  Per-fragment lighting
-// #define WS_RENDER_MODE_CEL          2 //  Cel shading
-// #define WS_RENDER_MODE_INV          3 //  Invisible (refracted) shading
-// #define WS_RENDER_MODE_CEL_OUTLINED 4 //  Cel Shading with black outline
-// #define WS_RENDER_MODE_WIRE         5 //  Wireframe
 
 #define WS_CAMERA_MODE_INACTIVE     0 //  Don't draw
 #define WS_CAMERA_MODE_PERSP        1 //  Perspective Mode
 #define WS_CAMERA_MODE_ORTHO        2 //  Orthographic Mode
-
-// #ifndef WS_DEFAULT_RENDER_MODE
-//   #define WS_DEFAULT_RENDER_MODE   WS_RENDER_MODE_LIT
-// #endif
 
 #define WS_DEFAULT_FOV            60.0f
 #define WS_DEFAULT_ASPECT_RATIO   (16.0 / 9.0)
@@ -69,7 +58,6 @@ class wsCamera {
     vec4 rightDir;  //  Normal vector storing the direction to the right of the camera.
     vec4 screenCoords;  //  Using rectX, rectY, rectW, rectH
     const char* name;
-    u32 renderMode; //  Smooth/cel shaded, wireframe, etc.
     u32 cameraMode; //  Perspective vs. Orthographic Projection
     f32 fov;  //  Field of view in degrees (perspective) or in units (ortho)
     f32 aspectRatio; //  The camera's aspect ratio
@@ -85,7 +73,6 @@ class wsCamera {
     const vec4& getDir() { return dir; }
     const vec4& getUpDir() { return upDir; }
     const vec4& getRightDir() { return rightDir; }
-    u32 getRenderMode() const { return renderMode; }
     u32 getCameraMode() const { return cameraMode; }
     const char* getName() const { return name; }
     f32 getX() const { return pos.x; }
@@ -103,7 +90,6 @@ class wsCamera {
     void setScreenPos(f32 x, f32 y) { screenCoords.rectX = x; screenCoords.rectY = y; }
     void setScreenSize(f32 w, f32 h) { screenCoords.rectW = w; screenCoords.rectH = h; }
     void setCameraMode(u32 myCameraMode) { cameraMode = myCameraMode; }
-    void setRenderMode(u32 myRenderMode) { renderMode = myRenderMode; }
     void setPos(const vec4& myPos) { pos = myPos; }
     void setDir(const vec4& myDir) { dir = myDir; }
     void setUpDir(const vec4& myUpDir) { upDir = myUpDir; }

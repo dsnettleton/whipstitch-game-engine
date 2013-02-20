@@ -38,9 +38,15 @@
 
   wsShader::wsShader(const char* vertexShaderPath, const char* fragmentShaderPath) {
     shaderProgram = glCreateProgram();
-    wsAssert(addVertexShader(vertexShaderPath), "Problem adding vertex shader.");
-    wsAssert(addFragmentShader(fragmentShaderPath), "Problem adding fragment shader.");
-    wsAssert(install(), "Problem installing shader program.");
+    #ifndef NDEBUG
+      wsAssert(addVertexShader(vertexShaderPath), "Problem adding vertex shader.");
+      wsAssert(addFragmentShader(fragmentShaderPath), "Problem adding fragment shader.");
+      wsAssert(install(), "Problem installing shader program.");
+    #else
+      addVertexShader(vertexShaderPath);
+      addFragmentShader(fragmentShaderPath);
+      install();
+    #endif
   }
 
   wsShader::~wsShader() {
@@ -52,13 +58,18 @@
   bool wsShader::addVertexShader(const char* filePath) {
     /// Open File
     FILE* pFile;
-    wsAssert( (pFile = fopen(filePath, "r")), "Error Loading file." );
+    pFile = fopen(filePath, "r");
+    wsAssert( pFile, "Error Loading file." );
     fseek(pFile, 0, SEEK_END);
     u32 fileLength = ftell(pFile);
     rewind(pFile);
     const char* fileContents = wsNewArrayTmp(char, fileLength);
-    u32 resultingLength = fread((void*)fileContents, 1, fileLength, pFile);
-    wsAssert(resultingLength == fileLength, "Problem reading shader file.");
+    #ifndef NDEBUG
+      u32 resultingLength = fread((void*)fileContents, 1, fileLength, pFile);
+      wsAssert(resultingLength == fileLength, "Problem reading shader file.");
+    #else
+      fread((void*)fileContents, 1, fileLength, pFile);
+    #endif
 
     i32 compiled;
     vertShader = glCreateShader(GL_VERTEX_SHADER);
@@ -84,14 +95,18 @@
   bool wsShader::addFragmentShader(const char* filePath) {
     /// Open File
     FILE* pFile;
-    wsAssert( (pFile = fopen(filePath, "r")), "Error Loading file." );
+    pFile = fopen(filePath, "r");
+    wsAssert( pFile, "Error Loading file." );
     fseek(pFile, 0, SEEK_END);
     u32 fileLength = ftell(pFile);
     rewind(pFile);
     const char* fileContents = wsNewArrayTmp(char, fileLength);
-    u32 resultingLength = fread((void*)fileContents, 1, fileLength, pFile);
-    wsAssert(resultingLength == fileLength, "Problem reading shader file.");
-
+    #ifndef NDEBUG
+      u32 resultingLength = fread((void*)fileContents, 1, fileLength, pFile);
+      wsAssert(resultingLength == fileLength, "Problem reading shader file.");
+    #else
+      fread((void*)fileContents, 1, fileLength, pFile);
+    #endif
     i32 compiled;
     fragShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragShader, 1, &fileContents, NULL);
@@ -136,11 +151,11 @@
   void wsShader::setTextureSampler2D(const char* varName, const u32 textureIndex) {
     i32 currentProgram;
     glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(shaderProgram);
     }
     glUniform1i(glGetUniformLocation(shaderProgram, varName), textureIndex);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(currentProgram);
     }
   }
@@ -148,11 +163,11 @@
   void wsShader::setUniform(const char* varName, const f32 value) {
     i32 currentProgram;
     glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(shaderProgram);
     }
     glUniform1f(glGetUniformLocation(shaderProgram, varName), value);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(currentProgram);
     }
   }
@@ -160,11 +175,11 @@
   void wsShader::setUniformArray(const char* varName, const f32* array, const u32 numItems) {
     i32 currentProgram;
     glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(shaderProgram);
     }
     glUniform1fv(glGetUniformLocation(shaderProgram, varName), numItems, array);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(currentProgram);
     }
   }
@@ -172,11 +187,11 @@
   void wsShader::setUniformInt(const char* varName, const i32 value) {
     i32 currentProgram;
     glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(shaderProgram);
     }
     glUniform1i(glGetUniformLocation(shaderProgram, varName), value);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(currentProgram);
     }
   }
@@ -184,11 +199,11 @@
   void wsShader::setUniformVec2(const char* varName, const f32 valueX, const f32 valueY) {
     i32 currentProgram;
     glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(shaderProgram);
     }
     glUniform2f(glGetUniformLocation(shaderProgram, varName), valueX, valueY);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(currentProgram);
     }
   }
@@ -196,11 +211,11 @@
   void wsShader::setUniformVec2(const char* varName, const vec4& values) {
     i32 currentProgram;
     glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(shaderProgram);
     }
     glUniform2f(glGetUniformLocation(shaderProgram, varName), values.x, values.y);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(currentProgram);
     }
   }
@@ -208,11 +223,11 @@
   void wsShader::setUniformVec3(const char* varName, const f32 valueX, const f32 valueY, const f32 valueZ) {
     i32 currentProgram;
     glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(shaderProgram);
     }
     glUniform3f(glGetUniformLocation(shaderProgram, varName), valueX, valueY, valueZ);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(currentProgram);
     }
   }
@@ -220,11 +235,11 @@
   void wsShader::setUniformVec3(const char* varName, const vec4& values) {
     i32 currentProgram;
     glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(shaderProgram);
     }
     glUniform3f(glGetUniformLocation(shaderProgram, varName), values.x, values.y, values.z);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(currentProgram);
     }
   }
@@ -232,11 +247,11 @@
   void wsShader::setUniformVec4(const char* varName, const f32 valueX, const f32 valueY, const f32 valueZ, const f32 valueW) {
     i32 currentProgram;
     glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(shaderProgram);
     }
     glUniform4f(glGetUniformLocation(shaderProgram, varName), valueX, valueY, valueZ, valueW);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(currentProgram);
     }
   }
@@ -244,11 +259,11 @@
   void wsShader::setUniformVec4(const char* varName, const vec4& values) {
     i32 currentProgram;
     glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(shaderProgram);
     }
     glUniform4f(glGetUniformLocation(shaderProgram, varName), values.x, values.y, values.z, values.w);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(currentProgram);
     }
   }
@@ -256,11 +271,11 @@
   void wsShader::setUniformMat4(const char* varName, const mat4& values) {
     i32 currentProgram;
     glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(shaderProgram);
     }
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, varName), 16, false, values.data);
-    if (currentProgram != shaderProgram) {
+    if (currentProgram != (i64)shaderProgram) {
       glUseProgram(currentProgram);
     }
   }

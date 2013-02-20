@@ -52,14 +52,17 @@ struct wsKeyArray {
     wsKeyArray& operator&=(const wsKeyArray& other) {
         keyButtonStates &= other.keyButtonStates;
         specButtonStates &= other.specButtonStates;
+        return *this;
     }
     wsKeyArray& operator|=(const wsKeyArray& other) {
         keyButtonStates |= other.keyButtonStates;
         specButtonStates |= other.specButtonStates;
+        return *this;
     }
     wsKeyArray& operator^=(const wsKeyArray& other) {
         keyButtonStates ^= other.keyButtonStates;
         specButtonStates ^= other.specButtonStates;
+        return *this;
     }
 };
 

@@ -49,10 +49,11 @@
 #define WS_DRAW_LIGHTING  0x00000002
 #define WS_DRAW_DEPTH     0x00000004
 #define WS_DRAW_BONES     0x00000008
-#define WS_DRAW_SHADER    0x00000010
-#define WS_DRAW_TAGS      0x00000020
-#define WS_DRAW_AXES      0x00000040
-#define WS_DRAW_TEXTURES  0x00000080
+#define WS_DRAW_CEL       0x00000010
+#define WS_DRAW_AXES      0x00000020
+#define WS_DRAW_TEXTURES  0x00000040
+#define WS_DRAW_OUTLINE   0x00000080
+#define WS_DRAW_CURSOR    0x00000100  //  If enabled, default system cursor is shown
 
 struct wsMeshContainer {
   const wsMesh* mesh;
@@ -76,17 +77,20 @@ class wsRenderSystem {
     u32* shaderBuffers;
     u32* frameBufferObjects;
     u32* frameBufferTextures;
-    u32 renderMode;
+    wsCamera* hudCam;
+    u32 renderMode, finalFramebuffer;
     i32 shaderWidth, shaderHeight;
     //  Drawing components
     wsHashMap<wsCamera*>* cameras;
     wsHashMap<wsModel*>* models;
     wsHashMap<wsMeshContainer*>* meshes;
+    wsOrderedHashMap<wsPanel*>* panels;
     //  True only when the startUp function has been called
     bool _mInitialized;
     //  Private Methods
     void drawMesh(u32 meshIndex);
     void drawModel(u32 modelIndex);
+    // void drawPanel(wsPanel* pan);
     void initializeShaders(u32 width, u32 height);
   public:
     /*  Default Constructor and Deconstructor */
@@ -96,14 +100,9 @@ class wsRenderSystem {
     wsRenderSystem() : _mInitialized(false) {}
     ~wsRenderSystem() {}
     /*  Setters and Getters */
-    bool getDrawBones() { return (drawFeatures & WS_DRAW_BONES); }
-    bool getDrawTags() { return (drawFeatures & WS_DRAW_TAGS); }
+    bool isEnabled(u32 features) { return ((drawFeatures & features) == features); }
     u32 getRenderMode() { return renderMode; }
-    void setRenderMode(const u32 my) {
-      renderMode = my;
-      // shader->setUniformInt("renderMode", renderMode);
-      //glUniform1i(glGetUniformLocation(primaryShader, "renderMode"), renderMode);
-    }
+    void setRenderMode(const u32 my) { renderMode = my; }
     wsCamera* getCamera(const char* cameraName) { return cameras->retrieve(wsHash(cameraName)); }
     wsModel* getModel(const char* modelName) { return models->retrieve(wsHash(modelName)); }
     /*  Operational Methods */
@@ -113,6 +112,7 @@ class wsRenderSystem {
     u32 addModel(const char* filepath); //  Adds a 3D model and returns its index
     u32 addModel(const char* modelName, wsMesh* myMesh, u32 maxAnimations = 7);
     u32 addModel(wsModel* myModel);
+    u32 addPanel(const char* panelName, wsPanel* myPanel);
     void beginAnimation(const char* modelName, const char* animName);
     void checkExtensions();
     void clearScreen();
@@ -121,6 +121,7 @@ class wsRenderSystem {
     void disable(u32 renderingFeatures);
     void drawMeshes();
     void drawModels();
+    void drawPanels();
     void drawPost();    //  Post-processing effects
     void drawScene();
     void enable(u32 renderingFeatures);

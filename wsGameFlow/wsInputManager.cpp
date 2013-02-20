@@ -39,7 +39,6 @@ void wsInputManager::startUp() {
   _mInitialized = true;
   #if (WS_SCREEN_BACKEND == WS_BACKEND_X11)
   #elif (WS_SCREEN_BACKEND == WS_BACKEND_GLFW)
-    glfwDisable(GLFW_MOUSE_CURSOR);
     for (u32 i = 0; i <= GLFW_KEY_LAST; ++i) {
       wsKeyboardMap[i] = WS_KEYS_NONE;
       wsSpecialKeys[i] = false;
@@ -281,6 +280,7 @@ void wsInputManager::pollDevices() {
         wsLog(WS_LOG_HID, "Controller %u has been unplugged.\n", i);
       }
     }
+    glfwPollEvents();
   #endif
   //  Update existing device states
   for (u32 i = 0; i < numControllers; ++i) {
@@ -317,7 +317,7 @@ bool wsInputManager::testEvent(const wsInputEvent& event) {
     }
   }
   else if (event.inputType == WS_INPUT_TYPE_CONTROLLER) {
-    u32 buttonStates;
+    u32 buttonStates = WS_NULL;
     if (event.inputIndex < numControllers) {
       if (event.eventType == WS_PRESS) {
         buttonStates = controllers[event.inputIndex].getNewlyPressedButtons();

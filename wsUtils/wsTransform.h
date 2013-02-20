@@ -44,7 +44,7 @@ struct wsTransform {
     f32 translationZ;
     f32 scale;
     //  Constructors
-    wsTransform() : scale(1.0f), translationX(0.0f), translationY(0.0f), translationZ(0.0f) {}
+    wsTransform() : translationX(0.0f), translationY(0.0f), translationZ(0.0f), scale(1.0f) {}
     wsTransform(f32 myScale, const quat& myRotation, const vec4& translation);
     wsTransform(f32 myScale, const quat& myRotation, f32 myTranslationX, f32 myTranslationY, f32 myTranslationZ);
     //  Setters and Getters

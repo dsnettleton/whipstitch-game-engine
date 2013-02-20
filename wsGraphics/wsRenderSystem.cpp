@@ -47,17 +47,13 @@ wsRenderSystem wsRenderer;
 //  Indices for framebuffer object array
 #define WS_NUM_FRAMEBUFFERS   2
 #define WS_FBO_PRIMARY        0
-#define WS_FBO_LIGHTING       1
-// #define WS_FBO_HORIZ          2
-// #define WS_FBO_VERT           3
+#define WS_FBO_POST           1
 
-#define WS_NUM_SHADERS        3
+#define WS_NUM_SHADERS        4
 #define WS_SHADER_INITIAL     0
 #define WS_SHADER_FINAL       1
-#define WS_SHADER_CEL         2
-// #define WS_SHADER_DEFERRED    1
-// #define WS_SHADER_FILTER      2
-// #define WS_SHADER_TONE_MAP    3
+#define WS_SHADER_POST        2
+#define WS_SHADER_HUD         3
 
 #define WS_NUM_FBO_TEX        6
 #define WS_FBO_TEX_POS        0
@@ -66,9 +62,6 @@ wsRenderSystem wsRenderer;
 #define WS_FBO_TEX_MAT        3
 #define WS_FBO_TEX_DEPTH      4
 #define WS_FBO_TEX_FINAL      5
-
-#define WS_HDR_FORMAT         GL_RGBA32F
-#define WS_BLUR_EFFECT_SIZE   2
 
 wsMeshContainer::wsMeshContainer(const wsMesh* my) {
   mesh = my;
@@ -92,7 +85,7 @@ wsMeshContainer::~wsMeshContainer() {
 
 void wsRenderSystem::startUp() {
   _mInitialized = true;
-  drawFeatures = WS_DRAW_AXES | WS_DRAW_LIGHTING | WS_DRAW_DEPTH | WS_DRAW_CULL_FACE | WS_DRAW_SHADER;
+  drawFeatures = WS_DRAW_LIGHTING | WS_DRAW_DEPTH | WS_DRAW_CULL_FACE | WS_DRAW_CEL | WS_DRAW_OUTLINE | WS_DRAW_CURSOR;
   #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
     GLenum glewStatus = glewInit();
     if (glewStatus != GLEW_OK) {
@@ -127,12 +120,21 @@ void wsRenderSystem::startUp() {
   frameBufferTextures = NULL;
   shaderWidth = 0;
   shaderHeight = 0;
-  initializeShaders(2560, 1440);
+  initializeShaders(1280, 720);
+  hudCam = wsNew(wsCamera, wsCamera("Hud Camera", vec4(0.0f, 0.0f, 1.0f), vec4(0.0f, 0.0f, -1.0f), vec4(0.0f, 1.0f),
+    vec4(0.0f, 0.0f, 1280.0f, 720.0f), WS_CAMERA_MODE_ORTHO, WS_DEFAULT_FOV, WS_DEFAULT_ASPECT_RATIO, WS_DEFAULT_Z_NEAR,
+    WS_DEFAULT_Z_FAR));
   cameras = wsNew(wsHashMap<wsCamera*>, wsHashMap<wsCamera*>(101));
   meshes = wsNew(wsHashMap<wsMeshContainer*>, wsHashMap<wsMeshContainer*>(101));
   models = wsNew(wsHashMap<wsModel*>, wsHashMap<wsModel*>(101));
+  panels = wsNew(wsOrderedHashMap<wsPanel*>, wsOrderedHashMap<wsPanel*>(101));
   // wsCamera* defaultCam = wsNew(wsCamera, wsCamera("wsDefault", vec4(9.0f, 17.0f, 9.0f), vec4(0.0f, 0.0f, 1.0f), vec4(0.0f, 1.0f, 0.0f),
   //     vec4(0.0f, 0.0f, 1280.0f, 720.0f), WS_RENDER_MODE_CEL, WS_CAMERA_MODE_PERSP, 60.0f, 16.0f/9.0f, 0.01f, 100.0f));
+  if (!(drawFeatures & WS_DRAW_CURSOR)) {
+    #if WS_SCREEN_BACKEND == WS_BACKEND_GLFW
+      glfwDisable(GLFW_MOUSE_CURSOR);
+    #endif
+  }
   enable(drawFeatures);
 }
 
@@ -187,7 +189,7 @@ void wsRenderSystem::initializeShaders(u32 width, u32 height) {
     glBindTexture(GL_TEXTURE_2D, 0);
     wsAssert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Problem configuring WS_FBO_PRIMARY.");
 
-    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObjects[WS_FBO_LIGHTING]);
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObjects[WS_FBO_POST]);
       glBindTexture(GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_FINAL]);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, shaderWidth, shaderHeight, 0, GL_RGBA, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -196,20 +198,23 @@ void wsRenderSystem::initializeShaders(u32 width, u32 height) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_FINAL], 0);
     glBindTexture(GL_TEXTURE_2D, 0);
-    wsAssert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Problem configuring WS_FBO_LIGHTING.");
+    wsAssert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Problem configuring WS_FBO_POST.");
 
     //  Create shader objects
     shaders = wsNewArray(wsShader*, WS_NUM_SHADERS);
     shaders[WS_SHADER_INITIAL] = wsNew(wsShader, wsShader("shaderFiles/wsInitial.vsh", "shaderFiles/wsInitial.fsh"));
     shaders[WS_SHADER_FINAL] = wsNew(wsShader, wsShader("shaderFiles/wsFullscreen.vsh", "shaderFiles/wsFinal.fsh"));
-    shaders[WS_SHADER_CEL] = wsNew(wsShader, wsShader("shaderFiles/wsFullscreen.vsh", "shaderFiles/wsCel.fsh"));
+    shaders[WS_SHADER_POST] = wsNew(wsShader, wsShader("shaderFiles/wsFullscreen.vsh", "shaderFiles/wsPost.fsh"));
+    shaders[WS_SHADER_HUD] = wsNew(wsShader, wsShader("shaderFiles/wsHud.vsh", "shaderFiles/wsHud.fsh"));
     // //  Set uniform variables
     shaders[WS_SHADER_INITIAL]->setUniformInt("colorMap", 0);
     shaders[WS_SHADER_FINAL]->setUniformInt("finalTexture", 0);
-    shaders[WS_SHADER_CEL]->setUniform("zNear", 0.01f);
-    shaders[WS_SHADER_CEL]->setUniform("zFar", 100.0f);
-    shaders[WS_SHADER_CEL]->setUniformInt("colorMap", 0);
-    shaders[WS_SHADER_CEL]->setUniformInt("depthMap", 1);
+    shaders[WS_SHADER_POST]->setUniform("zNear", 0.01f);
+    shaders[WS_SHADER_POST]->setUniform("zFar", 100.0f);
+    shaders[WS_SHADER_POST]->setUniformInt("colorMap", 0);
+    shaders[WS_SHADER_POST]->setUniformInt("depthMap", 1);
+    shaders[WS_SHADER_POST]->setUniformInt("materialMap", 2);
+    shaders[WS_SHADER_HUD]->setUniformInt("colorMap", 0);
 
     shaderBuffers = wsNewArray(u32, 4);
     shaderBuffers[0] = GL_COLOR_ATTACHMENT0;
@@ -295,6 +300,15 @@ u32 wsRenderSystem::addModel(wsModel* myModel) {
   return WS_NULL;
 }// End addModel(wsModel*) method
 
+u32 wsRenderSystem::addPanel(const char* panelName, wsPanel* myPanel) {
+  wsAssert(_mInitialized, "Must initialize the rendering system before adding a panel.");
+  u32 panelHash = wsHash(panelName);
+  if (panels->insert(panelHash, myPanel, myPanel->getLayer()) == WS_SUCCESS) {
+    return panelHash;
+  }
+  return WS_NULL;
+}
+
 void wsRenderSystem::beginAnimation(const char* modelName, const char* animName) {
   wsAssert(_mInitialized, "Must initialize the rendering system first.");
   wsLog(WS_LOG_GRAPHICS, "Model %s - Beginning Animation: %s\n", modelName, animName);
@@ -368,11 +382,13 @@ void wsRenderSystem::disable(u32 renderingFeatures) {
     if (renderingFeatures & WS_DRAW_DEPTH) {
       glDisable(GL_DEPTH_TEST);
     }
-    if (renderingFeatures & WS_DRAW_SHADER) {
-      // shader->end();
-    }
     if (renderingFeatures & WS_DRAW_TEXTURES) {
       glDisable(GL_TEXTURE_2D);
+    }
+    if (renderingFeatures & WS_DRAW_CURSOR) {
+      #if WS_SCREEN_BACKEND == WS_BACKEND_GLFW
+        glfwDisable(GLFW_MOUSE_CURSOR);
+      #endif
     }
   #endif
   renderingFeatures ^= drawFeatures;
@@ -408,7 +424,6 @@ void wsRenderSystem::drawMesh(u32 meshIndex) {
     glDisableClientState(GL_VERTEX_ARRAY);
     if ((drawFeatures & WS_DRAW_BONES) && my->mesh->getNumJoints()) {
       const wsJoint* joints = my->mesh->getJoints();
-      disable(WS_DRAW_SHADER);
       glDisable(GL_LIGHTING);
       glEnable(GL_COLOR_MATERIAL);
       glDisable(GL_TEXTURE_2D);
@@ -438,7 +453,6 @@ void wsRenderSystem::drawMesh(u32 meshIndex) {
       glDisable(GL_COLOR_MATERIAL);
       glEnable(GL_TEXTURE_2D);
       glEnable(GL_DEPTH_TEST);
-      enable(WS_DRAW_SHADER);
     }
   #endif
 }
@@ -465,7 +479,6 @@ void wsRenderSystem::drawMeshes() {
     ++it;
   }
   //  Draw Axes
-  disable(WS_DRAW_SHADER);
   glEnable(GL_COLOR_MATERIAL);
   glDisable(GL_TEXTURE_2D);
   glDisable(GL_LIGHTING);
@@ -484,7 +497,6 @@ void wsRenderSystem::drawMeshes() {
   glEnable(GL_TEXTURE_2D);
   glDisable(GL_COLOR_MATERIAL);
   glEnable(GL_LIGHTING);
-  enable(WS_DRAW_SHADER);
 }
 
 void wsRenderSystem::drawModel(u32 modelIndex) {
@@ -500,7 +512,7 @@ void wsRenderSystem::drawModel(u32 modelIndex) {
     if (my->getAttachment() != WS_NULL) {   //  This is attached to another model
       transform.loadIdentity();
       transform.setRotation(my->getAttachment()->rot);
-      transform.setTranslation(my->getAttachment()->pos);
+      transform.setTranslation(my->getAttachment()->start);
       glMultMatrixf((GLfloat*)&transform);
     }
 
@@ -530,7 +542,7 @@ void wsRenderSystem::drawModel(u32 modelIndex) {
       // glDisable(GL_LIGHTING);
       // glDisable(GL_TEXTURE_2D);
       // glDisable(GL_DEPTH_TEST);
-      disable(WS_DRAW_TEXTURES | WS_DRAW_DEPTH | WS_DRAW_LIGHTING | WS_DRAW_SHADER);
+      disable(WS_DRAW_TEXTURES | WS_DRAW_DEPTH | WS_DRAW_LIGHTING);
       vec4 endPos;
       quat rotation;
       glLineWidth(3.0f);
@@ -551,34 +563,7 @@ void wsRenderSystem::drawModel(u32 modelIndex) {
       glEnable(GL_LIGHTING);
       glEnable(GL_TEXTURE_2D);
       glEnable(GL_DEPTH_TEST);
-      enable(WS_DRAW_TEXTURES | WS_DRAW_DEPTH | WS_DRAW_LIGHTING | WS_DRAW_SHADER);
-    }
-    if ((drawFeatures & WS_DRAW_TAGS) && my->getMesh()->getNumTags()) {
-      wsHashMap<wsTag*>* tags = (wsHashMap<wsTag*>*)my->getMesh()->getTags();
-      disable(WS_DRAW_SHADER | WS_DRAW_LIGHTING | WS_DRAW_TEXTURES);
-      // glDisable(GL_LIGHTING);
-      glEnable(GL_COLOR_MATERIAL);
-      // glDisable(GL_TEXTURE_2D);
-      vec4 endPos;
-      glLineWidth(3.0f);
-      //  Draw Joints
-      glBegin(GL_LINES);
-      for (wsHashMap<wsTag*>::iterator it = tags->begin(); it.get() != WS_NULL; ++it) {
-        wsTag* myTag = it.get();
-        endPos = -Z_AXIS;
-        endPos.rotate(myTag->rot);
-        endPos += myTag->pos;
-
-        glColor4fv((GLfloat*)&BLUE);
-        glVertex3fv((GLfloat*)&myTag->pos);
-        glColor4fv((GLfloat*)&CYAN);
-        glVertex3fv((GLfloat*)&endPos);
-      }
-      glEnd();
-      // glEnable(GL_LIGHTING);
-      glDisable(GL_COLOR_MATERIAL);
-      // glEnable(GL_TEXTURE_2D);
-      enable(WS_DRAW_SHADER | WS_DRAW_LIGHTING | WS_DRAW_TEXTURES);
+      enable(WS_DRAW_TEXTURES | WS_DRAW_DEPTH | WS_DRAW_LIGHTING);
     }
     glPopMatrix();
   #endif
@@ -590,22 +575,35 @@ void wsRenderSystem::drawModels() {
   }
 }
 
+void wsRenderSystem::drawPanels() {
+  shaders[WS_SHADER_HUD]->use();
+  hudCam->draw();
+  disable(WS_DRAW_DEPTH | WS_DRAW_LIGHTING);
+  glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+  for (wsOrderedHashMap<wsPanel*>::iterator pan = panels->begin(); pan.get() != WS_NULL; ++pan) {
+    pan.get()->draw();
+  }
+  enable(WS_DRAW_DEPTH | WS_DRAW_LIGHTING | WS_DRAW_TEXTURES);
+}
+
 void wsRenderSystem::drawPost() { //  Post-processing effects
-  glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObjects[WS_FBO_LIGHTING]);
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferObjects[WS_FBO_POST]);
   glPushAttrib(GL_VIEWPORT_BIT | GL_ENABLE_BIT); // Push our glEnable and glViewport states
   glViewport(0, 0, shaderWidth, shaderHeight);
   glDrawBuffers(1, shaderBuffers);
 
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_MAT]);
+  glBindTexture(GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_TEXTURE]);
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_DEPTH]);
+  glActiveTexture(GL_TEXTURE2);
+  glBindTexture(GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_MAT]);
 
-  //glClear(GL_COLOR_BUFFER_BIT);
   clearScreen();
   glLoadIdentity();
 
-  shaders[WS_SHADER_CEL]->use();
+  shaders[WS_SHADER_POST]->use();
+  shaders[WS_SHADER_POST]->setUniformInt("drawOutline", (drawFeatures & WS_DRAW_OUTLINE) ? 1 : 0);
 
   glBegin(GL_QUADS);
     glVertex2f(0.0f, 0.0f);
@@ -614,12 +612,12 @@ void wsRenderSystem::drawPost() { //  Post-processing effects
     glVertex2f(0.0f, 1.0f);
   glEnd();
 
-  // wsShader::end();
-
+  glPopAttrib();
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, 0);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, 0);
-  glPopAttrib();
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -635,7 +633,8 @@ void wsRenderSystem::drawScene() {
   glEnable(GL_LIGHT0);
 
   shaders[WS_SHADER_INITIAL]->use();
-  //shaderWidth = 1280; shaderHeight = 720;
+  shaders[WS_SHADER_INITIAL]->setUniformInt("celShaded", (drawFeatures & WS_DRAW_CEL)? 1:0 );
+  shaders[WS_SHADER_INITIAL]->setUniformInt("lightingEnabled", (drawFeatures & WS_DRAW_LIGHTING)? 1:0 );
 
   glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObjects[WS_FBO_PRIMARY]);
   glPushAttrib(GL_VIEWPORT_BIT | GL_ENABLE_BIT); // Push our glEnable and glViewport states
@@ -646,13 +645,14 @@ void wsRenderSystem::drawScene() {
   
   for (wsHashMap<wsCamera*>::iterator cam = cameras->begin(); cam.get() != WS_NULL; ++cam) {
     cam.get()->draw();
+    shaders[WS_SHADER_INITIAL]->setUniformVec3("eyePos", cam.get()->getPos());
 
     drawModels();
   }
 
   if (drawFeatures & WS_DRAW_AXES) {
     //  Draw Axes
-    disable(WS_DRAW_TEXTURES | WS_DRAW_LIGHTING | WS_DRAW_SHADER);
+    disable(WS_DRAW_TEXTURES | WS_DRAW_LIGHTING);
     glEnable(GL_COLOR_MATERIAL);
     glLineWidth(1.0f);
     glBegin(GL_LINES);
@@ -667,7 +667,7 @@ void wsRenderSystem::drawScene() {
     glVertex3f(0.0f, 0.0f, 10.0f);
     glEnd();
     glDisable(GL_COLOR_MATERIAL);
-    enable(WS_DRAW_TEXTURES | WS_DRAW_LIGHTING | WS_DRAW_SHADER);
+    enable(WS_DRAW_TEXTURES | WS_DRAW_LIGHTING);
   }
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -690,8 +690,11 @@ void wsRenderSystem::drawScene() {
     glVertex2f(0.0f, 1.0f);
   glEnd();
 
-  wsShader::end();
   glPopAttrib();
+
+  drawPanels();
+  wsShader::end();
+  
   glBindTexture(GL_TEXTURE_2D, 0);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -712,11 +715,13 @@ void wsRenderSystem::enable(u32 renderingFeatures) {
     if (renderingFeatures & WS_DRAW_DEPTH) {
       glEnable(GL_DEPTH_TEST);
     }
-    if (renderingFeatures & WS_DRAW_SHADER) {
-      // shader->use();
-    }
     if (renderingFeatures & WS_DRAW_TEXTURES) {
       glEnable(GL_TEXTURE_2D);
+    }
+    if (renderingFeatures & WS_DRAW_CURSOR) {
+      #if WS_SCREEN_BACKEND == WS_BACKEND_GLFW
+        glfwEnable(GLFW_MOUSE_CURSOR);
+      #endif
     }
   #endif
 }

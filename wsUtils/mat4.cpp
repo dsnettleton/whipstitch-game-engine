@@ -283,7 +283,7 @@ const mat4 MAT4_IDENTITY(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0
             data[5], data[6], data[7], data[8], data[9], data[10], data[11],
             data[12], data[13], data[14], data[15]);
   }
-
+  
   mat4& mat4::setRotation(const quat& quaternion) {
     f32 xx = quaternion.x * quaternion.x;
     f32 xy = quaternion.x * quaternion.y;

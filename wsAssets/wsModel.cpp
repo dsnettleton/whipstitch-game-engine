@@ -96,6 +96,7 @@ wsModel::~wsModel() {
 
 void wsModel::addAnimation(wsAnimation* anim) {
   wsAssert( (anim != NULL), "Cannot add a null animation to the model.");
+  wsLog("Adding animation %s to model %s - animHash = %u\n", anim->getName(), name, wsHash(anim->getName()));
   animations->insert(wsHash(anim->getName()), anim);
 }
 
@@ -148,7 +149,6 @@ void wsModel::applyAnimation() {
   vec4 posSum;
   vec4 normSum;
   wsVert* verts = (wsVert*)mesh->getVerts();
-  wsHashMap<wsTag*>* tags = (wsHashMap<wsTag*>*)mesh->getTags();
   //  Animate Vertices
   for (u32 v = 0; v < mesh->getNumVerts(); ++v) {
     posSum.set(0, 0, 0, 1);
@@ -168,34 +168,16 @@ void wsModel::applyAnimation() {
     verts[v].pos = posSum;
     verts[v].norm = normSum / verts[v].numWeights;
   }
-  //  Animate Tags
-  wsTag* myTag;
-  for (wsHashMap<wsTag*>::iterator it = tags->begin(); it.get() != WS_NULL; ++it) {
-    myTag = it.get();
-    /*
-    myTag->pos = myTag->originalPos - mesh->getBaseSkel()[myTag->parentJoint].start;
-    myTag->pos.rotate(mesh->getBaseSkel()[myTag->parentJoint].rot.getInverse());
-    myTag->pos.rotate(joints[myTag->parentJoint].rot);
-    myTag->pos += joints[myTag->parentJoint].start;
-    myTag->rot = myTag->originalRot * joints[myTag->parentJoint].rot;
-    /*/
-    myTag->pos = myTag->originalPos - mesh->getBaseSkel()[myTag->parentJoint].start;
-    myTag->pos.rotate(mesh->getBaseSkel()[myTag->parentJoint].rot.getInverse());
-    myTag->pos.rotate(joints[myTag->parentJoint].rot);
-    myTag->pos += joints[myTag->parentJoint].start;
-    //myTag->rot = myTag->originalRot * joints[myTag->parentJoint].rot;
-    myTag->rot = joints[myTag->parentJoint].rot.getInverse() * myTag->originalRot;
-    //*/
-  }
   #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
     glBindBuffer(GL_ARRAY_BUFFER, vertexArray);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(wsVert)*mesh->getNumVerts(), mesh->getVerts());
   #endif
 }
 
-void wsModel::attachModel(wsModel* myModel, const char* meshTag) {
+void wsModel::attachModel(wsModel* myModel, const char* jointName) {
   wsAssert(myModel != NULL, "Cannot attach a null model");
-  myModel->attachment = mesh->getTags()->retrieve(wsHash(meshTag));
+  //u32 nameHash = wsHash(jointName);
+  myModel->attachment = (wsJoint*)mesh->getJoint(jointName);
 }
 
 void wsModel::beginAnimation(const char* animName) {

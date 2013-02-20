@@ -52,6 +52,12 @@ typedef uint64_t  u64;  //  64-bit unsigned integer
 typedef float     f32;  //  32-bit floating point value
 typedef double    f64;  //  64-bit floating point value
 
+struct wsIndexArray {
+  u32* indices;
+  u32 numIndices;
+  u32 handle;
+};
+
 //  The following is a hybrid 32-bit int/float format, useful
 //  for some lightning-fast floating point operations
 union i_f_hybrid {

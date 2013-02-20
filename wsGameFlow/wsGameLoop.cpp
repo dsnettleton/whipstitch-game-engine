@@ -88,17 +88,11 @@ void wsGameLoop::handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 act
       case WS_BUTTON_BOTTOM:
         if (action  == WS_PRESS) {
           wsRenderer.nextRenderMode();
-          // if (wsRenderer.getRenderMode() == WS_RENDER_MODE_CEL) {
-          //   wsRenderer.setRenderMode(WS_RENDER_MODE_LIT);
-          // }
-          // else {
-          //   wsRenderer.setRenderMode(WS_RENDER_MODE_CEL);
-          // }
         }
         break;
       case WS_BUTTON_RIGHT:
         if (action  == WS_PRESS) {
-          if (wsRenderer.getDrawBones()) {
+          if (wsRenderer.isEnabled(WS_DRAW_BONES)) {
             wsRenderer.disable(WS_DRAW_BONES);
           }
           else {
@@ -184,7 +178,7 @@ void wsGameLoop::handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action) {
           break;
         case WS_KEY_B:
           if (action == WS_PRESS) {
-            if (wsRenderer.getDrawBones()) {
+            if (wsRenderer.isEnabled(WS_DRAW_BONES)) {
               wsRenderer.disable(WS_DRAW_BONES);
             }
             else {
@@ -192,9 +186,29 @@ void wsGameLoop::handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action) {
             }
           }
           break;
+        case WS_KEY_C:
+          if (action == WS_PRESS) {
+            if (wsRenderer.isEnabled(WS_DRAW_CEL)) {
+              wsRenderer.disable(WS_DRAW_CEL);
+            }
+            else {
+              wsRenderer.enable(WS_DRAW_CEL);
+            }
+          }
+          break;
         case WS_KEY_M:
           if (action == WS_PRESS) {
             wsSounds.playMusic("Resistors");
+          }
+          break;
+        case WS_KEY_O:
+          if (action == WS_PRESS) {
+            if (wsRenderer.isEnabled(WS_DRAW_OUTLINE)) {
+              wsRenderer.disable(WS_DRAW_OUTLINE);
+            }
+            else {
+              wsRenderer.enable(WS_DRAW_OUTLINE);
+            }
           }
           break;
         case WS_KEY_P:
@@ -212,22 +226,6 @@ void wsGameLoop::handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action) {
         case WS_KEY_R:
           if (action == WS_PRESS) {
             wsRenderer.nextRenderMode();
-            // if (wsRenderer.getRenderMode() == WS_RENDER_MODE_CEL) {
-            //   wsRenderer.setRenderMode(WS_RENDER_MODE_LIT);
-            // }
-            // else {
-            //   wsRenderer.setRenderMode(WS_RENDER_MODE_CEL);
-            // }
-          }
-          break;
-        case WS_KEY_T:
-          if (action == WS_PRESS) {
-            if (wsRenderer.getDrawTags()) {
-              wsRenderer.disable(WS_DRAW_TAGS);
-            }
-            else {
-              wsRenderer.enable(WS_DRAW_TAGS);
-            }
           }
           break;
         case WS_KEY_LEFT:
@@ -267,12 +265,6 @@ void wsGameLoop::handleMouseButtonEvents(u64 action, u64 btnIndex) {
     case WS_MOUSE_BUTTON_LEFT:
       if (action  == WS_PRESS) {
         wsRenderer.nextRenderMode();
-        // if (wsRenderer.getRenderMode() == WS_RENDER_MODE_CEL) {
-        //   wsRenderer.setRenderMode(WS_RENDER_MODE_LIT);
-        // }
-        // else {
-        //   wsRenderer.setRenderMode(WS_RENDER_MODE_CEL);
-        // }
       }
       break;
     case WS_MOUSE_BUTTON_RIGHT:
@@ -292,7 +284,7 @@ void wsGameLoop::handleMouseMotionEvents(i32 posX, i32 posY, f32 dx, f32 dy) {
   }
   if (dy) {
     cam->orbit(vec4(0.0f, 9.0f, 0.0f), cam->getRightDir(), -dy*rotationSpeed);
-    cam->getRightDir().print(WS_LOG_MAIN);
+    // cam->getRightDir().print(WS_LOG_MAIN);
   }
 }
 

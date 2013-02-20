@@ -223,9 +223,9 @@ struct wsEvent {
     u32 eventSubType;
     u64 uVal1;
     u64 uVal2;
+    u32 uVal3;
     f64 fVal1;
     f64 fVal2;
-    u32 uVal3;
     f32 fVal3;
     wsEvent(u32 type = WS_EVENT_NULL, u32 subType = WS_EVENT_NULL, u64 u1 = 0, u64 u2 = 0, u32 u3 = 0,
         f64 f1 = 0.0f, f32 f2 = 0.0f, f32 f3 = 0.0f) : eventType(type), eventSubType(subType),

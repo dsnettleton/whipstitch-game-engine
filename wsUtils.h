@@ -28,6 +28,7 @@
 #include "wsUtils/wsMemoryPool.h"
 #include "wsUtils/wsProfiling.h"
 #include "wsUtils/wsProfileManager.h"
+#include "wsUtils/wsOrderedHashMap.h"
 #include "wsUtils/wsHashMap.h"
 #include "wsUtils/wsQueue.h"
 #include "wsUtils/wsStack.h"

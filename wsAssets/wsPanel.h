@@ -35,21 +35,27 @@
 
 #include "wsPanelElement.h"
 
-class wsPanel : wsPanelElement {
+#ifndef WS_MAX_PANEL_ELEMENTS
+  #define WS_MAX_PANEL_ELEMENTS 32
+#endif
+
+class wsPanel : public wsPanelElement {
   private:
     //  Private Data Members
     #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
-        wsIndexArray* indexArrays;
-        u32 numIndexArrays;
-        u32 vertexArray;
+      wsIndexArray* indexArrays;
+      u32 numIndexArrays;
+      u32 vertexArray;
     #endif
+    wsOrderedHashMap<wsPanelElement*>* elements;
   public:
     //  Constructors and Deconstructors
-    wsPanel(vec4 myRectangle, u32 myLayer, u32 myProperties, const char* myColorMap= WS_NULL) {}
+    wsPanel(vec4 myRectangle, u32 myLayer, const char* myColorMap, u32 myProperties = WS_NULL);
     //  Setters and Getters
-    //  Go Here
+    u32 getNumElements() { return elements->getLength(); }
     //  Operational Methods
-    //  Go Here
+    void addElement(wsPanelElement* myElement);
+    void draw();
 };
 
 #endif //  WS_PANEL_H_

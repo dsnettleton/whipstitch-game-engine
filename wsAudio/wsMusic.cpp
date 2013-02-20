@@ -101,7 +101,8 @@ bool wsMusic::isPlaying() {
 void wsMusic::load(const char* filePath) {
   #if WS_SOUND_BACKEND == WS_BACKEND_OPENAL
     i32 result;
-    wsAssert(oggFile = fopen(filePath, "rb"), "Could not open Ogg file.");
+    oggFile = fopen(filePath, "rb");
+    wsAssert(oggFile, "Could not open Ogg file.");
     if((result = ov_open(oggFile, &oggStream, NULL, 0)) < 0)     {
       fclose(oggFile);
       wsAssert(false, "Could not open Ogg stream. ");

@@ -27,13 +27,13 @@
 #ifndef WS_PANEL_ELEMENT_H_
 #define WS_PANEL_ELEMENT_H_
 
-#include "wsRenderSystem.h"
+//#include "../wsGraphicswsRenderSystem.h"
+#include "../wsUtils.h"
 
 #define WS_HUD_VISIBLE      0x00000001  //  Whether to draw this element
 #define WS_HUD_PASSABLE     0x00000002  //  Whether this element is interactive
 #define WS_HUD_FOCUS        0x00000004  //  Whether this element is the active input element
 #define WS_HUD_MOUSE_OVER   0x00000008  //  Whether the mouse pointer is currently over this element
-#define WS_HUD_HAS_IMAGE    0x00000010  //  Whether this element has a colormap
 
 class wsPanelElement {
   protected:
@@ -44,21 +44,15 @@ class wsPanelElement {
     u32 colorMap; //  Texture id
   public:
     //  Constructors and Deconstructors
-    wsPanelElement(vec4 myRectangle, u32 myLayer, u32 myProperties, const char* myColorMap= WS_NULL) :
-                    rectangle(myRectangle), layer(myLayer), properties(myProperties), colorMap(myColorMap) {
-      if (myColorMap != WS_NULL) {
-        char filepath[264] = { "textures/" };
-        strcat(filepath, myColorMap);
-        wsRenderer.loadTexture(&colorMap, filepath);
-      }
-    }
+    wsPanelElement(vec4 myRectangle, u32 myLayer, const char* myColorMap, u32 myProperties = WS_NULL);
     //  Setters and Getters
     void disable(u32 property) { property ^= properties; properties &= property; }
     void enable(u32 property) { properties |= property; }
+    u32 getColorMap() { return colorMap; }
     f32 getHeight() { return rectangle.rectH; }
     u32 getLayer() { return layer; }
     u32 getProperties() { return properties; }
-    const vec4& getRect() { return rect; }
+    const vec4& getRect() { return rectangle; }
     f32 getWidth() { return rectangle.rectW; }
     f32 getX() { return rectangle.x; }
     f32 getY() { return rectangle.y; }
@@ -70,6 +64,8 @@ class wsPanelElement {
     void setWidth(f32 my) { rectangle.rectW = my; }
     void setX(f32 my) { rectangle.x = my; }
     void setY(f32 my) { rectangle.y = my; }
+    //  Operational Methods
+    virtual void draw() = 0;
 };
 
 #endif //  WS_PANEL_ELEMENT_H_

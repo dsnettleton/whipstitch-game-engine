@@ -33,7 +33,8 @@ wsAnimation::wsAnimation(const char* filepath) {
     assetType = WS_ASSET_TYPE_ANIM;
     wsLog(WS_LOG_GRAPHICS, "Loading Animation from file \"%s\"\n", filepath);
     FILE* pFile;
-    wsAssert( (pFile = fopen(filepath, "r")), "Error Loading file." );
+    pFile = fopen(filepath, "r");
+    wsAssert( pFile, "Error Loading file." );
     //  Scan past the header
     errorCheck( fscanf( pFile,  "//  Whipstitch Animation File\n//  This Animation is for use with the Whipstitch Game Engine\n"
                                 "//  For more information, email dsnettleton@whipstitchgames.com\n\n") );

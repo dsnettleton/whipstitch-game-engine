@@ -84,17 +84,19 @@ wsScreen::wsScreen(wsScreenSettings mySettings) {
         context = glXCreateContext(xDisp, visualInfo, NULL, GL_TRUE);
         glXMakeCurrent(xDisp, win, context);
     #elif (WS_SCREEN_BACKEND == WS_BACKEND_GLFW)
-        wsAssert(
-            glfwOpenWindow( settings.mWidth,    //  window width
-                            settings.mHeight,   //  window height
-                            settings.mChannelBits,  //  red bits
-                            settings.mChannelBits,  //  green bits
-                            settings.mChannelBits,  //  blue bits
-                            settings.mChannelBits,  //  alpha bits
-                            settings.mDepthBuffer ? settings.mChannelBits : 0,  //  depth bits
-                            settings.mStencilBuffer ? settings.mChannelBits : 0, // stencil bits
-                            settings.mFullscreen ? GLFW_FULLSCREEN : GLFW_WINDOW),   //  window mode
-                "Could not open window. GLFW error.");  //  Assertion fail message
+        bool success = glfwOpenWindow( settings.mWidth,    //  window width
+                                        settings.mHeight,   //  window height
+                                        settings.mChannelBits,  //  red bits
+                                        settings.mChannelBits,  //  green bits
+                                        settings.mChannelBits,  //  blue bits
+                                        settings.mChannelBits,  //  alpha bits
+                                        settings.mDepthBuffer ? settings.mChannelBits : 0,  //  depth bits
+                                        settings.mStencilBuffer ? settings.mChannelBits : 0, // stencil bits
+                                        settings.mFullscreen ? GLFW_FULLSCREEN : GLFW_WINDOW);   //  window mode
+        wsAssert(success, "Could not open window. GLFW error.");  //  Assertion fail message
+        if (!success) {
+          exit(1);
+        }
         glfwSetWindowTitle(settings.mTitle);
     #endif
 }

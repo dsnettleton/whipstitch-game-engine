@@ -2,11 +2,11 @@
  * wsMesh.h
  *
  *  Created on: Sep 19, 2012
- *      Author: dsnettleton
+ *    Author: dsnettleton
  *
- *      This file declares the class wsMesh, which extends the abstract base
- *      type wsAsset. A wsMesh is only part of the more complete type,
- *      wsModel, but the mesh can be used independently if so desired.
+ *    This file declares the class wsMesh, which extends the abstract base
+ *    type wsAsset. A wsMesh is only part of the more complete type,
+ *    wsModel, but the mesh can be used independently if so desired.
  *
  *  Copyright D. Scott Nettleton, 2013
  *  This software is released under the terms of the
@@ -31,83 +31,71 @@
 #include "wsAsset.h"
 
 struct wsWeight {
-    i32 jointIndex;
-    f32 influence;
+  i32 jointIndex;
+  f32 influence;
 };
 
 struct wsVert {
-    vec4 pos;
-    vec4 norm;
-    f32 tex[2]; //  UV texture coordinates
-    vec4 originalPos;
-    vec4 originalNorm;
-    wsWeight* weights;
-    u32 numWeights;
+  vec4 pos;
+  vec4 norm;
+  f32 tex[2]; //  UV texture coordinates
+  vec4 originalPos;
+  vec4 originalNorm;
+  wsWeight* weights;
+  u32 numWeights;
 };
 
 struct wsTriangle {
-    u32 vertIndices[3];
+  u32 vertIndices[3];
 };
 
 struct wsMaterial {
-    vec4 ambient;
-    vec4 diffuse;
-    vec4 specular;
-    vec4 emissive;
-    wsTriangle* tris;
-    u32 shininess;
-    u32 colorMap;
-    u32 numTriangles;
-    wsHashMap<f32> *properties;
-    u32 numProperties;
+  vec4 ambient;
+  vec4 diffuse;
+  vec4 specular;
+  vec4 emissive;
+  wsTriangle* tris;
+  u32 shininess;
+  u32 colorMap;
+  u32 numTriangles;
+  wsHashMap<f32> *properties;
+  u32 numProperties;
 };
 
 struct wsJoint {
-    vec4 start;
-    vec4 startRel;
-    vec4 end;
-    vec4 endRel;
-    quat rot;
-    i32 parent;
-};
-
-struct wsTag {
-    vec4 pos;
-    quat rot;
-    vec4 originalPos;
-    quat originalRot;
-    i32 parentJoint;
+  vec4 start;
+  vec4 startRel;
+  vec4 end;
+  vec4 endRel;
+  quat rot;
+  i32 parent;
 };
 
 class wsMesh: public wsAsset {
-    private:
-        wsVert* verts;
-        wsMaterial* mats;
-        wsJoint* joints;
-        wsJoint* baseSkel;
-        //wsTag* tags;
-        wsHashMap<wsTag*>* tags;
-        u32 numVerts;
-        u32 numMaterials;
-        u32 numJoints;
-        u32 numTags;
-    public:
-        //  Constructor
-        wsMesh(const char* filepath);
-        ~wsMesh();
-        //  Getters
-        const wsVert* getVerts() const { return verts; }
-        const wsMaterial* getMats() const { return mats; }
-        const wsJoint* getJoints() const { return joints; }
-        const wsJoint* getBaseSkel() const { return baseSkel; }
-        const wsHashMap<wsTag*>* getTags() const { return tags; }
-        const wsTag* getTag(const char* tagName) const { return tags->retrieve(wsHash(tagName)); }
-        u32 getNumVerts() const { return numVerts; }
-        u32 getNumMaterials() const { return numMaterials; }
-        u32 getNumJoints() const { return numJoints; }
-        u32 getNumTags() const { return numTags; }
-        //  Operational Methods
-        void errorCheck(const i32 my);
+  private:
+    wsVert* verts;
+    wsMaterial* mats;
+    wsJoint* joints;
+    wsJoint* baseSkel;
+    wsHashMap<u32>* jointIndices;
+    u32 numVerts;
+    u32 numMaterials;
+    u32 numJoints;
+  public:
+    //  Constructor
+    wsMesh(const char* filepath);
+    ~wsMesh();
+    //  Getters
+    const wsVert* getVerts() const { return verts; }
+    const wsMaterial* getMats() const { return mats; }
+    const wsJoint* getJoint(const char* jointName) { return &joints[jointIndices->retrieve(wsHash(jointName))]; }
+    const wsJoint* getJoints() const { return joints; }
+    const wsJoint* getBaseSkel() const { return baseSkel; }
+    u32 getNumVerts() const { return numVerts; }
+    u32 getNumMaterials() const { return numMaterials; }
+    u32 getNumJoints() const { return numJoints; }
+    //  Operational Methods
+    void errorCheck(const i32 my);
 };
 
 #endif /* WS_MESH_H_ */
