@@ -11,16 +11,20 @@
 #     Lesser GNU Public License (LGPL).
 
 CC=g++
+WIN_CC=i586-mingw32msvc-g++
 COMPILER_NAME=GNU G++
+WIN_COMPILER_NAME=Minimalist GNU Win32 Compiler
 REMOVAL_BIN=/bin/rm -f
 
 PROJECT_NAME = Florin
 DEBUG_NAME = Florin_dbg
 PROFILE_NAME = Florin_profile
+WIN_NAME = Florin.exe
 INCLUDE_DIRS = -I/usr/include/freetype2
 RELEASE_OPTIONS= -O3 -DNDEBUG
 DEBUG_OPTIONS= -O0 -g3 -DDEBUG
 PROFILE_OPTIONS= -O0 -g3 -DDEBUG -D_PROFILE
+WINDOWS_OPTIONS= -I/usr/i586-mingw32msvc/include -I/usr/i586s-mingw32msvc/lib
 OPTIONS = -Wall -fmessage-length=0 $(INCLUDE_DIRS)
 
 OBJ_ASSETS = ./wsAssets/wsAnimation.o ./wsAssets/wsAsset.o ./wsAssets/wsFont.o ./wsAssets/wsMesh.o ./wsAssets/wsModel.o ./wsAssets/wsPanel.o ./wsAssets/wsPanelElement.o ./wsAssets/wsText.o
@@ -55,6 +59,12 @@ release: executable
 profile: OPTIONS += $(PROFILE_OPTIONS)
 profile: PROJECT_NAME = $(PROFILE_NAME)
 profile: executable
+
+# windows: CC = $(WIN_CC)
+windows: COMPILER_NAME = $(WIN_COMPILER_NAME)
+windows: OPTIONS += -lmingw32
+windows: PROJECT_NAME = $(WIN_NAME)
+windows: release
 
 executable: $(OBJS)
 	#  Building Target: $@

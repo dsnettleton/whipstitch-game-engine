@@ -1,0 +1,1271 @@
+//  Whipstitch Animation File
+//  This Animation is for use with the Whipstitch Game Engine
+//  For more information, email dsnettleton@whipstitchgames.com
+
+versionNumber 0.9
+animationType 1
+animationName Jump
+framesPerSecond 24
+
+numJoints 36
+numKeyFrames 7
+
+//  Animation files store a collection of joint rotations; matrices are computed on loading
+
+joints {
+  joint 0 {
+    jointName Sacrum (root)
+    parent -1
+    pos_start { 0.05796872079372406 5.639041900634766 0.14931470155715942 }
+    rotation { -0.0009719771915115416 -0.7071059942245483 0.7070508003234863 0.00891853403300047 }
+  }
+  joint 1 {
+    jointName abdomen
+    parent 0
+    pos_start { 0.07250476628541946 6.677825450897217 0.14931419491767883 }
+    rotation { 0.7703770399093628 -1.7719590239551053e-09 9.255495037052697e-09 0.6375885009765625 }
+  }
+  joint 2 {
+    jointName Ribs
+    parent 1
+    pos_start { 0.07250475138425827 7.803511619567871 0.36355170607566833 }
+    rotation { 4.5364879497356014e-07 0.6727740168571472 -0.7398480176925659 5.0641745019675e-07 }
+  }
+  joint 3 {
+    jointName Sternum
+    parent 2
+    pos_start { 0.07250474393367767 8.731554985046387 0.2752220034599304 }
+    rotation { -4.5861699504712305e-07 0.6774091124534607 -0.7356064915657043 -4.902153705188539e-07 }
+  }
+  joint 4 {
+    jointName Chest
+    parent 3
+    pos_start { 0.07250473648309708 9.5308256149292 0.2092713713645935 }
+    rotation { 0.7097551822662354 2.936113574492083e-09 2.930533371525712e-09 0.7044486403465271 }
+  }
+  joint 5 {
+    jointName Head
+    parent 4
+    pos_start { 0.07250472903251648 10.727808952331543 0.2182539701461792 }
+    rotation { 0.7117221355438232 5.257803081804013e-09 2.170604807005816e-09 0.7024611830711365 }
+  }
+  joint 6 {
+    jointName arm.l
+    parent 4
+    pos_start { 1.273154616355896 10.219583511352539 -0.08469712734222412 }
+    rotation { 0.40125733613967896 -0.6897655129432678 -0.5157465934753418 0.3118037283420563 }
+  }
+  joint 7 {
+    jointName forearm.l
+    parent 6
+    pos_start { 3.0766446590423584 9.233987808227539 0.4998471140861511 }
+    rotation { -0.3988306522369385 -0.778480589389801 -0.08001331984996796 0.47801682353019714 }
+  }
+  joint 8 {
+    jointName opposable.l
+    parent 7
+    pos_start { 4.408906936645508 8.243502616882324 1.5379557609558105 }
+    rotation { -0.4894099831581116 -0.8551961183547974 -0.12547047436237335 0.11564931273460388 }
+  }
+  joint 9 {
+    jointName thumbBase.l
+    parent 8
+    pos_start { 4.46010684967041 8.019701957702637 2.1809253692626953 }
+    rotation { -0.4763926863670349 -0.824917197227478 -0.18951213359832764 0.23800590634346008 }
+  }
+  joint 10 {
+    jointName thumbTip.l
+    parent 9
+    pos_start { 4.513928413391113 7.882821559906006 2.387699842453003 }
+    rotation { -0.3957781195640564 -0.7959280014038086 -0.1189049705862999 0.44240260124206543 }
+  }
+  joint 11 {
+    jointName outerPalm.l
+    parent 7
+    pos_start { 4.408906936645508 8.243502616882324 1.5379557609558105 }
+    rotation { -0.4722224175930023 -0.8181601166725159 -0.05418458953499794 0.3235493302345276 }
+  }
+  joint 12 {
+    jointName indexBase.l
+    parent 11
+    pos_start { 4.768463134765625 7.947112083435059 2.127944231033325 }
+    rotation { 0.36252403259277344 -0.82169508934021 -0.43060848116874695 0.08927452564239502 }
+  }
+  joint 13 {
+    jointName indexTip.l
+    parent 12
+    pos_start { 4.946344375610352 7.697909832000732 2.365628242492676 }
+    rotation { 0.34364357590675354 -0.8237192630767822 -0.45064088702201843 0.01784077286720276 }
+  }
+  joint 14 {
+    jointName tag_Hand.l
+    parent 11
+    pos_start { 4.704438209533691 7.821671485900879 1.7623629570007324 }
+    rotation { -0.35245075821876526 0.9197467565536499 -0.12831974029541016 0.11566521227359772 }
+  }
+  joint 15 {
+    jointName innerPalm.l
+    parent 7
+    pos_start { 4.408906936645508 8.243502616882324 1.5379557609558105 }
+    rotation { -0.3649615943431854 -0.7650837898254395 -0.13549257814884186 0.5129246711730957 }
+  }
+  joint 16 {
+    jointName fingersKnuckle.l
+    parent 15
+    pos_start { 4.950993537902832 7.783792972564697 1.8833777904510498 }
+    rotation { -0.3861834406852722 -0.7479222416877747 -0.2011576145887375 0.5010095238685608 }
+  }
+  joint 17 {
+    jointName fingertips.l
+    parent 16
+    pos_start { 5.123384475708008 7.584181785583496 2.004401683807373 }
+    rotation { -0.4240282475948334 -0.6952191591262817 -0.2744615972042084 0.5114110708236694 }
+  }
+  joint 18 {
+    jointName arm.r
+    parent 4
+    pos_start { -1.1281450986862183 10.219583511352539 -0.08469831943511963 }
+    rotation { 0.4012574255466461 0.6897656321525574 0.515746533870697 0.31180357933044434 }
+  }
+  joint 19 {
+    jointName forearm.r
+    parent 18
+    pos_start { -2.9316351413726807 9.233987808227539 0.49984627962112427 }
+    rotation { -0.39883044362068176 0.7784808278083801 0.08001331239938736 0.47801679372787476 }
+  }
+  joint 20 {
+    jointName innerPalm.r
+    parent 19
+    pos_start { -4.263898849487305 8.243502616882324 1.5379552841186523 }
+    rotation { -0.3649615943431854 0.7650838494300842 0.13549256324768066 0.5129244923591614 }
+  }
+  joint 21 {
+    jointName fingersKnuckle.r
+    parent 20
+    pos_start { -4.805983543395996 7.783793926239014 1.883376121520996 }
+    rotation { -0.38618314266204834 0.7479222416877747 0.2011573314666748 0.5010095834732056 }
+  }
+  joint 22 {
+    jointName fingertips.r
+    parent 21
+    pos_start { -4.978374481201172 7.584183692932129 2.004399299621582 }
+    rotation { -0.4240279495716095 0.6952191591262817 0.27446165680885315 0.5114113092422485 }
+  }
+  joint 23 {
+    jointName outerPalm.r
+    parent 19
+    pos_start { -4.263898849487305 8.243502616882324 1.5379552841186523 }
+    rotation { -0.4722234010696411 0.8181598782539368 0.05418466031551361 0.32354840636253357 }
+  }
+  joint 24 {
+    jointName indexBase.r
+    parent 23
+    pos_start { -4.6234540939331055 7.947112083435059 2.127944231033325 }
+    rotation { 0.36252525448799133 0.8216934204101562 0.4306103587150574 0.08927519619464874 }
+  }
+  joint 25 {
+    jointName indexTip.r
+    parent 24
+    pos_start { -4.801335334777832 7.697911262512207 2.3656249046325684 }
+    rotation { 0.34364306926727295 0.8237197399139404 0.4506406784057617 0.017841115593910217 }
+  }
+  joint 26 {
+    jointName tag_Hand.r
+    parent 23
+    pos_start { -4.559429168701172 7.821671485900879 1.7623629570007324 }
+    rotation { -0.35245105624198914 -0.9197466373443604 0.12831975519657135 0.11566474288702011 }
+  }
+  joint 27 {
+    jointName opposable.r
+    parent 19
+    pos_start { -4.263898849487305 8.243502616882324 1.5379552841186523 }
+    rotation { -0.4894101321697235 0.8551960587501526 0.12547028064727783 0.11564937978982925 }
+  }
+  joint 28 {
+    jointName thumbBase.r
+    parent 27
+    pos_start { -4.315098762512207 8.019701957702637 2.1809229850769043 }
+    rotation { -0.4763928949832916 0.8249171376228333 0.18951238691806793 0.23800534009933472 }
+  }
+  joint 29 {
+    jointName thumbTip.r
+    parent 28
+    pos_start { -4.368919372558594 7.882822036743164 2.3876962661743164 }
+    rotation { -0.3957778215408325 0.7959278225898743 0.11890466511249542 0.44240331649780273 }
+  }
+  joint 30 {
+    jointName thigh.l
+    parent 0
+    pos_start { 0.6144159436225891 5.9696431159973145 0.14931470155715942 }
+    rotation { 0.09076835215091705 -0.7732439637184143 -0.6258959174156189 0.04592673480510712 }
+  }
+  joint 31 {
+    jointName leg.l
+    parent 30
+    pos_start { 1.1671656370162964 3.0970613956451416 0.7848110795021057 }
+    rotation { 0.036056146025657654 -0.6874005198478699 -0.7252618670463562 0.01325802132487297 }
+  }
+  joint 32 {
+    jointName foot.l
+    parent 31
+    pos_start { 1.351415753364563 0.49477720260620117 0.6480299830436707 }
+    rotation { 0.9958175420761108 -1.0927076345979003e-06 2.1425066165647877e-07 -0.09136475622653961 }
+  }
+  joint 33 {
+    jointName thigh.r
+    parent 0
+    pos_start { -0.4694063067436218 5.969643592834473 0.14931492507457733 }
+    rotation { 0.09076852351427078 0.7732447981834412 0.6258949041366577 0.045927420258522034 }
+  }
+  joint 34 {
+    jointName leg.r
+    parent 33
+    pos_start { -1.0221562385559082 3.0970611572265625 0.7848114371299744 }
+    rotation { 0.036057356745004654 0.6874037981033325 0.7252587080001831 0.013255528174340725 }
+  }
+  joint 35 {
+    jointName foot.r
+    parent 34
+    pos_start { -1.2064062356948853 0.49477624893188477 0.6480308175086975 }
+    rotation { 0.9958173632621765 -6.2781341512163635e-06 1.913636424433207e-06 -0.09136618673801422 }
+  }
+}
+
+keyframes {
+  keyframe 0 {
+    frameNumber 0.0
+    jointsModified 36
+    joint 0 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.000972 -0.707106 0.707051 0.008919 }
+    }
+    joint 1 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.770377 -0.000000 0.000000 0.637589 }
+    }
+    joint 2 {
+      jointTranslation { 0.000000 0.000000 -0.000000 }
+      jointRotation { 0.000000 0.672774 -0.739848 0.000001 }
+    }
+    joint 3 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.000000 0.677409 -0.735606 -0.000000 }
+    }
+    joint 4 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.709755 0.000000 0.000000 0.704449 }
+    }
+    joint 5 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.717934 0.000000 0.000000 0.696111 }
+    }
+    joint 6 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.130050 -0.787319 -0.592873 0.108250 }
+    }
+    joint 7 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.649367 -0.586021 -0.244607 0.418413 }
+    }
+    joint 8 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.761290 -0.625555 -0.158370 0.063533 }
+    }
+    joint 9 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.738366 -0.601875 -0.261701 0.155159 }
+    }
+    joint 10 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.652711 -0.603415 -0.268310 0.371306 }
+    }
+    joint 11 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.732067 -0.597040 -0.165589 0.283197 }
+    }
+    joint 12 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.046976 -0.896883 -0.434236 -0.069519 }
+    }
+    joint 13 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.028608 -0.892068 -0.427585 -0.143410 }
+    }
+    joint 14 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.002728 0.984961 -0.161039 0.062536 }
+    }
+    joint 15 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.612948 -0.585530 -0.308868 0.431336 }
+    }
+    joint 16 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.626689 -0.561949 -0.366017 0.396871 }
+    }
+    joint 17 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.643343 -0.499239 -0.438235 0.380553 }
+    }
+    joint 18 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.117343 0.789313 0.594540 0.098680 }
+    }
+    joint 19 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.658728 0.575478 0.251319 0.414416 }
+    }
+    joint 20 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.622306 0.575574 0.315780 0.426301 }
+    }
+    joint 21 {
+      jointTranslation { 0.059094 0.034361 -0.023785 }
+      jointRotation { -0.727577 0.258132 0.615895 0.157074 }
+    }
+    joint 22 {
+      jointTranslation { 0.055576 -0.000676 -0.017874 }
+      jointRotation { -0.577370 -0.220788 0.756514 -0.213505 }
+    }
+    joint 23 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.741596 0.585162 0.170132 0.280490 }
+    }
+    joint 24 {
+      jointTranslation { -0.059094 -0.034361 0.023785 }
+      jointRotation { -0.293662 0.781603 0.404466 -0.373185 }
+    }
+    joint 25 {
+      jointTranslation { -0.055576 0.000676 0.017874 }
+      jointRotation { -0.616766 0.392587 0.199663 -0.652388 }
+    }
+    joint 26 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.013149 -0.984877 0.162026 0.059932 }
+    }
+    joint 27 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.569815 0.762694 0.300198 -0.059072 }
+    }
+    joint 28 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.487547 0.789622 0.360853 0.092628 }
+    }
+    joint 29 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.243643 0.860806 0.197230 0.400938 }
+    }
+    joint 30 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.033841 -0.777817 -0.627579 -0.000079 }
+    }
+    joint 31 {
+      jointTranslation { 0.000000 -0.000000 0.000000 }
+      jointRotation { 0.026649 -0.687829 -0.725375 0.003335 }
+    }
+    joint 32 {
+      jointTranslation { 0.000000 -0.000000 0.000000 }
+      jointRotation { 0.995724 -0.013624 0.001250 -0.091356 }
+    }
+    joint 33 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.044488 0.777282 0.627520 0.008515 }
+    }
+    joint 34 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.023850 0.687936 0.725380 0.000380 }
+    }
+    joint 35 {
+      jointTranslation { 0.000000 -0.000000 0.000000 }
+      jointRotation { 0.995661 0.017670 -0.001620 -0.091352 }
+    }
+  }
+  keyframe 1 {
+    frameNumber 4.0
+    jointsModified 36
+    joint 0 {
+      jointTranslation { 0.000005 -1.740930 -0.853768 }
+      jointRotation { 0.000141 -0.789264 0.613988 0.008971 }
+    }
+    joint 1 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.843441 -0.000000 -0.000001 0.537222 }
+    }
+    joint 2 {
+      jointTranslation { 0.000000 0.000000 -0.000000 }
+      jointRotation { 0.000000 0.759261 -0.650787 -0.000000 }
+    }
+    joint 3 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.000001 0.763335 -0.646003 -0.000001 }
+    }
+    joint 4 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.791571 0.000000 -0.000001 0.611078 }
+    }
+    joint 5 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.753909 0.000000 -0.000001 0.656979 }
+    }
+    joint 6 {
+      jointTranslation { -0.000000 -0.000000 0.000000 }
+      jointRotation { 0.161213 -0.506549 -0.845445 0.051393 }
+    }
+    joint 7 {
+      jointTranslation { 0.007530 -0.008476 0.016798 }
+      jointRotation { -0.771576 -0.618912 0.142131 -0.037653 }
+    }
+    joint 8 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.656064 -0.600875 0.235267 -0.391382 }
+    }
+    joint 9 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.690745 -0.641753 0.137456 -0.303530 }
+    }
+    joint 10 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.746881 -0.646851 0.132978 -0.077908 }
+    }
+    joint 11 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.760137 -0.581887 0.212801 -0.195742 }
+    }
+    joint 12 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.078659 -0.982067 0.168834 -0.029195 }
+    }
+    joint 13 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.106724 -0.974281 0.171440 -0.099973 }
+    }
+    joint 14 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.038612 0.707260 -0.704177 0.049267 }
+    }
+    joint 15 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.749480 -0.655911 0.089587 -0.005950 }
+    }
+    joint 16 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.740597 -0.669993 0.029389 -0.041974 }
+    }
+    joint 17 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.744644 -0.661026 -0.065834 -0.064936 }
+    }
+    joint 18 {
+      jointTranslation { -0.000000 0.000000 -0.000000 }
+      jointRotation { 0.145841 0.507770 0.847740 0.047305 }
+    }
+    joint 19 {
+      jointTranslation { 0.007799 0.008229 -0.016798 }
+      jointRotation { -0.776862 0.614246 -0.130535 -0.046353 }
+    }
+    joint 20 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.754160 0.651838 -0.078170 -0.015492 }
+    }
+    joint 21 {
+      jointTranslation { 0.059094 0.034361 -0.023785 }
+      jointRotation { -0.683085 0.568349 0.350628 -0.295694 }
+    }
+    joint 22 {
+      jointTranslation { 0.055576 -0.000676 -0.017874 }
+      jointRotation { -0.345269 0.260722 0.743697 -0.509636 }
+    }
+    joint 23 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.766310 0.574872 -0.202193 -0.203490 }
+    }
+    joint 24 {
+      jointTranslation { -0.059094 -0.034361 0.023785 }
+      jointRotation { -0.021626 0.870994 -0.125953 -0.474382 }
+    }
+    joint 25 {
+      jointTranslation { -0.055576 0.000676 0.017874 }
+      jointRotation { -0.121890 0.435453 -0.066105 -0.889468 }
+    }
+    joint 26 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.024186 -0.706618 0.704930 0.056390 }
+    }
+    joint 27 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.429001 0.794937 -0.199741 -0.379654 }
+    }
+    joint 28 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.450385 0.852135 -0.166086 -0.208413 }
+    }
+    joint 29 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.431466 0.814799 -0.340574 0.184254 }
+    }
+    joint 30 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { 0.032436 -0.925296 -0.377733 0.009645 }
+    }
+    joint 31 {
+      jointTranslation { -0.000604 0.002311 0.002067 }
+      jointRotation { 0.025250 -0.282610 -0.958859 -0.009153 }
+    }
+    joint 32 {
+      jointTranslation { -0.000011 0.000411 -0.001746 }
+      jointRotation { 0.986569 -0.013679 0.000266 -0.162771 }
+    }
+    joint 33 {
+      jointTranslation { -0.000000 -0.000000 -0.000000 }
+      jointRotation { 0.040169 0.924766 0.377831 0.020934 }
+    }
+    joint 34 {
+      jointTranslation { -0.000464 -0.002336 -0.002074 }
+      jointRotation { 0.021418 0.282702 0.958911 -0.010508 }
+    }
+    joint 35 {
+      jointTranslation { -0.000015 -0.000412 0.001746 }
+      jointRotation { 0.986506 0.017738 -0.000353 -0.162762 }
+    }
+  }
+  keyframe 2 {
+    frameNumber 10.0
+    jointsModified 36
+    joint 0 {
+      jointTranslation { -0.000004 0.998673 0.124570 }
+      jointRotation { 0.000141 -0.789264 0.613988 0.008971 }
+    }
+    joint 1 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.744906 0.000000 -0.000001 0.667170 }
+    }
+    joint 2 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.000000 0.753838 -0.657061 -0.000000 }
+    }
+    joint 3 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.000001 0.757951 -0.652311 -0.000001 }
+    }
+    joint 4 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.786476 0.000000 -0.000001 0.617621 }
+    }
+    joint 5 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.836793 -0.000000 -0.000001 0.547519 }
+    }
+    joint 6 {
+      jointTranslation { -0.000000 -0.000000 -0.000000 }
+      jointRotation { 0.167667 -0.352880 -0.920242 0.022770 }
+    }
+    joint 7 {
+      jointTranslation { 0.016979 -0.019113 -0.007645 }
+      jointRotation { -0.330175 -0.368245 -0.517348 0.698378 }
+    }
+    joint 8 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.612732 -0.447380 -0.465028 0.456246 }
+    }
+    joint 9 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.544850 -0.372671 -0.540238 0.521917 }
+    }
+    joint 10 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.357909 -0.370486 -0.546663 0.660153 }
+    }
+    joint 11 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.471841 -0.419357 -0.456088 0.627288 }
+    }
+    joint 12 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.003142 -0.531945 -0.842612 -0.083844 }
+    }
+    joint 13 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.051500 -0.531372 -0.834421 -0.136868 }
+    }
+    joint 14 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { 0.030732 0.921296 0.383792 0.054532 }
+    }
+    joint 15 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.292428 -0.333869 -0.571644 0.690103 }
+    }
+    joint 16 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.322307 -0.283649 -0.607699 0.668105 }
+    }
+    joint 17 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.345068 -0.192247 -0.635870 0.663052 }
+    }
+    joint 18 {
+      jointTranslation { -0.000000 0.000000 -0.000000 }
+      jointRotation { 0.151820 0.353685 0.922713 0.021399 }
+    }
+    joint 19 {
+      jointTranslation { 0.017586 0.018555 0.007645 }
+      jointRotation { -0.340233 0.355749 0.517475 0.699932 }
+    }
+    joint 20 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.303032 0.321765 0.572250 0.690774 }
+    }
+    joint 21 {
+      jointTranslation { 0.059094 0.034361 -0.023785 }
+      jointRotation { -0.534678 -0.106328 0.659283 0.517843 }
+    }
+    joint 22 {
+      jointTranslation { 0.055576 -0.000676 -0.017874 }
+      jointRotation { -0.602993 -0.587223 0.525575 0.123858 }
+    }
+    joint 23 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.481360 0.406874 0.453668 0.630026 }
+    }
+    joint 24 {
+      jointTranslation { -0.059094 -0.034361 0.023785 }
+      jointRotation { -0.446519 0.449809 0.756418 -0.161632 }
+    }
+    joint 25 {
+      jointTranslation { -0.055576 0.000676 0.017874 }
+      jointRotation { -0.868368 0.227778 0.376971 -0.227918 }
+    }
+    joint 26 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.042833 -0.921746 -0.382910 0.043932 }
+    }
+    joint 27 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.514967 0.488858 0.657906 0.250972 }
+    }
+    joint 28 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.364959 0.479664 0.723631 0.336285 }
+    }
+    joint 29 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { 0.005036 0.626564 0.622338 0.469136 }
+    }
+    joint 30 {
+      jointTranslation { -0.000000 -0.000000 -0.000000 }
+      jointRotation { 0.033818 -0.756151 -0.653522 -0.001223 }
+    }
+    joint 31 {
+      jointTranslation { -0.001133 0.004157 0.000104 }
+      jointRotation { 0.026774 -0.653454 -0.756490 0.002096 }
+    }
+    joint 32 {
+      jointTranslation { -0.000117 0.004262 -0.000164 }
+      jointRotation { 0.886270 -0.013077 -0.004022 -0.462968 }
+    }
+    joint 33 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { 0.044751 0.755618 0.653445 0.007006 }
+    }
+    joint 34 {
+      jointTranslation { -0.000870 -0.004220 -0.000105 }
+      jointRotation { 0.023843 0.653560 0.756499 -0.000726 }
+    }
+    joint 35 {
+      jointTranslation { -0.000151 -0.004261 0.000163 }
+      jointRotation { 0.886213 0.016960 0.005222 -0.462939 }
+    }
+  }
+  keyframe 3 {
+    frameNumber 25.0
+    jointsModified 36
+    joint 0 {
+      jointTranslation { -0.000004 0.998673 0.124570 }
+      jointRotation { 0.000141 -0.789264 0.613988 0.008971 }
+    }
+    joint 1 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.744906 0.000000 -0.000001 0.667170 }
+    }
+    joint 2 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.000000 0.772324 -0.635228 -0.000000 }
+    }
+    joint 3 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.000001 0.712506 -0.701666 -0.000001 }
+    }
+    joint 4 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.661756 0.000000 -0.000001 0.749719 }
+    }
+    joint 5 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.750404 0.000000 -0.000001 0.660979 }
+    }
+    joint 6 {
+      jointTranslation { -0.000000 -0.000001 0.000000 }
+      jointRotation { 0.148453 -0.557872 -0.760661 0.296877 }
+    }
+    joint 7 {
+      jointTranslation { 0.008065 -0.020779 0.014671 }
+      jointRotation { -0.721098 -0.551382 0.078246 0.412158 }
+    }
+    joint 8 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.727348 -0.662400 0.170349 0.056322 }
+    }
+    joint 9 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.751602 -0.638835 0.068515 0.149300 }
+    }
+    joint 10 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.718581 -0.584348 0.057134 0.372714 }
+    }
+    joint 11 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.750612 -0.582712 0.165611 0.263824 }
+    }
+    joint 12 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.017860 -0.953857 -0.233547 0.187869 }
+    }
+    joint 13 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.017631 -0.966735 -0.229027 0.112514 }
+    }
+    joint 14 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.122328 0.910589 -0.358737 -0.164837 }
+    }
+    joint 15 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.704799 -0.559131 0.009656 0.436507 }
+    }
+    joint 16 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.725607 -0.558282 -0.048506 0.399328 }
+    }
+    joint 17 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.759353 -0.519587 -0.127361 0.370394 }
+    }
+    joint 18 {
+      jointTranslation { -0.000000 0.000001 -0.000000 }
+      jointRotation { 0.321792 0.589723 0.718012 0.182037 }
+    }
+    joint 19 {
+      jointTranslation { 0.011558 0.013538 -0.019879 }
+      jointRotation { -0.622289 0.767225 0.060746 0.142945 }
+    }
+    joint 20 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.584680 0.783706 0.114179 0.175838 }
+    }
+    joint 21 {
+      jointTranslation { 0.059094 0.034361 -0.023785 }
+      jointRotation { -0.609934 0.570799 0.549260 -0.022004 }
+    }
+    joint 22 {
+      jointTranslation { 0.055576 -0.000676 -0.017874 }
+      jointRotation { -0.410584 0.104614 0.874120 -0.237473 }
+    }
+    joint 23 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.664108 0.747200 0.013508 -0.021698 }
+    }
+    joint 24 {
+      jointTranslation { -0.059094 -0.034361 0.023785 }
+      jointRotation { 0.019869 0.855674 0.217173 -0.469323 }
+    }
+    joint 25 {
+      jointTranslation { -0.055576 0.000676 0.017874 }
+      jointRotation { -0.275432 0.447353 0.235311 -0.817706 }
+    }
+    joint 26 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.143406 -0.854765 0.455709 0.202833 }
+    }
+    joint 27 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.352276 0.885753 0.110016 -0.281499 }
+    }
+    joint 28 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.313393 0.935291 0.123732 -0.108204 }
+    }
+    joint 29 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.194971 0.946825 -0.128489 0.221360 }
+    }
+    joint 30 {
+      jointTranslation { -0.000000 -0.000000 -0.000000 }
+      jointRotation { 0.033295 -0.654823 -0.755024 -0.006051 }
+    }
+    joint 31 {
+      jointTranslation { -0.001113 0.004018 0.001094 }
+      jointRotation { 0.026411 -0.436445 -0.899331 -0.004875 }
+    }
+    joint 32 {
+      jointTranslation { -0.000098 0.003596 -0.002293 }
+      jointRotation { 0.888081 -0.013093 -0.003971 -0.459485 }
+    }
+    joint 33 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { 0.043845 0.816217 0.575967 0.011373 }
+    }
+    joint 34 {
+      jointTranslation { -0.000829 -0.003883 -0.001676 }
+      jointRotation { 0.023683 0.583164 0.812004 -0.002859 }
+    }
+    joint 35 {
+      jointTranslation { -0.000142 -0.004003 0.001472 }
+      jointRotation { 0.915306 0.017270 0.004068 -0.402370 }
+    }
+  }
+  keyframe 4 {
+    frameNumber 45.0
+    jointsModified 36
+    joint 0 {
+      jointTranslation { -0.000004 0.998673 0.124570 }
+      jointRotation { 0.000141 -0.789264 0.613988 0.008971 }
+    }
+    joint 1 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.744906 0.000000 -0.000001 0.667170 }
+    }
+    joint 2 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.000000 0.753838 -0.657061 -0.000000 }
+    }
+    joint 3 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.000001 0.757951 -0.652311 -0.000001 }
+    }
+    joint 4 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.786476 0.000000 -0.000001 0.617621 }
+    }
+    joint 5 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.836793 -0.000000 -0.000001 0.547519 }
+    }
+    joint 6 {
+      jointTranslation { -0.000000 -0.000000 -0.000000 }
+      jointRotation { 0.167667 -0.352880 -0.920242 0.022770 }
+    }
+    joint 7 {
+      jointTranslation { 0.016979 -0.019113 -0.007645 }
+      jointRotation { -0.330175 -0.368245 -0.517348 0.698378 }
+    }
+    joint 8 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.612732 -0.447380 -0.465028 0.456246 }
+    }
+    joint 9 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.544850 -0.372671 -0.540238 0.521917 }
+    }
+    joint 10 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.357909 -0.370486 -0.546663 0.660153 }
+    }
+    joint 11 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.471841 -0.419357 -0.456088 0.627288 }
+    }
+    joint 12 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.003142 -0.531945 -0.842612 -0.083844 }
+    }
+    joint 13 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.051500 -0.531372 -0.834421 -0.136868 }
+    }
+    joint 14 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { 0.030732 0.921296 0.383792 0.054532 }
+    }
+    joint 15 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.292428 -0.333869 -0.571644 0.690103 }
+    }
+    joint 16 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.322307 -0.283649 -0.607699 0.668105 }
+    }
+    joint 17 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.345068 -0.192247 -0.635870 0.663052 }
+    }
+    joint 18 {
+      jointTranslation { -0.000000 0.000000 -0.000000 }
+      jointRotation { 0.151820 0.353685 0.922713 0.021399 }
+    }
+    joint 19 {
+      jointTranslation { 0.017586 0.018555 0.007645 }
+      jointRotation { -0.340233 0.355749 0.517475 0.699932 }
+    }
+    joint 20 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.303032 0.321765 0.572250 0.690774 }
+    }
+    joint 21 {
+      jointTranslation { 0.059094 0.034361 -0.023785 }
+      jointRotation { -0.534678 -0.106328 0.659283 0.517843 }
+    }
+    joint 22 {
+      jointTranslation { 0.055576 -0.000676 -0.017874 }
+      jointRotation { -0.602993 -0.587223 0.525575 0.123858 }
+    }
+    joint 23 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.481360 0.406874 0.453668 0.630026 }
+    }
+    joint 24 {
+      jointTranslation { -0.059094 -0.034361 0.023785 }
+      jointRotation { -0.446519 0.449809 0.756418 -0.161632 }
+    }
+    joint 25 {
+      jointTranslation { -0.055576 0.000676 0.017874 }
+      jointRotation { -0.868368 0.227778 0.376971 -0.227918 }
+    }
+    joint 26 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.042833 -0.921746 -0.382910 0.043932 }
+    }
+    joint 27 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.514967 0.488858 0.657906 0.250972 }
+    }
+    joint 28 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.364959 0.479664 0.723631 0.336285 }
+    }
+    joint 29 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { 0.005036 0.626564 0.622338 0.469136 }
+    }
+    joint 30 {
+      jointTranslation { -0.000000 -0.000000 -0.000000 }
+      jointRotation { 0.033818 -0.756151 -0.653522 -0.001223 }
+    }
+    joint 31 {
+      jointTranslation { -0.001133 0.004157 0.000104 }
+      jointRotation { 0.026774 -0.653454 -0.756490 0.002096 }
+    }
+    joint 32 {
+      jointTranslation { -0.000117 0.004262 -0.000164 }
+      jointRotation { 0.886270 -0.013077 -0.004022 -0.462968 }
+    }
+    joint 33 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { 0.044751 0.755618 0.653445 0.007006 }
+    }
+    joint 34 {
+      jointTranslation { -0.000870 -0.004220 -0.000105 }
+      jointRotation { 0.023843 0.653560 0.756499 -0.000726 }
+    }
+    joint 35 {
+      jointTranslation { -0.000151 -0.004261 0.000163 }
+      jointRotation { 0.886213 0.016960 0.005222 -0.462939 }
+    }
+  }
+  keyframe 5 {
+    frameNumber 48.0
+    jointsModified 36
+    joint 0 {
+      jointTranslation { 0.000003 -1.154362 -0.627690 }
+      jointRotation { 0.000141 -0.789264 0.613988 0.008971 }
+    }
+    joint 1 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.843441 -0.000000 -0.000001 0.537222 }
+    }
+    joint 2 {
+      jointTranslation { 0.000000 0.000000 -0.000000 }
+      jointRotation { 0.000000 0.759261 -0.650787 -0.000000 }
+    }
+    joint 3 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.000001 0.763335 -0.646003 -0.000001 }
+    }
+    joint 4 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.791571 0.000000 -0.000001 0.611078 }
+    }
+    joint 5 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.864977 -0.000000 -0.000001 0.501811 }
+    }
+    joint 6 {
+      jointTranslation { 0.000000 -0.000000 0.000000 }
+      jointRotation { 0.155557 -0.585109 -0.793106 0.066581 }
+    }
+    joint 7 {
+      jointTranslation { 0.012839 -0.014452 0.005697 }
+      jointRotation { -0.661678 -0.593124 -0.226841 0.398661 }
+    }
+    joint 8 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.762859 -0.630042 -0.139452 0.040570 }
+    }
+    joint 9 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.742706 -0.609486 -0.243450 0.132844 }
+    }
+    joint 10 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.663602 -0.611224 -0.250009 0.351474 }
+    }
+    joint 11 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.740267 -0.601758 -0.147527 0.261014 }
+    }
+    joint 12 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.049049 -0.909558 -0.407019 -0.068072 }
+    }
+    joint 13 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.032915 -0.904545 -0.400516 -0.142483 }
+    }
+    joint 14 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.004610 0.979662 -0.190639 0.062425 }
+    }
+    joint 15 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.625665 -0.594569 -0.291088 0.412674 }
+    }
+    joint 16 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.638361 -0.572720 -0.348921 0.377811 }
+    }
+    joint 17 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.654516 -0.512215 -0.422996 0.360999 }
+    }
+    joint 18 {
+      jointTranslation { -0.000000 0.000000 -0.000000 }
+      jointRotation { 0.140646 0.586543 0.795274 0.061040 }
+    }
+    joint 19 {
+      jointTranslation { 0.013298 0.014031 -0.005697 }
+      jointRotation { -0.670914 0.582789 0.233868 0.394383 }
+    }
+    joint 20 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.634866 0.584827 0.298297 0.407359 }
+    }
+    joint 21 {
+      jointTranslation { 0.059094 0.034361 -0.023785 }
+      jointRotation { -0.731979 0.276571 0.607840 0.135084 }
+    }
+    joint 22 {
+      jointTranslation { 0.055576 -0.000676 -0.017874 }
+      jointRotation { -0.570676 -0.197896 0.762823 -0.230801 }
+    }
+    joint 23 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.749710 0.590023 0.152426 0.258021 }
+    }
+    joint 24 {
+      jointTranslation { -0.059094 -0.034361 0.023785 }
+      jointRotation { -0.282286 0.793433 0.380735 -0.381863 }
+    }
+    joint 25 {
+      jointTranslation { -0.055576 0.000676 0.017874 }
+      jointRotation { -0.596832 0.398423 0.187746 -0.670673 }
+    }
+    joint 26 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.011337 -0.979549 0.191623 0.060301 }
+    }
+    joint 27 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.567776 0.771393 0.277084 -0.076212 }
+    }
+    joint 28 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.490116 0.800135 0.336901 0.077897 }
+    }
+    joint 29 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.255610 0.866358 0.171208 0.393416 }
+    }
+    joint 30 {
+      jointTranslation { -0.000000 -0.000000 -0.000000 }
+      jointRotation { 0.033583 -0.850285 -0.525234 0.004160 }
+    }
+    joint 31 {
+      jointTranslation { -0.000614 0.002201 0.001502 }
+      jointRotation { 0.025707 -0.333971 -0.942201 -0.007776 }
+    }
+    joint 32 {
+      jointTranslation { -0.000011 0.000411 -0.001746 }
+      jointRotation { 0.993919 -0.013645 0.001004 -0.109264 }
+    }
+    joint 33 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { 0.043072 0.849746 0.525243 0.014019 }
+    }
+    joint 34 {
+      jointTranslation { -0.000470 -0.002231 -0.001510 }
+      jointRotation { 0.021953 0.334066 0.942248 -0.009338 }
+    }
+    joint 35 {
+      jointTranslation { -0.000015 -0.000412 0.001746 }
+      jointRotation { 0.993855 0.017694 -0.001310 -0.109258 }
+    }
+  }
+  keyframe 6 {
+    frameNumber 52.0
+    jointsModified 36
+    joint 0 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.000972 -0.707106 0.707051 0.008919 }
+    }
+    joint 1 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.770377 -0.000000 0.000000 0.637589 }
+    }
+    joint 2 {
+      jointTranslation { 0.000000 0.000000 -0.000000 }
+      jointRotation { 0.000000 0.672774 -0.739848 0.000001 }
+    }
+    joint 3 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.000000 0.677409 -0.735606 -0.000000 }
+    }
+    joint 4 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.709755 0.000000 0.000000 0.704449 }
+    }
+    joint 5 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.717934 0.000000 0.000000 0.696111 }
+    }
+    joint 6 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.130050 -0.787319 -0.592873 0.108250 }
+    }
+    joint 7 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.649367 -0.586021 -0.244607 0.418413 }
+    }
+    joint 8 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.761290 -0.625555 -0.158370 0.063533 }
+    }
+    joint 9 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.738366 -0.601875 -0.261701 0.155159 }
+    }
+    joint 10 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.652711 -0.603415 -0.268310 0.371306 }
+    }
+    joint 11 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.732067 -0.597040 -0.165589 0.283197 }
+    }
+    joint 12 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.046976 -0.896883 -0.434236 -0.069519 }
+    }
+    joint 13 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.028608 -0.892068 -0.427585 -0.143410 }
+    }
+    joint 14 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.002728 0.984961 -0.161039 0.062536 }
+    }
+    joint 15 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.612948 -0.585530 -0.308868 0.431336 }
+    }
+    joint 16 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.626689 -0.561949 -0.366017 0.396871 }
+    }
+    joint 17 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.643343 -0.499239 -0.438235 0.380553 }
+    }
+    joint 18 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.117343 0.789313 0.594540 0.098680 }
+    }
+    joint 19 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.658728 0.575478 0.251319 0.414416 }
+    }
+    joint 20 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.622306 0.575574 0.315780 0.426301 }
+    }
+    joint 21 {
+      jointTranslation { 0.059094 0.034361 -0.023785 }
+      jointRotation { -0.727577 0.258132 0.615895 0.157074 }
+    }
+    joint 22 {
+      jointTranslation { 0.055576 -0.000676 -0.017874 }
+      jointRotation { -0.577370 -0.220788 0.756514 -0.213505 }
+    }
+    joint 23 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.741596 0.585162 0.170132 0.280490 }
+    }
+    joint 24 {
+      jointTranslation { -0.059094 -0.034361 0.023785 }
+      jointRotation { -0.293662 0.781603 0.404466 -0.373185 }
+    }
+    joint 25 {
+      jointTranslation { -0.055576 0.000676 0.017874 }
+      jointRotation { -0.616766 0.392587 0.199663 -0.652388 }
+    }
+    joint 26 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.013149 -0.984877 0.162026 0.059932 }
+    }
+    joint 27 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { -0.569815 0.762694 0.300198 -0.059072 }
+    }
+    joint 28 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.487547 0.789622 0.360853 0.092628 }
+    }
+    joint 29 {
+      jointTranslation { -0.000000 0.000000 0.000000 }
+      jointRotation { -0.243643 0.860806 0.197230 0.400938 }
+    }
+    joint 30 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.033841 -0.777817 -0.627579 -0.000079 }
+    }
+    joint 31 {
+      jointTranslation { 0.000000 -0.000000 0.000000 }
+      jointRotation { 0.026649 -0.687829 -0.725375 0.003335 }
+    }
+    joint 32 {
+      jointTranslation { 0.000000 -0.000000 0.000000 }
+      jointRotation { 0.995724 -0.013624 0.001250 -0.091356 }
+    }
+    joint 33 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.044488 0.777282 0.627520 0.008515 }
+    }
+    joint 34 {
+      jointTranslation { 0.000000 0.000000 0.000000 }
+      jointRotation { 0.023850 0.687936 0.725380 0.000380 }
+    }
+    joint 35 {
+      jointTranslation { 0.000000 -0.000000 0.000000 }
+      jointRotation { 0.995661 0.017670 -0.001620 -0.091352 }
+    }
+  }
+}

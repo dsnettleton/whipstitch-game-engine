@@ -228,6 +228,16 @@ void wsGameLoop::handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action) {
             wsRenderer.nextRenderMode();
           }
           break;
+        case WS_KEY_Z:
+          if (action == WS_PRESS) {
+            if (wsRenderer.isEnabled(WS_DRAW_ANTIALIAS)) {
+              wsRenderer.disable(WS_DRAW_ANTIALIAS);
+            }
+            else {
+              wsRenderer.enable(WS_DRAW_ANTIALIAS);
+            }
+          }
+          break;
         case WS_KEY_LEFT:
           cam->orbit(vec4(0.0f, 9.0f, 0.0f), Y_AXIS, -3.0f);
           break;

@@ -45,23 +45,27 @@ wsRenderSystem wsRenderer;
 #endif
 
 //  Indices for framebuffer object array
-#define WS_NUM_FRAMEBUFFERS   2
+#define WS_NUM_FRAMEBUFFERS   3
 #define WS_FBO_PRIMARY        0
-#define WS_FBO_POST           1
+#define WS_FBO_POST_A         1
+#define WS_FBO_POST_B         2
 
-#define WS_NUM_SHADERS        4
+#define WS_NUM_SHADERS        6
 #define WS_SHADER_INITIAL     0
 #define WS_SHADER_FINAL       1
 #define WS_SHADER_POST        2
 #define WS_SHADER_HUD         3
+#define WS_SHADER_OUTLINE     4
+#define WS_SHADER_ANTIALIAS   5
 
-#define WS_NUM_FBO_TEX        6
+#define WS_NUM_FBO_TEX        7
 #define WS_FBO_TEX_POS        0
 #define WS_FBO_TEX_NORM       1
 #define WS_FBO_TEX_TEXTURE    2
 #define WS_FBO_TEX_MAT        3
 #define WS_FBO_TEX_DEPTH      4
-#define WS_FBO_TEX_FINAL      5
+#define WS_FBO_TEX_FINAL_A    5
+#define WS_FBO_TEX_FINAL_B    6
 
 wsMeshContainer::wsMeshContainer(const wsMesh* my) {
   mesh = my;
@@ -85,7 +89,7 @@ wsMeshContainer::~wsMeshContainer() {
 
 void wsRenderSystem::startUp() {
   _mInitialized = true;
-  drawFeatures = WS_DRAW_LIGHTING | WS_DRAW_DEPTH | WS_DRAW_CULL_FACE | WS_DRAW_CEL | WS_DRAW_OUTLINE | WS_DRAW_CURSOR;
+  drawFeatures = WS_DRAW_LIGHTING | WS_DRAW_DEPTH | WS_DRAW_CULL_FACE | WS_DRAW_CEL | WS_DRAW_CURSOR | WS_DRAW_OUTLINE | WS_DRAW_ANTIALIAS;
   #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
     GLenum glewStatus = glewInit();
     if (glewStatus != GLEW_OK) {
@@ -115,7 +119,8 @@ void wsRenderSystem::startUp() {
     wsAssert(versionMajor >= 3, "The Whipstitch Engine only supports OpenGL versions 3.0 and up.");
 
   #endif
-  renderMode = WS_FBO_TEX_FINAL;
+  currentPostBuffer = renderMode = WS_FBO_TEX_FINAL_A;
+  currentFBO = WS_FBO_POST_A;
   frameBufferObjects = NULL;
   frameBufferTextures = NULL;
   shaderWidth = 0;
@@ -189,16 +194,27 @@ void wsRenderSystem::initializeShaders(u32 width, u32 height) {
     glBindTexture(GL_TEXTURE_2D, 0);
     wsAssert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Problem configuring WS_FBO_PRIMARY.");
 
-    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObjects[WS_FBO_POST]);
-      glBindTexture(GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_FINAL]);
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObjects[WS_FBO_POST_A]);
+      glBindTexture(GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_FINAL_A]);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, shaderWidth, shaderHeight, 0, GL_RGBA, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_FINAL], 0);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_FINAL_A], 0);
     glBindTexture(GL_TEXTURE_2D, 0);
-    wsAssert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Problem configuring WS_FBO_POST.");
+    wsAssert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Problem configuring WS_FBO_POST_A.");
+
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObjects[WS_FBO_POST_B]);
+      glBindTexture(GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_FINAL_B]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, shaderWidth, shaderHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_FINAL_B], 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    wsAssert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Problem configuring WS_FBO_POST_B.");
 
     //  Create shader objects
     shaders = wsNewArray(wsShader*, WS_NUM_SHADERS);
@@ -206,15 +222,22 @@ void wsRenderSystem::initializeShaders(u32 width, u32 height) {
     shaders[WS_SHADER_FINAL] = wsNew(wsShader, wsShader("shaderFiles/wsFullscreen.vsh", "shaderFiles/wsFinal.fsh"));
     shaders[WS_SHADER_POST] = wsNew(wsShader, wsShader("shaderFiles/wsFullscreen.vsh", "shaderFiles/wsPost.fsh"));
     shaders[WS_SHADER_HUD] = wsNew(wsShader, wsShader("shaderFiles/wsHud.vsh", "shaderFiles/wsHud.fsh"));
-    // //  Set uniform variables
+    shaders[WS_SHADER_OUTLINE] = wsNew(wsShader, wsShader("shaderFiles/wsFullscreen.vsh", "shaderFiles/wsOutline.fsh"));
+    shaders[WS_SHADER_ANTIALIAS] = wsNew(wsShader, wsShader("shaderFiles/wsFullscreen.vsh", "shaderFiles/wsAntialiasing.fsh"));
+    //  Set uniform variables
     shaders[WS_SHADER_INITIAL]->setUniformInt("colorMap", 0);
     shaders[WS_SHADER_FINAL]->setUniformInt("finalTexture", 0);
-    shaders[WS_SHADER_POST]->setUniform("zNear", 0.01f);
-    shaders[WS_SHADER_POST]->setUniform("zFar", 100.0f);
     shaders[WS_SHADER_POST]->setUniformInt("colorMap", 0);
-    shaders[WS_SHADER_POST]->setUniformInt("depthMap", 1);
-    shaders[WS_SHADER_POST]->setUniformInt("materialMap", 2);
+    shaders[WS_SHADER_POST]->setUniformInt("materialMap", 1);
     shaders[WS_SHADER_HUD]->setUniformInt("colorMap", 0);
+    shaders[WS_SHADER_OUTLINE]->setUniformVec3("outlineColor", 0.0f, 0.0f, 0.0f);
+    shaders[WS_SHADER_OUTLINE]->setUniform("zNear", 0.01f);
+    shaders[WS_SHADER_OUTLINE]->setUniform("zFar", 100.0f);
+    shaders[WS_SHADER_OUTLINE]->setUniformInt("colorMap", 0);
+    shaders[WS_SHADER_OUTLINE]->setUniformInt("depthMap", 1);
+    shaders[WS_SHADER_ANTIALIAS]->setUniformInt("colorMap", 0);
+    shaders[WS_SHADER_ANTIALIAS]->setUniform("screenWidth", shaderWidth);
+    shaders[WS_SHADER_ANTIALIAS]->setUniform("screenHeight", shaderHeight);
 
     shaderBuffers = wsNewArray(u32, 4);
     shaderBuffers[0] = GL_COLOR_ATTACHMENT0;
@@ -587,32 +610,67 @@ void wsRenderSystem::drawPanels() {
 }
 
 void wsRenderSystem::drawPost() { //  Post-processing effects
-  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferObjects[WS_FBO_POST]);
-  glPushAttrib(GL_VIEWPORT_BIT | GL_ENABLE_BIT); // Push our glEnable and glViewport states
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferObjects[currentFBO]);
+  // glPushAttrib(GL_VIEWPORT_BIT | GL_ENABLE_BIT); // Push our glEnable and glViewport states
   glViewport(0, 0, shaderWidth, shaderHeight);
   glDrawBuffers(1, shaderBuffers);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_TEXTURE]);
   glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_DEPTH]);
-  glActiveTexture(GL_TEXTURE2);
   glBindTexture(GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_MAT]);
 
-  clearScreen();
-  glLoadIdentity();
+  // clearScreen();
+  // glLoadIdentity();
 
   shaders[WS_SHADER_POST]->use();
-  shaders[WS_SHADER_POST]->setUniformInt("drawOutline", (drawFeatures & WS_DRAW_OUTLINE) ? 1 : 0);
-
   glBegin(GL_QUADS);
     glVertex2f(0.0f, 0.0f);
     glVertex2f(1.0f, 0.0f);
     glVertex2f(1.0f, 1.0f);
     glVertex2f(0.0f, 1.0f);
   glEnd();
+  // glPopAttrib();
+  if (drawFeatures & WS_DRAW_OUTLINE) {
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, frameBufferTextures[currentPostBuffer]);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_DEPTH]);
+    swapPostBuffer();
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferObjects[currentFBO]);
+    // glPushAttrib(GL_VIEWPORT_BIT | GL_ENABLE_BIT); // Push our glEnable and glViewport states
+    glDrawBuffers(1, shaderBuffers);
+    // clearScreen();
+    // glLoadIdentity();
+    shaders[WS_SHADER_OUTLINE]->use();
+    glBegin(GL_QUADS);
+      glVertex2f(0.0f, 0.0f);
+      glVertex2f(1.0f, 0.0f);
+      glVertex2f(1.0f, 1.0f);
+      glVertex2f(0.0f, 1.0f);
+    glEnd();
+    // glPopAttrib();
+  }
 
-  glPopAttrib();
+  if (drawFeatures & WS_DRAW_ANTIALIAS) {
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, frameBufferTextures[currentPostBuffer]);
+    swapPostBuffer();
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferObjects[currentFBO]);
+    // glPushAttrib(GL_VIEWPORT_BIT | GL_ENABLE_BIT); // Push our glEnable and glViewport states
+    glDrawBuffers(1, shaderBuffers);
+    // clearScreen();
+    // glLoadIdentity();
+    shaders[WS_SHADER_ANTIALIAS]->use();
+    glBegin(GL_QUADS);
+      glVertex2f(0.0f, 0.0f);
+      glVertex2f(1.0f, 0.0f);
+      glVertex2f(1.0f, 1.0f);
+      glVertex2f(0.0f, 1.0f);
+    glEnd();
+    // glPopAttrib();
+  }
+
   glBindTexture(GL_TEXTURE_2D, 0);
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, 0);
@@ -675,11 +733,9 @@ void wsRenderSystem::drawScene() {
 
   drawPost();
 
-  //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   clearScreen();
   glViewport(0, 0, shaderWidth, shaderHeight);
   glBindTexture(GL_TEXTURE_2D, frameBufferTextures[renderMode]);
-  //glBindTexture(GL_TEXTURE_2D, models->retrieve(wsHash("Griswald"))->getMesh()->getMats()[0].colorMap);
 
   shaders[WS_SHADER_FINAL]->use();
 
@@ -754,6 +810,7 @@ void wsRenderSystem::modelviewMatrix() {
 }
 
 void wsRenderSystem::nextRenderMode() {
+  if (renderMode == WS_FBO_TEX_FINAL_A) { ++renderMode; }
   renderMode = (renderMode + 1) % WS_NUM_FBO_TEX;
   if (renderMode == WS_FBO_TEX_DEPTH) { ++renderMode; }
 }
@@ -825,6 +882,20 @@ void wsRenderSystem::setScale(const char* modelName, const f32 scale) {
 void wsRenderSystem::swapBuffers() {
   wsAssert(_mInitialized, "Must initialize the rendering system first.");
   wsScreens.swapBuffers();
+}
+
+void wsRenderSystem::swapPostBuffer() {
+  if (currentPostBuffer == WS_FBO_TEX_FINAL_A) {
+    currentPostBuffer = WS_FBO_TEX_FINAL_B;
+    currentFBO = WS_FBO_POST_B;
+  }
+  else {
+    currentPostBuffer = WS_FBO_TEX_FINAL_A;
+    currentFBO = WS_FBO_POST_A;
+  }
+  if (renderMode == WS_FBO_TEX_FINAL_A || renderMode == WS_FBO_TEX_FINAL_B) {
+    renderMode = currentPostBuffer;
+  }
 }
 
 void wsRenderSystem::updateAnimation(const char* modelName, t32 increment) {

@@ -54,6 +54,7 @@
 #define WS_DRAW_TEXTURES  0x00000040
 #define WS_DRAW_OUTLINE   0x00000080
 #define WS_DRAW_CURSOR    0x00000100  //  If enabled, default system cursor is shown
+#define WS_DRAW_ANTIALIAS 0x00000200
 
 struct wsMeshContainer {
   const wsMesh* mesh;
@@ -85,6 +86,8 @@ class wsRenderSystem {
     wsHashMap<wsModel*>* models;
     wsHashMap<wsMeshContainer*>* meshes;
     wsOrderedHashMap<wsPanel*>* panels;
+    u32 currentPostBuffer;
+    u32 currentFBO;
     //  True only when the startUp function has been called
     bool _mInitialized;
     //  Private Methods
@@ -140,6 +143,7 @@ class wsRenderSystem {
     void setRotation(const char* modelName, const quat& rot);
     void setScale(const char* modelName, const f32 scale);
     void swapBuffers();
+    void swapPostBuffer();
     void updateAnimation(const char* modelName, t32 increment);
     void updateAnimations(t32 increment);
     //  Uninitializes the renderer

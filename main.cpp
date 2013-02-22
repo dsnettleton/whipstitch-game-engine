@@ -31,25 +31,25 @@ int main(int argc, char** argv) {
     wsActiveLogs = (WS_LOG_PROFILING | WS_LOG_MAIN | WS_LOG_UTIL | WS_LOG_ERROR);
   #else
     //wsActiveLogs = (WS_LOG_MAIN | WS_LOG_MEMORY | WS_LOG_ERROR);
-    wsActiveLogs = (WS_LOG_DEBUG | WS_LOG_ERROR | WS_LOG_UTIL);
+    wsActiveLogs = (WS_LOG_DEBUG | WS_LOG_ERROR | WS_LOG_UTIL | WS_LOG_SHADER);
     //wsActiveLogs = WS_LOG_ALL;
     //sActiveLogs = WS_LOG_MAIN;
   #endif
   wsInit("Whipstitch Game Engine", 1280, 720, false, 512*wsMB, 32*wsMB);  //  512MB, 32MB
   wsRenderer.setClearColor(0.4f, 0.6f, 0.4f, 1.0f);
-  wsMesh* griswald = wsNew(wsMesh, wsMesh("/home/dsnettleton/Documents/Programming/LoreArcana/models/Griswald.wsMesh"));
-  wsMesh* bladeWand = wsNew(wsMesh, wsMesh("/home/dsnettleton/Documents/Programming/LoreArcana/models/bladeWand.wsMesh"));
+  wsMesh* griswald = wsNew(wsMesh, wsMesh("models/Griswald.wsMesh"));
+  wsMesh* bladeWand = wsNew(wsMesh, wsMesh("models/bladeWand.wsMesh"));
   wsModel* Griswald = wsNew(wsModel, wsModel("Griswald", griswald, 7));
   wsModel* BladeWand = wsNew(wsModel, wsModel("BladeWand", bladeWand, 0));
-  wsSound* Click = wsNew(wsSound, wsSound("/home/dsnettleton/Documents/Programming/LoreArcana/sounds/btnClick.wav"));
-  wsMusic* Resistors = wsNew(wsMusic, wsMusic("/home/dsnettleton/Documents/Programming/LoreArcana/sounds/music/07. We're the Resistors.ogg"));
+  wsSound* Click = wsNew(wsSound, wsSound("sounds/btnClick.wav"));
+  wsMusic* Resistors = wsNew(wsMusic, wsMusic("sounds/music/07. We're the Resistors.ogg"));
   wsSounds.addSound("Click", Click);
   wsSounds.addMusic("Resistors", Resistors);
   wsRenderer.addModel(Griswald);
   wsRenderer.addModel(BladeWand);
-  wsAnimation* anim_walk = wsNew(wsAnimation, wsAnimation("/home/dsnettleton/Documents/Programming/LoreArcana/models/Walk.wsAnim"));
-  wsAnimation* anim_idle = wsNew(wsAnimation, wsAnimation("/home/dsnettleton/Documents/Programming/LoreArcana/models/Idle.wsAnim"));
-  wsAnimation* anim_jump = wsNew(wsAnimation, wsAnimation("/home/dsnettleton/Documents/Programming/LoreArcana/models/Jump.wsAnim"));
+  wsAnimation* anim_walk = wsNew(wsAnimation, wsAnimation("models/Walk.wsAnim"));
+  wsAnimation* anim_idle = wsNew(wsAnimation, wsAnimation("models/Idle.wsAnim"));
+  wsAnimation* anim_jump = wsNew(wsAnimation, wsAnimation("models/Jump.wsAnim"));
   wsRenderer.addAnimation(anim_walk, "Griswald");
   wsRenderer.addAnimation(anim_idle, "Griswald");
   wsRenderer.addAnimation(anim_jump, "Griswald");
