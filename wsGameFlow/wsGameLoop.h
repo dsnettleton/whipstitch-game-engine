@@ -73,6 +73,7 @@ class wsGameLoop {
         void beginLoop();
         void continueLoop();
         void drawGameState();
+        void handleButtonEvents(u32 btnHash, u32 action);
         void handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 action, f32 analogVal);
         void handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action);
         void handleMouseButtonEvents(u64 action, u64 btnIndex);

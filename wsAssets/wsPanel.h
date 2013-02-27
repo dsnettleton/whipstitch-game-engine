@@ -55,6 +55,7 @@ class wsPanel : public wsPanelElement {
     u32 getNumElements() { return elements->getLength(); }
     //  Operational Methods
     void addElement(wsPanelElement* myElement);
+    void checkMouse(f32 mouseX, f32 mouseY, bool buttonDown);
     void draw();
 };
 

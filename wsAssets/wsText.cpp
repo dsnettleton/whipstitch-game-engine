@@ -35,6 +35,7 @@
 
 wsText::wsText(vec4 myRectangle, const char* myText, wsFont* myFont, u32 myLayer, u32 myProperties) :
     wsPanelElement(myRectangle, myLayer, WS_NULL, myProperties), color(1.0f, 1.0f, 1.0f, 1.0f), font(myFont) {
+  type = WS_ELEMENT_TEXT;
   length = strlen(myText);
   text = wsNewArray(char, length+1);//  Add 1 for null-terminating character (\0)
   strcpy(text, myText);

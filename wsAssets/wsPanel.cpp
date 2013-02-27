@@ -32,12 +32,14 @@
 */
 
 #include "wsPanel.h"
-
+#include "wsButton.h"
 #include "../wsGraphics/wsRenderSystem.h"
+#include "../wsGameFlow/wsEventManager.h"
 
 /*  Constructor */
 wsPanel::wsPanel(vec4 myRectangle, u32 myLayer, const char* myColorMap, u32 myProperties) :
                 wsPanelElement(myRectangle, myLayer, myColorMap, myProperties) {
+  type = WS_ELEMENT_PANEL;
   elements = wsNew(wsOrderedHashMap<wsPanelElement*>, wsOrderedHashMap<wsPanelElement*>(WS_MAX_PANEL_ELEMENTS));
 }
 
@@ -47,10 +49,72 @@ void wsPanel::addElement(wsPanelElement* myElement) {
   elements->insert(elements->getLength(), myElement, myElement->getLayer());
 }
 
+void wsPanel::checkMouse(f32 mouseX, f32 mouseY, bool buttonDown) {
+  if ( (properties & WS_HUD_VISIBLE) && !(properties & WS_HUD_PASSABLE)) {
+    f32 relX = mouseX - rectangle.rectX;
+    f32 relY = WS_HUD_HEIGHT - mouseY - rectangle.rectY;
+    if (relX >= 0 && relY >= 0 && relX <= rectangle.rectW && relY <= rectangle.rectH) {
+      // wsLog("Checking Mouse: %f, %f, %u\n", relX, relY, (buttonDown)?1:0);
+      //  Check buttons and other inputs
+      for (wsOrderedHashMap<wsPanelElement*>::iterator it = elements->begin(); it.get() != WS_NULL; ++it) {
+        // wsLog("Ping");
+        if (it.get()->getType() == WS_ELEMENT_BUTTON) {
+          wsButton* my = (wsButton*)it.get();
+          switch (my->getState()) {
+            case WS_BUTTON_STATE_ACTIVE:
+              if (relX >= my->getX() && relY >= my->getY() && relX <= my->getX() + my->getWidth() &&
+                  relY <= my->getY() + my->getHeight()) {
+                if (buttonDown) {
+                  my->setState(WS_BUTTON_STATE_CLICKED);
+                  // wsEvents.push( wsEvent(WS_EVENT_HUD_BUTTON, WS_PRESS, wsHash(my->getName())) );
+                }
+                else {
+                  my->setState(WS_BUTTON_STATE_HOVER);
+                  wsEvents.push( wsEvent(WS_EVENT_HUD_BUTTON, WS_HOVER, wsHash(my->getName())) );
+                }
+              }
+              break;
+            case WS_BUTTON_STATE_HOVER:
+              if (relX >= my->getX() && relY >= my->getY() && relX <= my->getX() + my->getWidth() &&
+                  relY <= my->getY() + my->getHeight()) {
+                if (buttonDown) {
+                  my->setState(WS_BUTTON_STATE_CLICKED);
+                  wsEvents.push( wsEvent(WS_EVENT_HUD_BUTTON, WS_PRESS, wsHash(my->getName())) );
+                }
+              }
+              else {
+                my->setState(WS_BUTTON_STATE_ACTIVE);
+                wsEvents.push( wsEvent(WS_EVENT_HUD_BUTTON, WS_UNHOVER, wsHash(my->getName())) );
+              }
+              break;
+            case WS_BUTTON_STATE_CLICKED:
+              if (relX >= my->getX() && relY >= my->getY() &&
+                  relX <= my->getX() + my->getWidth() && relY <= my->getY() + my->getHeight()) {
+                if (!buttonDown) {
+                  //  Activate Button Event
+                  my->setState(WS_BUTTON_STATE_HOVER);
+                  wsEvents.push( wsEvent(WS_EVENT_HUD_BUTTON, WS_RELEASE, wsHash(my->getName())) );
+                }
+              }
+              else {
+                my->setState(WS_BUTTON_STATE_ACTIVE);
+              }
+              break;
+            default:
+            case WS_BUTTON_STATE_INACTIVE:
+              wsLog("INACTIVE");
+              break;
+          }
+        }
+      }// End for each panel element
+    }// End if the mouse is within the panel's borders
+  }// End if this panel is available
+}// End checkMouse method
+
 void wsPanel::draw() {
   if (properties & WS_HUD_VISIBLE) {
-    f32 widthRatio = (f32)wsScreenWidth / 1600.0f;
-    f32 heightRatio = (f32)wsScreenHeight / 900.0f;
+    f32 widthRatio = wsScreenWidth / WS_HUD_WIDTH;
+    f32 heightRatio = wsScreenHeight / WS_HUD_HEIGHT;
     #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
       glEnable(GL_SCISSOR_TEST);
       glScissor(rectangle.x*widthRatio, rectangle.y*heightRatio, rectangle.rectW*widthRatio, rectangle.rectH*heightRatio);

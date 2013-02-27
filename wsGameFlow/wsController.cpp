@@ -26,7 +26,9 @@
 */
 
 #include "wsController.h"
-// #include "wsGameLoop.h"
+#if WS_SCREEN_BACKEND == WS_BACKEND_GLFW
+  #include "GL/glfw.h"
+#endif
 
 //  Constructor
 wsController::wsController() {

@@ -30,6 +30,8 @@
 
 #include "wsInputManager.h"
 
+#include "../wsGraphics/wsRenderSystem.h"
+
 wsInputManager wsInputs;
 u64 wsKeyboardMap[GLFW_KEY_LAST+1];
 bool wsSpecialKeys[GLFW_KEY_LAST+1];
@@ -286,6 +288,21 @@ void wsInputManager::pollDevices() {
   for (u32 i = 0; i < numControllers; ++i) {
     controllers[i].poll();
   }
+}
+
+void wsInputManager::setMousePos(i32 posX, i32 posY) {
+  mouse.setPos(posX, posY);
+  wsRenderer.scanHUD();
+}
+
+void wsInputManager::pressMouseButton(u32 btnState) {
+  mouse.pressButton(btnState);
+  wsRenderer.scanHUD();
+}
+
+void wsInputManager::releaseMouseButton(u32 btnState) {
+  mouse.releaseButton(btnState);
+  wsRenderer.scanHUD();
 }
 
 void wsInputManager::swapFrames() {

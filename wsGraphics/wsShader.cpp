@@ -24,12 +24,11 @@
 
 #include "wsShader.h"
 #include "wsRenderSystem.h"
-//*
-// #include <fstream>
-// #include <iostream>
-// #include <sstream>
-// #include <stdlib.h>
+
 #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
+
+  #include "GL/glew.h"
+
   wsShader::wsShader() {
     shaderProgram = glCreateProgram();
     vertShader = 0;

@@ -36,6 +36,14 @@
 
 #include "wsScreen.h"
 
+#if (WS_SCREEN_BACKEND == WS_BACKEND_X11)
+    #include "X11/X.h"
+    #include "X11/Xlib.h"
+    #include "GL/glx.h"
+#elif (WS_SCREEN_BACKEND == WS_BACKEND_GLFW)
+    #include "GL/glfw.h"
+#endif
+
 wsScreen::wsScreen(wsScreenSettings mySettings) {
     settings = mySettings;
     #if (WS_SCREEN_BACKEND == WS_BACKEND_X11)

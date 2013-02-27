@@ -50,14 +50,6 @@
     #define WS_SCREEN_BACKEND   WS_BACKEND_GLFW
 #endif
 
-#if (WS_SCREEN_BACKEND == WS_BACKEND_X11)
-    #include "X11/X.h"
-    #include "X11/Xlib.h"
-    #include "GL/glx.h"
-#elif (WS_SCREEN_BACKEND == WS_BACKEND_GLFW)
-    #include "GL/glfw.h"
-#endif
-
 struct wsScreenSettings {
     public:
         i32 mChannelBits;
@@ -72,8 +64,8 @@ struct wsScreenSettings {
         const char* mTitle;
     wsScreenSettings() {
         mTitle = "Whipstitch Game Engine";
-        mHeight = 720;
-        mWidth = 1280;
+        mHeight = wsScreenHeight;
+        mWidth = wsScreenWidth;
         mChannelBits = 8;   //  times 4 channels = 32 bit color
         mFullscreen = false;
         mDepthBuffer = true;

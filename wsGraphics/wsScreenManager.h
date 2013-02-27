@@ -71,11 +71,7 @@ class wsScreenManager {
                 return mScreens[index]->getDisplay();
             }
         #endif
-        bool closed() {
-            #if (WS_SCREEN_BACKEND == WS_BACKEND_GLFW)
-                return !glfwGetWindowParam(GLFW_OPENED);
-            #endif
-        }
+        bool closed();
         /*  Operational Methods */
         //  Creates a new screen using the given title and dimensions
         i32 create(const char* title, const i32 width, const i32 height, bool fullscreen);

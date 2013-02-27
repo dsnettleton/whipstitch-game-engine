@@ -47,7 +47,7 @@ void wsGameLoop::startUp(f32 framesPerSecond) {
   maxFrameSkips = WS_MAX_FRAME_SKIPS;
   frameDuration = 1.0f / fps;
   cam = wsNew(wsCamera, wsCamera("MainCam", vec4(9.0f, 17.0f, 9.0f), vec4(0.0f, 0.0f, 1.0f), vec4(0.0f, 1.0f, 0.0f),
-    vec4(0.0f, 0.0f, 1280.0f, 720.0f), WS_CAMERA_MODE_PERSP, 60.0f, 1280.0f/720.0f, 0.01f, 100.0f));
+    vec4(0.0f, 0.0f, wsScreenWidth, wsScreenHeight), WS_CAMERA_MODE_PERSP, 60.0f, wsScreenWidth/wsScreenHeight, 0.01f, 100.0f));
   cam->lookAt(vec4(0.0f, 9.0f, 0.0f));
   wsRenderer.addCamera(cam);
 }
@@ -80,6 +80,13 @@ void wsGameLoop::drawGameState() {
   wsRenderer.drawModels();
   wsRenderer.swapBuffers();
   //*/
+}
+
+void wsGameLoop::handleButtonEvents(u32 btnHash, u32 action) {
+  if (btnHash == wsHash("Test Button") && action == WS_RELEASE) {
+    wsSounds.playSound("Click");
+    wsRenderer.nextRenderMode();
+  }
 }
 
 void wsGameLoop::handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 action, f32 analogVal) {
@@ -271,30 +278,31 @@ void wsGameLoop::handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action) {
 }
 
 void wsGameLoop::handleMouseButtonEvents(u64 action, u64 btnIndex) {
-  switch (btnIndex) {
-    case WS_MOUSE_BUTTON_LEFT:
-      if (action  == WS_PRESS) {
-        wsRenderer.nextRenderMode();
-      }
-      break;
-    case WS_MOUSE_BUTTON_RIGHT:
-      if (action == WS_PRESS) {
-        wsSounds.playSound("Click");
-      }
-      break;
-    default:
-      break;
-  }
+  // switch (btnIndex) {
+  //   case WS_MOUSE_BUTTON_LEFT:
+  //     if (action  == WS_PRESS) {
+  //       // wsRenderer.nextRenderMode();
+  //     }
+  //     break;
+  //   case WS_MOUSE_BUTTON_RIGHT:
+  //     if (action == WS_PRESS) {
+  //       // wsSounds.playSound("Click");
+  //     }
+  //     break;
+  //   default:
+  //     break;
+  // }
 }
 
 void wsGameLoop::handleMouseMotionEvents(i32 posX, i32 posY, f32 dx, f32 dy) {
-  f32 rotationSpeed = 0.5f;
-  if (dx) {
-    cam->orbit(vec4(0.0f, 9.0f, 0.0f), Y_AXIS, -dx*rotationSpeed);
-  }
-  if (dy) {
-    cam->orbit(vec4(0.0f, 9.0f, 0.0f), cam->getRightDir(), -dy*rotationSpeed);
-    // cam->getRightDir().print(WS_LOG_MAIN);
+  if (wsInputs.getMouseDown(WS_MOUSE_BUTTON_RIGHT)) {
+    f32 rotationSpeed = 0.5f;
+    if (dx) {
+      cam->orbit(vec4(0.0f, 9.0f, 0.0f), Y_AXIS, -dx*rotationSpeed);
+    }
+    if (dy) {
+      cam->orbit(vec4(0.0f, 9.0f, 0.0f), cam->getRightDir(), -dy*rotationSpeed);
+    }
   }
 }
 
@@ -338,6 +346,10 @@ void wsGameLoop::handleEvents() {
         }
         break;
       case WS_EVENT_PHYSICS:
+        break;
+      case WS_EVENT_HUD_BUTTON:
+        //  uVal1 = button hash
+        handleButtonEvents(my.uVal1, my.eventSubType);
         break;
       default:
         break;

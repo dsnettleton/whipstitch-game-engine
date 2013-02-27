@@ -29,14 +29,18 @@
 
 #define WS_EVENT_QUEUE_SIZE 32
 
-#define WS_EVENT_NULL       0x0000
-#define WS_EVENT_INPUT      0x0001
-#define WS_EVENT_PHYSICS    0x0002
+#define WS_EVENT_NULL         0x0000
+#define WS_EVENT_INPUT        0x0001
+#define WS_EVENT_PHYSICS      0x0002
+#define WS_EVENT_HUD_BUTTON   0x0003
 
-#define WS_RELEASE          0x00000001
-#define WS_PRESS            0x00000002
-#define WS_PRESS_OR_RELEASE 0x00000003
-#define WS_ANALOG           0x00000004
+#define WS_RELEASE            0x0001
+#define WS_PRESS              0x0002
+#define WS_PRESS_OR_RELEASE   0x0003
+#define WS_ANALOG             0x0004
+#define WS_HOVER              0x0005
+#define WS_UNHOVER            0x0006
+#define WS_INVALID            0x0007
 
 #define WS_INPUT_TYPE_KEYBOARD      0x01
 #define WS_INPUT_TYPE_MOUSE         0x02
@@ -108,7 +112,7 @@
 #define WS_MOUSE_MOTION_Y           0x00000400
 
 #ifndef WS_MAX_CONTROLLERS
-#define WS_MAX_CONTROLLERS 4
+  #define WS_MAX_CONTROLLERS 8
 #endif
 
 #define WS_KB_KEY           0x01

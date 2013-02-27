@@ -26,7 +26,6 @@
 #define WS_SHADER_H_
 
 #include "../wsUtils.h"
-#include "GL/glew.h"
 
 class wsShader {
   private:

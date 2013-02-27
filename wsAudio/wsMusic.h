@@ -34,6 +34,8 @@
   #define WS_MUSIC_BUFFER_SIZE 262144  //  256 kilobyte buffer
 #endif
 
+#define WS_MUSIC_FILE_OGG 0x0001
+
 struct wsMusic {
   vec4 pos; //  w value indicates volume
   vec4 vel; //  velocity of the sound source
@@ -53,14 +55,14 @@ struct wsMusic {
   bool relative;
   bool fileLoaded;
   //  Constructors and Deconstructors
-  wsMusic(const char* filePath);
+  wsMusic(const char* filePath, u32 fileType = WS_MUSIC_FILE_OGG);
   ~wsMusic();
   //  Operational Methods
   void clear();
   void displayInfo();
   void errorCheck();
   bool isPlaying();
-  void load(const char* filePath);
+  void loadOGG(const char* filePath);
   bool play();
   bool streamBuffer(u32 bufferIndex);
   void update();

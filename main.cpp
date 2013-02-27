@@ -23,8 +23,8 @@
 */
 
 #include "ws.h"
-#include <stdio.h>
-#include "GL/glu.h"
+// #include <stdio.h>
+// #include "GL/glu.h"
 
 int main(int argc, char** argv) {
   #ifdef _PROFILE
@@ -80,6 +80,9 @@ int main(int argc, char** argv) {
   wsRenderer.addPanel("TestPanel", testPanel);
   wsRenderer.addPanel("TestPanel2", testPanel2);
   wsRenderer.addPanel("Text Block", textBlock);
+
+  wsButton* testButton = wsNew(wsButton, wsButton("Test Button", vec4(15, 15, 64, 64), 10, "btnTemplate.png", WS_HUD_VISIBLE));
+  textBlock->addElement(testButton);
 
   wsGame.beginLoop();
 

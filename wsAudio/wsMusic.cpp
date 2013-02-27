@@ -28,7 +28,7 @@
 
 f32 wsMusic::gain = 1.0f;
 
-wsMusic::wsMusic(const char* filePath) {
+wsMusic::wsMusic(const char* filePath, u32 fileType) {
   pos.w = 1.0f;
   pitch = 1.0f;
   rolloff = 0.0f;
@@ -41,7 +41,9 @@ wsMusic::wsMusic(const char* filePath) {
     update();
     alGenBuffers(2, buffers);
   #endif
-  load(filePath);
+  if (fileType == WS_MUSIC_FILE_OGG) {
+    loadOGG(filePath);
+  }
 }
 
 wsMusic::~wsMusic() {
@@ -98,7 +100,7 @@ bool wsMusic::isPlaying() {
   #endif
 }
 
-void wsMusic::load(const char* filePath) {
+void wsMusic::loadOGG(const char* filePath) {
   #if WS_SOUND_BACKEND == WS_BACKEND_OPENAL
     i32 result;
     oggFile = fopen(filePath, "rb");

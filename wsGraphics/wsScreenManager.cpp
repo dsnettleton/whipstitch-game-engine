@@ -33,6 +33,9 @@
 */
 
 #include "wsScreenManager.h"
+#if WS_SCREEN_BACKEND == WS_BACKEND_GLFW
+  #include "GL/glfw.h"
+#endif
 
 //  Define the singleton instance of this class
 wsScreenManager wsScreens;
@@ -53,6 +56,12 @@ void wsScreenManager::shutDown() {
     #if (WS_SCREEN_BACKEND == WS_BACKEND_X11)
     #elif (WS_SCREEN_BACKEND == WS_BACKEND_GLFW)
         glfwTerminate();
+    #endif
+}
+
+bool wsScreenManager::closed() {
+    #if (WS_SCREEN_BACKEND == WS_BACKEND_GLFW)
+        return !glfwGetWindowParam(GLFW_OPENED);
     #endif
 }
 

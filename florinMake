@@ -27,7 +27,7 @@ PROFILE_OPTIONS= -O0 -g3 -DDEBUG -D_PROFILE
 WINDOWS_OPTIONS= -I/usr/i586-mingw32msvc/include -I/usr/i586s-mingw32msvc/lib
 OPTIONS = -Wall -fmessage-length=0 $(INCLUDE_DIRS)
 
-OBJ_ASSETS = ./wsAssets/wsAnimation.o ./wsAssets/wsAsset.o ./wsAssets/wsFont.o ./wsAssets/wsMesh.o ./wsAssets/wsModel.o ./wsAssets/wsPanel.o ./wsAssets/wsPanelElement.o ./wsAssets/wsText.o
+OBJ_ASSETS = ./wsAssets/wsAnimation.o ./wsAssets/wsAsset.o ./wsAssets/wsButton.o ./wsAssets/wsFont.o ./wsAssets/wsMesh.o ./wsAssets/wsModel.o ./wsAssets/wsPanel.o ./wsAssets/wsPanelElement.o ./wsAssets/wsText.o
 OBJ_AUDIO = ./wsAudio/wsSoundManager.o ./wsAudio/wsSound.o ./wsAudio/wsMusic.o
 OBJ_GAME_FLOW = ./wsGameFlow/wsController.o ./wsGameFlow/wsEventManager.o ./wsGameFlow/wsGameLoop.o ./wsGameFlow/wsInputManager.o ./wsGameFlow/wsKeyboardInput.o ./wsGameFlow/wsPointerInput.o ./wsGameFlow/wsThreadPool.o
 OBJ_GRAPHICS = ./wsGraphics/wsCamera.o ./wsGraphics/wsRenderSystem.o ./wsGraphics/wsScreen.o ./wsGraphics/wsScreenManager.o ./wsGraphics/wsShader.o

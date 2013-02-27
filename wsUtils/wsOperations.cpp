@@ -26,8 +26,8 @@
 #include <stdlib.h>
 #include <string.h> //  For strlen()
 
-u32 wsScreenWidth = 1280;
-u32 wsScreenHeight = 720;
+f32 wsScreenWidth = 1280;
+f32 wsScreenHeight = 720;
 
 u32 wsCRC32HashFuncTable[256];
 bool wsCRC32HashTableGenerated = false;

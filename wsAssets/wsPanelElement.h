@@ -27,13 +27,21 @@
 #ifndef WS_PANEL_ELEMENT_H_
 #define WS_PANEL_ELEMENT_H_
 
-//#include "../wsGraphicswsRenderSystem.h"
 #include "../wsUtils.h"
+
+#define WS_HUD_WIDTH   1600.0f
+#define WS_HUD_HEIGHT   900.0f
 
 #define WS_HUD_VISIBLE      0x00000001  //  Whether to draw this element
 #define WS_HUD_PASSABLE     0x00000002  //  Whether this element is interactive
 #define WS_HUD_FOCUS        0x00000004  //  Whether this element is the active input element
 #define WS_HUD_MOUSE_OVER   0x00000008  //  Whether the mouse pointer is currently over this element
+#define WS_HUD_INACTIVE     0x00000010  //  This (interactive) element cannot be used
+#define WS_HUD_CLICKED      0x00000020  //  Whether the pointer is being clicked over this element
+
+#define WS_ELEMENT_PANEL    0x0001
+#define WS_ELEMENT_TEXT     0x0002
+#define WS_ELEMENT_BUTTON   0x0003
 
 class wsPanelElement {
   protected:
@@ -42,6 +50,7 @@ class wsPanelElement {
     u32 layer;  //  Panels with higher layers are drawn on top of other panels
     u32 properties; //  HUD properties
     u32 colorMap; //  Texture id
+    u32 type;
   public:
     //  Constructors and Deconstructors
     wsPanelElement(vec4 myRectangle, u32 myLayer, const char* myColorMap, u32 myProperties = WS_NULL);
@@ -53,6 +62,7 @@ class wsPanelElement {
     u32 getLayer() { return layer; }
     u32 getProperties() { return properties; }
     const vec4& getRect() { return rectangle; }
+    u32 getType() { return type; }
     f32 getWidth() { return rectangle.rectW; }
     f32 getX() { return rectangle.x; }
     f32 getY() { return rectangle.y; }

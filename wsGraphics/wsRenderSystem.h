@@ -36,6 +36,11 @@
 #include "../wsUtils.h"
 #include "../wsAssets.h"
 #include "wsCamera.h"
+ 
+#ifndef WS_GLEW_INCLUDED_
+  #include "GL/glew.h"
+  #define WS_GLEW_INCLUDED_
+#endif
 
 #define WS_BACKEND_OPENGL   0x10
 #define WS_BACKEND_SDL  0x20  //  For potential future use
@@ -82,7 +87,7 @@ class wsRenderSystem {
     u32 renderMode, finalFramebuffer;
     i32 shaderWidth, shaderHeight;
     //  Drawing components
-    wsHashMap<wsCamera*>* cameras;
+    wsHashMap<wsCamera*>* cameras;  //  Change to ordered hashmap
     wsHashMap<wsModel*>* models;
     wsHashMap<wsMeshContainer*>* meshes;
     wsOrderedHashMap<wsPanel*>* panels;
@@ -129,12 +134,13 @@ class wsRenderSystem {
     void drawScene();
     void enable(u32 renderingFeatures);
     void loadIdentity();
-    void loadTexture(u32* index, const char* filename);
+    void loadTexture(u32* index, const char* filename, bool autoSmooth = true);
     void modelviewMatrix();
     void nextRenderMode();
     void pauseAnimation(const char* modelName);
     void pauseAnimations();
     void projectionMatrix();
+    void scanHUD(); //  Use mouse position from wsInputs to test ui panels for events, etc.
     void setCameraMode(const char* cameraName, u32 cameraMode);
     void setClearColor(const vec4& clearColor);
     void setClearColor(f32 r, f32 g, f32 b, f32 a);

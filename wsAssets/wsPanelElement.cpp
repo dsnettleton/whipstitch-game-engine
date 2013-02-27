@@ -34,6 +34,6 @@ wsPanelElement::wsPanelElement(vec4 myRectangle, u32 myLayer, const char* myColo
   if (myColorMap != WS_NULL) {
     char filepath[264] = { "textures/" };
     strcat(filepath, myColorMap);
-    wsRenderer.loadTexture(&colorMap, filepath);
+    wsRenderer.loadTexture(&colorMap, filepath, false);
   }
 }

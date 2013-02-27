@@ -44,7 +44,7 @@ wsCamera::wsCamera(const char* myName, u32 myCameraMode) :
   dir(0.0f, 0.0f, 1.0f),
   upDir(0.0f, 1.0f, 0.0f),
   rightDir(1.0f, 0.0f, 0.0f),
-  screenCoords(0.0f, 0.0f, 1600, 900),
+  screenCoords(0.0f, 0.0f, WS_HUD_WIDTH, WS_HUD_HEIGHT),
   cameraMode(myCameraMode),
   fov(WS_DEFAULT_FOV),
   aspectRatio(WS_DEFAULT_ASPECT_RATIO),
@@ -86,13 +86,7 @@ void wsCamera::draw() {
         glLoadIdentity();
         break;
       case WS_CAMERA_MODE_ORTHO:
-        // glOrtho(-fov*aspectRatio, fov*aspectRatio, -fov, fov, -1.0f, 1.0f);
-        
-        // gluLookAt(pos.x-(dir.x), pos.y-(dir.y), pos.z-(dir.z),
-        //   pos.x+dir.x, pos.y+dir.y, pos.z+dir.z,
-        //   upDir.x, upDir.y, upDir.z);
-        // /
-        gluOrtho2D(0.0f, 1600.0f, 0.0f, 900.0f);
+        gluOrtho2D(0.0f, WS_HUD_WIDTH, 0.0f, WS_HUD_HEIGHT);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         break;

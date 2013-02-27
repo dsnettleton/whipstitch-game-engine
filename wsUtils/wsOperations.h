@@ -75,8 +75,8 @@
   #endif
 #endif  /* WS_SUPPORTS_SSE4 */
 
-extern u32 wsScreenWidth;
-extern u32 wsScreenHeight;
+extern f32 wsScreenWidth;
+extern f32 wsScreenHeight;
 
 extern u32 wsCRC32HashFuncTable[256];
 extern bool wsCRC32HashTableGenerated;

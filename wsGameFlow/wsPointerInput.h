@@ -40,6 +40,7 @@ class wsPointerInput : public wsInputMethod {
         //  Constructors and Deconstructors
         wsPointerInput();
         //  Setters and Getters
+        bool getDown(u32 buttonIndex) { return  (buttonStates & buttonIndex); }
         f32 getDx() { return dx; }
         f32 getDy() { return dy; }
         f32 getX() { return posX; }

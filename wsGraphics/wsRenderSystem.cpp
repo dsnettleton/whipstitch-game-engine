@@ -36,6 +36,7 @@
 #include <sstream>
 #include "wsScreenManager.h"
 #include "wsColors.h"
+#include "../wsGameFlow/wsInputManager.h"
 
 wsRenderSystem wsRenderer;
 
@@ -125,9 +126,9 @@ void wsRenderSystem::startUp() {
   frameBufferTextures = NULL;
   shaderWidth = 0;
   shaderHeight = 0;
-  initializeShaders(1280, 720);
+  initializeShaders(wsScreenWidth, wsScreenHeight);
   hudCam = wsNew(wsCamera, wsCamera("Hud Camera", vec4(0.0f, 0.0f, 1.0f), vec4(0.0f, 0.0f, -1.0f), vec4(0.0f, 1.0f),
-    vec4(0.0f, 0.0f, 1280.0f, 720.0f), WS_CAMERA_MODE_ORTHO, WS_DEFAULT_FOV, WS_DEFAULT_ASPECT_RATIO, WS_DEFAULT_Z_NEAR,
+    vec4(0.0f, 0.0f, wsScreenWidth, wsScreenHeight), WS_CAMERA_MODE_ORTHO, WS_DEFAULT_FOV, wsScreenWidth/wsScreenHeight, WS_DEFAULT_Z_NEAR,
     WS_DEFAULT_Z_FAR));
   cameras = wsNew(wsHashMap<wsCamera*>, wsHashMap<wsCamera*>(101));
   meshes = wsNew(wsHashMap<wsMeshContainer*>, wsHashMap<wsMeshContainer*>(101));
@@ -562,9 +563,6 @@ void wsRenderSystem::drawModel(u32 modelIndex) {
     if ((drawFeatures & WS_DRAW_BONES) && my->getMesh()->getNumJoints()) {
       const wsJoint* joints = my->getMesh()->getJoints();
       glEnable(GL_COLOR_MATERIAL);
-      // glDisable(GL_LIGHTING);
-      // glDisable(GL_TEXTURE_2D);
-      // glDisable(GL_DEPTH_TEST);
       disable(WS_DRAW_TEXTURES | WS_DRAW_DEPTH | WS_DRAW_LIGHTING);
       vec4 endPos;
       quat rotation;
@@ -789,7 +787,7 @@ void wsRenderSystem::loadIdentity() {
   #endif
 }
 
-void wsRenderSystem::loadTexture(u32* index, const char* filename) {
+void wsRenderSystem::loadTexture(u32* index, const char* filename, bool autoSmooth) {
   wsAssert(_mInitialized, "Must initialize the rendering system first.");
   #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
     *index = SOIL_load_OGL_texture(filename, SOIL_LOAD_AUTO, *index, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y);
@@ -798,6 +796,22 @@ void wsRenderSystem::loadTexture(u32* index, const char* filename) {
     }
     else {
       wsLog(WS_LOG_GRAPHICS, "Loaded texture file: \"%s\"\n", filename);
+      if (autoSmooth) {
+        glBindTexture(GL_TEXTURE_2D, *index);
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D, 0);
+      }
+      else {
+        glBindTexture(GL_TEXTURE_2D, *index);
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D, 0);
+      }
     }
   #endif
 }
@@ -834,6 +848,17 @@ void wsRenderSystem::projectionMatrix() {
   #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
     glMatrixMode(GL_PROJECTION);
   #endif
+}
+
+void wsRenderSystem::scanHUD() {
+  f32 mouseX = wsInputs.getMouseX();
+  f32 mouseY = wsInputs.getMouseY();
+  //  Convert to screen space coordinates (1600x900 grid)
+  mouseX *= WS_HUD_WIDTH / wsScreenWidth;
+  mouseY *= WS_HUD_HEIGHT / wsScreenHeight;
+  for (wsOrderedHashMap<wsPanel*>::iterator pan = panels->begin(); pan.get() != WS_NULL; ++pan) {
+    pan.get()->checkMouse(mouseX, mouseY, wsInputs.getMouseDown());
+  }
 }
 
 void wsRenderSystem::setCameraMode(const char* cameraName, u32 cameraMode) {
