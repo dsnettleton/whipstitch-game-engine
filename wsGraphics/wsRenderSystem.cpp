@@ -793,6 +793,9 @@ void wsRenderSystem::loadTexture(u32* index, const char* filename, bool autoSmoo
     *index = SOIL_load_OGL_texture(filename, SOIL_LOAD_AUTO, *index, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y);
     if (!(*index)) {
       wsLog(WS_LOG_ERROR, "Could not locate texture file: \"%s\"\n  SOIL error: %s\n", filename, SOIL_last_result());
+      if (strcmp(filename, "textures/wsDefaultTexture.png")) {
+        loadTexture(index, "textures/wsDefaultTexture.png", autoSmooth);
+      }
     }
     else {
       wsLog(WS_LOG_GRAPHICS, "Loaded texture file: \"%s\"\n", filename);

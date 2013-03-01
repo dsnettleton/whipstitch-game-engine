@@ -35,31 +35,27 @@
 #include "wsInputManager.h"
 #include "../wsAudio/wsSoundManager.h"
 
-wsGameLoop wsGame;
+wsGameLoop wsLoop;
 
 void wsGameLoop::startUp(f32 framesPerSecond) {
   quit = false;
   paused = true;
   keyPressed = false;
-  animationsPaused = false;
   _mInitialized = true;
   fps = framesPerSecond;
   maxFrameSkips = WS_MAX_FRAME_SKIPS;
   frameDuration = 1.0f / fps;
-  cam = wsNew(wsCamera, wsCamera("MainCam", vec4(9.0f, 17.0f, 9.0f), vec4(0.0f, 0.0f, 1.0f), vec4(0.0f, 1.0f, 0.0f),
-    vec4(0.0f, 0.0f, wsScreenWidth, wsScreenHeight), WS_CAMERA_MODE_PERSP, 60.0f, wsScreenWidth/wsScreenHeight, 0.01f, 100.0f));
-  cam->lookAt(vec4(0.0f, 9.0f, 0.0f));
-  wsRenderer.addCamera(cam);
 }
 
 void wsGameLoop::shutDown() {
   //  Nothing to see here.
 }
 
-void wsGameLoop::beginLoop() {
+void wsGameLoop::beginGame(wsGame* myGame) {
   wsAssert(_mInitialized, "The object wsGame must be initialized via the startUp() method before use.");
   quit = false;
   paused = false;
+  game = myGame;
   while (!quit && !paused) {
     iterateLoop();
   }
@@ -82,278 +78,10 @@ void wsGameLoop::drawGameState() {
   //*/
 }
 
-void wsGameLoop::handleButtonEvents(u32 btnHash, u32 action) {
-  if (btnHash == wsHash("Test Button") && action == WS_RELEASE) {
-    wsSounds.playSound("Click");
-    wsRenderer.nextRenderMode();
-  }
-}
-
-void wsGameLoop::handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 action, f32 analogVal) {
-  if (action != WS_ANALOG) {  //  Digital Button presses
-    switch (btnIndex) {
-      case WS_BUTTON_BOTTOM:
-        if (action  == WS_PRESS) {
-          wsRenderer.nextRenderMode();
-        }
-        break;
-      case WS_BUTTON_RIGHT:
-        if (action  == WS_PRESS) {
-          if (wsRenderer.isEnabled(WS_DRAW_BONES)) {
-            wsRenderer.disable(WS_DRAW_BONES);
-          }
-          else {
-            wsRenderer.enable(WS_DRAW_BONES);
-          }
-        }
-        break;
-      case WS_BUTTON_LEFT:
-        if (action == WS_PRESS) {
-          const char* anim = wsRenderer.getModel("Griswald")->getCurrentAnimation();
-          if (strcmp(anim, "Walk") == 0) {
-            wsRenderer.beginAnimation("Griswald", "Idle");
-          }
-          else if (strcmp(anim, "Idle") == 0) {
-            wsRenderer.beginAnimation("Griswald", "Jump");
-          }
-          else if (strcmp(anim, "Jump") == 0) {
-            wsRenderer.beginAnimation("Griswald", "Walk");
-          }
-        }
-        break;
-      case WS_BUTTON_START:
-        if (action  == WS_PRESS) {
-          if (animationsPaused) {
-            wsRenderer.continueAnimations();
-            animationsPaused = false;
-          }
-          else {
-            wsRenderer.pauseAnimations();
-            animationsPaused = true;
-          }
-        }
-        break;
-      case WS_BUTTON_SYSTEM:
-        if (action == WS_PRESS) {
-          quit = true;
-        }
-        break;
-      default:
-        break;
-    }
-  }
-  else {  //  Analog controls
-    switch (btnIndex) {
-      case WS_ANALOG_L_AXIS_X:
-        if (analogVal) {
-          f32 rotationSpeed = 4.0f;
-          //glRotatef(-analogVal*rotationSpeed, 0.0f, 1.0f, 0.0f);
-          cam->orbit(vec4(0.0f, 9.0f), Y_AXIS, -analogVal*rotationSpeed);
-        }
-        break;
-      case WS_ANALOG_L_AXIS_Y:
-        if (analogVal) {
-          f32 rotationSpeed = 4.0f;
-          //glRotatef(-analogVal*rotationSpeed, 0.0f, 1.0f, 0.0f);
-          cam->orbit(vec4(0.0f, 9.0f), cam->getRightDir(), -analogVal*rotationSpeed);
-        }
-        break;
-      default:
-        break;
-    }
-  }
-}
-
-void wsGameLoop::handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action) {
-  wsLog(WS_LOG_MAIN, "Key Input %lu\n", keyType);
-  switch (keyType) {
-    case WS_KB_KEY: //  Regular Keys
-      switch (btnIndex) {
-        case WS_KEY_A:
-          if (action == WS_PRESS) {
-            const char* anim = wsRenderer.getModel("Griswald")->getCurrentAnimation();
-            if (strcmp(anim, "Walk") == 0) {
-              wsRenderer.beginAnimation("Griswald", "Idle");
-            }
-            else if (strcmp(anim, "Idle") == 0) {
-              wsRenderer.beginAnimation("Griswald", "Jump");
-            }
-            else if (strcmp(anim, "Jump") == 0) {
-              wsRenderer.beginAnimation("Griswald", "Walk");
-            }
-          }
-          break;
-        case WS_KEY_B:
-          if (action == WS_PRESS) {
-            if (wsRenderer.isEnabled(WS_DRAW_BONES)) {
-              wsRenderer.disable(WS_DRAW_BONES);
-            }
-            else {
-              wsRenderer.enable(WS_DRAW_BONES);
-            }
-          }
-          break;
-        case WS_KEY_C:
-          if (action == WS_PRESS) {
-            if (wsRenderer.isEnabled(WS_DRAW_CEL)) {
-              wsRenderer.disable(WS_DRAW_CEL);
-            }
-            else {
-              wsRenderer.enable(WS_DRAW_CEL);
-            }
-          }
-          break;
-        case WS_KEY_M:
-          if (action == WS_PRESS) {
-            wsSounds.playMusic("Resistors");
-          }
-          break;
-        case WS_KEY_O:
-          if (action == WS_PRESS) {
-            if (wsRenderer.isEnabled(WS_DRAW_OUTLINE)) {
-              wsRenderer.disable(WS_DRAW_OUTLINE);
-            }
-            else {
-              wsRenderer.enable(WS_DRAW_OUTLINE);
-            }
-          }
-          break;
-        case WS_KEY_P:
-          if (action == WS_PRESS) {
-            if (animationsPaused) {
-              wsRenderer.continueAnimations();
-              animationsPaused = false;
-            }
-            else {
-              wsRenderer.pauseAnimations();
-              animationsPaused = true;
-            }
-          }
-          break;
-        case WS_KEY_R:
-          if (action == WS_PRESS) {
-            wsRenderer.nextRenderMode();
-          }
-          break;
-        case WS_KEY_Z:
-          if (action == WS_PRESS) {
-            if (wsRenderer.isEnabled(WS_DRAW_ANTIALIAS)) {
-              wsRenderer.disable(WS_DRAW_ANTIALIAS);
-            }
-            else {
-              wsRenderer.enable(WS_DRAW_ANTIALIAS);
-            }
-          }
-          break;
-        case WS_KEY_LEFT:
-          cam->orbit(vec4(0.0f, 9.0f, 0.0f), Y_AXIS, -3.0f);
-          break;
-        case WS_KEY_RIGHT:
-          cam->orbit(vec4(0.0f, 9.0f, 0.0f), Y_AXIS, 3.0f);
-          break;
-        case WS_KEY_DOWN:
-          cam->orbit(vec4(0.0f, 9.0f, 0.0f), cam->getRightDir(), 3.0f);
-          break;
-        case WS_KEY_UP:
-          cam->orbit(vec4(0.0f, 9.0f, 0.0f), cam->getRightDir(), -3.0f);
-          break;
-        default:
-          break;
-      }
-      break;
-    case WS_KB_SPECIAL_KEY: //  Special Keys
-      switch (btnIndex) {
-        case WS_KEY_ESC:
-          if (action == WS_PRESS) {
-            quit = true;
-          }
-          break;
-        default:
-          break;
-      }
-      break;
-    default:
-      break;
-  }
-}
-
-void wsGameLoop::handleMouseButtonEvents(u64 action, u64 btnIndex) {
-  // switch (btnIndex) {
-  //   case WS_MOUSE_BUTTON_LEFT:
-  //     if (action  == WS_PRESS) {
-  //       // wsRenderer.nextRenderMode();
-  //     }
-  //     break;
-  //   case WS_MOUSE_BUTTON_RIGHT:
-  //     if (action == WS_PRESS) {
-  //       // wsSounds.playSound("Click");
-  //     }
-  //     break;
-  //   default:
-  //     break;
-  // }
-}
-
-void wsGameLoop::handleMouseMotionEvents(i32 posX, i32 posY, f32 dx, f32 dy) {
-  if (wsInputs.getMouseDown(WS_MOUSE_BUTTON_RIGHT)) {
-    f32 rotationSpeed = 0.5f;
-    if (dx) {
-      cam->orbit(vec4(0.0f, 9.0f, 0.0f), Y_AXIS, -dx*rotationSpeed);
-    }
-    if (dy) {
-      cam->orbit(vec4(0.0f, 9.0f, 0.0f), cam->getRightDir(), -dy*rotationSpeed);
-    }
-  }
-}
-
 void wsGameLoop::handleEvents() {
   while (wsEvents.isNotEmpty()) {
     wsEvent my = wsEvents.pop();
-    switch (my.eventType) {
-      case WS_EVENT_INPUT:
-        switch (my.eventSubType) {
-          case WS_INPUT_TYPE_KEYBOARD:
-            //  uVal1 = WS_KB_KEY / WS_KB_SPECIAL_KEY
-            //  uVal2 = Button Index
-            //  uVal3 = WS_PRESS / WS_RELEASE
-            handleKeyboardEvents(my.uVal1, my.uVal2, my.uVal3);
-            break;
-          case WS_INPUT_TYPE_MOUSE:
-            //  uVal1 = WS_PRESS/WS_RELEASE/WS_ANALOG (analog indicates mouse motion)
-            switch (my.uVal1) {
-              case WS_ANALOG:
-                //  uVal2 = posX
-                //  uVal3 = posY
-                //  fVal1 = dx
-                //  fVal2 = dy
-                handleMouseMotionEvents(my.uVal2, my.uVal3, my.fVal1, my.fVal2);
-                break;
-              default:  //  Button press/release
-                //  uVal2 = btnIndex
-                handleMouseButtonEvents(my.uVal1, my.uVal2);
-                break;
-            }
-            break;
-          case WS_INPUT_TYPE_CONTROLLER:
-            //  uVal1 = Controller Index
-            //  uVal2 = Button Index
-            //  uVal3 = WS_PRESS/WS_RELEASE/WS_ANALOG
-            //  fVal1 = analog value (if any)
-            handleControllerEvents(my.uVal1, my.uVal2, my.uVal3, my.fVal1);
-            break;
-          default:
-            break;
-        }
-        break;
-      case WS_EVENT_PHYSICS:
-        break;
-      case WS_EVENT_HUD_BUTTON:
-        //  uVal1 = button hash
-        handleButtonEvents(my.uVal1, my.eventSubType);
-        break;
-      default:
-        break;
-    }
+    game->onEvent(my);
   }
 }
 
@@ -401,7 +129,7 @@ void wsGameLoop::updateGameState() {
   wsAssert(_mInitialized, "The object wsGame must be initialized via the startUp() method before use.");
 
   wsSounds.updateStreams();
-
+  game->onLoop();
   handleInputs();
   handleEvents();
   if (quit) { return; }

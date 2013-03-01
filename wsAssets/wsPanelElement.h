@@ -42,6 +42,7 @@
 #define WS_ELEMENT_PANEL    0x0001
 #define WS_ELEMENT_TEXT     0x0002
 #define WS_ELEMENT_BUTTON   0x0003
+#define WS_ELEMENT_TEXT_BOX 0x0004
 
 class wsPanelElement {
   protected:

@@ -36,5 +36,6 @@
 #include "wsAssets/wsPanel.h"
 #include "wsAssets/wsPanelElement.h"
 #include "wsAssets/wsText.h"
+#include "wsAssets/wsTextBox.h"
 
 #endif /* WS_ASSETS_H_ */

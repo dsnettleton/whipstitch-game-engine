@@ -126,13 +126,13 @@ void wsInit(const char* title, const i32 width, const i32 height, bool fullscree
   wsSounds.startUp();
   wsEvents.startUp();
   wsInputs.startUp();
-  wsGame.startUp();
+  wsLoop.startUp();
 }
 
 void wsQuit() {
   wsLog(WS_LOG_MAIN, "Shutting Down Whipstitch Engine\n");
   /*  Shut Down Engine Subsystems in reverse order of StartUp  */
-  wsGame.shutDown();
+  wsLoop.shutDown();
   wsInputs.shutDown();
   wsEvents.shutDown();
   wsSounds.shutDown();
