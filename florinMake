@@ -7,8 +7,7 @@
 # 		dsnettleton at whipstitchgames dot com
 
 #     Copyright D. Scott Nettleton, 2013
-#     This software is released under the terms of the
-#     Lesser GNU Public License (LGPL).
+#     This software is released under the terms of the MIT license
 
 CC=g++
 WIN_CC=i586-mingw32msvc-g++

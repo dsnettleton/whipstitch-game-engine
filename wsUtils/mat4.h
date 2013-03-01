@@ -20,21 +20,28 @@
  *      The SSE register is 128 bits, allowing four 32-bit data values to be operated on.
  *      In this case, those data values are floating point decimal values.
  *
- *  Copyright D. Scott Nettleton, 2013
- *  This software is released under the terms of the
- *  Lesser GNU Public License (LGPL).
- *  This file is part of the Whipstitch Game Engine.
- *  The Whipstitch Game Engine is free software: you can redistribute it
- *  and/or modify it under the terms of the GNU Lesser Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
- *  The Whipstitch Game Engine is distributed in the hope that it will be
- *  useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser Public License for more details.
- *  You should have received a copy of the GNU Lesser Public License
- *  along with The Whipstitch Game Engine.
- *  If not, see <http://www.gnu.org/licenses/>.
+ *  This software is provided under the terms of the MIT license
+ *  Copyright (c) D. Scott Nettleton, 2013
+ *
+ *  Permission is hereby granted, free of charge, to any person
+ *  obtaining a copy of this software and associated documentation
+ *  files (the "Software"), to deal in the Software without
+ *  restriction, including without limitation the rights to use, copy,
+ *  modify, merge, publish, distribute, sublicense, and/or sell copies
+ *  of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be
+ *  included in all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ *  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *  OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #ifndef WS_MAT4_H_
