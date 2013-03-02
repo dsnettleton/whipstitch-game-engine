@@ -2,7 +2,7 @@
 //  This mesh is for use with the Whipstitch Game Engine
 //  For more information, email dsnettleton@whipstitchgames.com
 
-versionNumber 0.9
+versionNumber 1.0
 meshName Griswald
 numVertices 15040
 numMaterials 2
@@ -265,6 +265,10 @@ skeleton {
 }
 
 vertices {
+  bounds {
+    min { -5.174786 0.088370 -1.700359 }
+    max { 5.319796 15.783918 2.605447 }
+  }
   vert 0 {
     pos { 0.411192 11.148897 -0.085926 }
     norm { 0.633900 -0.443739 -0.633442 }
@@ -140802,7 +140806,7 @@ materials {
     specular { 0.11068485677242279 0.11068485677242279 0.11068485677242279 1.0 }
     emissive { 0.0 0.0 0.0 0.0 }
     maps {
-      colorMap //chibiGriswaldSkin.png
+      colorMap chibiGriswaldSkin.png
     }
     numTriangles 3876
     triangles {
@@ -160199,7 +160203,7 @@ materials {
     specular { 0.11068485677242279 0.11068485677242279 0.11068485677242279 1.0 }
     emissive { 0.0 0.0 0.0 0.0 }
     maps {
-      colorMap //chibiGriswaldSkin.png
+      colorMap chibiGriswaldSkin.png
     }
     numTriangles 2076
     triangles {

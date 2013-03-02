@@ -1,13 +1,12 @@
 /**
- *  wsDemo.h
- *  March 1, 2013
+ *  wsPanelElement.cpp
+ *  Feb 15, 2013
  *  D. Scott Nettleton
  *
- *  This file declares the class wsDemo, which serves as an example
- *  of how to implement a game in the Whipstitch game engine.
- *
- *  This class inherits the class wsGame, and implements all operations
- *  specific to this particular game.
+ *  This file implements methods for the class wsPanelElement.
+ *  A panel element is a HUD interface object which is drawn onto
+ *  a wsPanel object. A wsPanel itself is a Panel Element, so one
+ *  panel may contain many.
  *
  *  This software is provided under the terms of the MIT license
  *  Copyright (c) D. Scott Nettleton, 2013
@@ -32,33 +31,16 @@
  *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *  OTHER DEALINGS IN THE SOFTWARE.
 */
-#ifndef WS_DEMO_H_
-#define WS_DEMO_H_
 
-#include "whipstitch/ws.h"
+#include "wsPanelElement.h"
 
-class wsDemo : public wsGame {
-  private:
-    //  Private Data Members
-    wsCamera* cam;
-    bool quit;
-    bool animationsPaused;
-  public:
-    //  Constructors and Deconstructors
-    wsDemo() : quit(false), animationsPaused(false) {}
-    //  Setters and Getters
-    //  Go Here
-    //  Operational Methods
-    void handleButtonEvents(u32 btnHash, u32 action);
-    void handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 action, f32 analogVal);
-    void handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action);
-    void handleMouseButtonEvents(u64 action, u64 btnIndex);
-    void handleMouseMotionEvents(i32 posX, i32 posY, f32 dx, f32 dy);
-    //  Inherited Methods
-    void onStart();
-    void onLoop();
-    void onEvent(const wsEvent& event);
-    void onExit();
-};
+#include "../wsGraphics/wsRenderSystem.h"
 
-#endif //  WS_DEMO_H_
+wsPanelElement::wsPanelElement(vec4 myRectangle, u32 myLayer, const char* myColorMap, u32 myProperties) :
+    rectangle(myRectangle), layer(myLayer), properties(myProperties) {
+  if (myColorMap != WS_NULL) {
+    char filepath[264] = { "textures/" };
+    strcat(filepath, myColorMap);
+    wsRenderer.loadTexture(&colorMap, filepath, false);
+  }
+}

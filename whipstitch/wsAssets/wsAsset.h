@@ -1,13 +1,11 @@
-/**
- *  wsDemo.h
- *  March 1, 2013
- *  D. Scott Nettleton
+/*
+ * wsAsset.h
  *
- *  This file declares the class wsDemo, which serves as an example
- *  of how to implement a game in the Whipstitch game engine.
+ *  Created on: Sep 19, 2012
+ *      Author: dsnettleton
  *
- *  This class inherits the class wsGame, and implements all operations
- *  specific to this particular game.
+ *      This file declares the abstract base type wsAsset, which creates and initializes
+ *      new gameplay objects onto the stack.
  *
  *  This software is provided under the terms of the MIT license
  *  Copyright (c) D. Scott Nettleton, 2013
@@ -32,33 +30,34 @@
  *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *  OTHER DEALINGS IN THE SOFTWARE.
 */
-#ifndef WS_DEMO_H_
-#define WS_DEMO_H_
 
-#include "whipstitch/ws.h"
+#ifndef WS_ASSET_H_
+#define WS_ASSET_H_
 
-class wsDemo : public wsGame {
-  private:
-    //  Private Data Members
-    wsCamera* cam;
-    bool quit;
-    bool animationsPaused;
-  public:
-    //  Constructors and Deconstructors
-    wsDemo() : quit(false), animationsPaused(false) {}
-    //  Setters and Getters
-    //  Go Here
-    //  Operational Methods
-    void handleButtonEvents(u32 btnHash, u32 action);
-    void handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 action, f32 analogVal);
-    void handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action);
-    void handleMouseButtonEvents(u64 action, u64 btnIndex);
-    void handleMouseMotionEvents(i32 posX, i32 posY, f32 dx, f32 dy);
-    //  Inherited Methods
-    void onStart();
-    void onLoop();
-    void onEvent(const wsEvent& event);
-    void onExit();
+#include "../wsUtils.h"
+
+#define WS_ASSET_TYPE_MESH  0x0001
+#define WS_ASSET_TYPE_ANIM  0x0002
+#define WS_ASSET_TYPE_MODEL 0x0003
+#define WS_ASSET_TYPE_FONT  0x0004
+
+class wsAsset {
+    private:
+        static u32 assetIdCounter;
+    protected:
+        u32 assetId; //  Globally unique identifier for the asset
+        u32 assetType;
+    public:
+        //  Constructor
+        wsAsset() {
+            assetId = ++assetIdCounter;
+            assetType = WS_NULL;
+        }
+        //  Getter
+        u32 getId() { return assetId; }
+        u32 getType() { return assetType; }
 };
 
-#endif //  WS_DEMO_H_
+//u32 wsAsset::assetIdCounter = 1;
+
+#endif /* WS_ASSET_H_ */

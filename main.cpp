@@ -35,10 +35,10 @@ int main(int argc, char** argv) {
   #ifdef _PROFILE
     wsActiveLogs = (WS_LOG_PROFILING | WS_LOG_MAIN | WS_LOG_UTIL | WS_LOG_ERROR);
   #else
-    wsActiveLogs = (WS_LOG_MAIN | WS_LOG_ERROR);
+    // wsActiveLogs = (WS_LOG_MAIN | WS_LOG_ERROR);
     // wsActiveLogs = (WS_LOG_DEBUG | WS_LOG_ERROR | WS_LOG_UTIL | WS_LOG_SHADER);
-    //wsActiveLogs = WS_LOG_ALL;
-    //sActiveLogs = WS_LOG_MAIN;
+    // wsActiveLogs = WS_LOG_ALL;
+    wsActiveLogs = WS_LOG_MAIN;
   #endif
   wsInit("Whipstitch Game Engine", 1280, 720, false, 512*wsMB, 32*wsMB);  //  512MB, 32MB
 

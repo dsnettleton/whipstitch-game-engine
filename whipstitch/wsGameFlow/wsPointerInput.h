@@ -1,13 +1,11 @@
 /**
- *  wsDemo.h
- *  March 1, 2013
- *  D. Scott Nettleton
+ *    wsPointerInput.h
+ *    Jan 8, 2013
+ *    D. Scott Nettleton
  *
- *  This file declares the class wsDemo, which serves as an example
- *  of how to implement a game in the Whipstitch game engine.
- *
- *  This class inherits the class wsGame, and implements all operations
- *  specific to this particular game.
+ *    This file declares the class wsPointerInput, which handles pointer
+ *    controls, such as from a mouse, touchscreen, or (possibly) Wii
+ *    remote pointer.
  *
  *  This software is provided under the terms of the MIT license
  *  Copyright (c) D. Scott Nettleton, 2013
@@ -32,33 +30,35 @@
  *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *  OTHER DEALINGS IN THE SOFTWARE.
 */
-#ifndef WS_DEMO_H_
-#define WS_DEMO_H_
+#ifndef WS_POINTER_INPUT_H_
+#define WS_POINTER_INPUT_H_
 
-#include "whipstitch/ws.h"
+#include "wsInputMethod.h"
 
-class wsDemo : public wsGame {
-  private:
-    //  Private Data Members
-    wsCamera* cam;
-    bool quit;
-    bool animationsPaused;
-  public:
-    //  Constructors and Deconstructors
-    wsDemo() : quit(false), animationsPaused(false) {}
-    //  Setters and Getters
-    //  Go Here
-    //  Operational Methods
-    void handleButtonEvents(u32 btnHash, u32 action);
-    void handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 action, f32 analogVal);
-    void handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action);
-    void handleMouseButtonEvents(u64 action, u64 btnIndex);
-    void handleMouseMotionEvents(i32 posX, i32 posY, f32 dx, f32 dy);
-    //  Inherited Methods
-    void onStart();
-    void onLoop();
-    void onEvent(const wsEvent& event);
-    void onExit();
+class wsPointerInput : public wsInputMethod {
+    private:
+        //  Private Data Members
+        f32 dx;
+        f32 dy;
+        f32 posX;
+        f32 posY;
+        bool _mInitialized;
+    public:
+        //  Constructors and Deconstructors
+        wsPointerInput();
+        //  Setters and Getters
+        bool getDown(u32 buttonIndex) { return  (buttonStates & buttonIndex); }
+        f32 getDx() { return dx; }
+        f32 getDy() { return dy; }
+        f32 getX() { return posX; }
+        f32 getY() { return posY; }
+        bool getInitialized() { return _mInitialized; }
+        //  Operational Methods
+        void poll() { /* Intentionally Empty */ }    //  Inherited from wsInputMethod
+        void pressButton(u32 btnIndex);
+        void releaseButton(u32 btnIndex);
+        void setPos(i32 newPosX, i32 newPosY);
+        void swapFrames();
 };
 
-#endif //  WS_DEMO_H_
+#endif //  WS_POINTER_INPUT_H_

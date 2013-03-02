@@ -1,13 +1,21 @@
 /**
- *  wsDemo.h
- *  March 1, 2013
+ *  wsTextBox.h
+ *  Feb 27, 2013
  *  D. Scott Nettleton
  *
- *  This file declares the class wsDemo, which serves as an example
- *  of how to implement a game in the Whipstitch game engine.
+ *  This file declares the class wsTextBox, which inherits the abstract
+ *  base class wsPanelElement. A TextBox may be added to a panel for
+ *  user-interface purposes. It utilizes a single image file, with predefined
+ *  end lengths. The endLength is the width of the image on either side which
+ *  is used cap the ends of the textBox. The middle of the textbox is drawn
+ *  by stretching the remainder of the image across the remainder of the
+ *  textBox's width.
  *
- *  This class inherits the class wsGame, and implements all operations
- *  specific to this particular game.
+ *  HUD coordinates assume a screen size of 1600x900 for convenience.
+ *  When the game is run, if the display is not widescreen, coordinates
+ *  are clipped from both ends. So to support, for example, a 4:3 screen
+ *  ratio, it's best either to keep all elements within the range x=[200, 1200],
+ *  or to rearrange the elements when the screen is resized.
  *
  *  This software is provided under the terms of the MIT license
  *  Copyright (c) D. Scott Nettleton, 2013
@@ -32,33 +40,27 @@
  *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *  OTHER DEALINGS IN THE SOFTWARE.
 */
-#ifndef WS_DEMO_H_
-#define WS_DEMO_H_
+#ifndef WS_TEXT_BOX_H_
+#define WS_TEXT_BOX_H_
 
-#include "whipstitch/ws.h"
+#include "wsPanelElement.h"
+#include "wsText.h"
 
-class wsDemo : public wsGame {
+class wsTextBox : public wsPanelElement {
   private:
     //  Private Data Members
-    wsCamera* cam;
-    bool quit;
-    bool animationsPaused;
+    const char* name;
+    wsText* text;
+    f32 endLength;
+    f32 endRatio;
+    u32 maxChars;
   public:
     //  Constructors and Deconstructors
-    wsDemo() : quit(false), animationsPaused(false) {}
+    wsTextBox(const char* myName, vec4 myRectangle, f32 imageWidth, f32 myEndLength, u32 myMaxChars, u32 myLayer, const char* myColorMap, u32 myProperties = WS_NULL);
     //  Setters and Getters
-    //  Go Here
+    //  @TODO:  Add method for additional colormap (textbox has focus)
     //  Operational Methods
-    void handleButtonEvents(u32 btnHash, u32 action);
-    void handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 action, f32 analogVal);
-    void handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action);
-    void handleMouseButtonEvents(u64 action, u64 btnIndex);
-    void handleMouseMotionEvents(i32 posX, i32 posY, f32 dx, f32 dy);
-    //  Inherited Methods
-    void onStart();
-    void onLoop();
-    void onEvent(const wsEvent& event);
-    void onExit();
+    void draw();
 };
 
-#endif //  WS_DEMO_H_
+#endif //  WS_TEXT_BOX_H_

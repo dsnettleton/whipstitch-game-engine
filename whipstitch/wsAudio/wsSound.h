@@ -1,13 +1,10 @@
 /**
- *  wsDemo.h
- *  March 1, 2013
+ *  wsSound.h
+ *  Jan 19, 2013
  *  D. Scott Nettleton
  *
- *  This file declares the class wsDemo, which serves as an example
- *  of how to implement a game in the Whipstitch game engine.
- *
- *  This class inherits the class wsGame, and implements all operations
- *  specific to this particular game.
+ *  This file declares the struct wsSound, which is used to store
+ *  information for a single sound object.
  *
  *  This software is provided under the terms of the MIT license
  *  Copyright (c) D. Scott Nettleton, 2013
@@ -32,33 +29,32 @@
  *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *  OTHER DEALINGS IN THE SOFTWARE.
 */
-#ifndef WS_DEMO_H_
-#define WS_DEMO_H_
+#ifndef WS_SOUND_H_
+#define WS_SOUND_H_
 
-#include "whipstitch/ws.h"
+#include "../wsUtils.h"
 
-class wsDemo : public wsGame {
-  private:
-    //  Private Data Members
-    wsCamera* cam;
-    bool quit;
-    bool animationsPaused;
-  public:
-    //  Constructors and Deconstructors
-    wsDemo() : quit(false), animationsPaused(false) {}
-    //  Setters and Getters
-    //  Go Here
-    //  Operational Methods
-    void handleButtonEvents(u32 btnHash, u32 action);
-    void handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 action, f32 analogVal);
-    void handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action);
-    void handleMouseButtonEvents(u64 action, u64 btnIndex);
-    void handleMouseMotionEvents(i32 posX, i32 posY, f32 dx, f32 dy);
-    //  Inherited Methods
-    void onStart();
-    void onLoop();
-    void onEvent(const wsEvent& event);
-    void onExit();
+#define WS_BACKEND_OPENAL 1
+
+//  Default (preferred) backend is OpenAL
+#define WS_SOUND_BACKEND WS_BACKEND_OPENAL
+#include <AL/alut.h>
+
+struct wsSound {
+  vec4 pos; //  w value indicates volume
+  vec4 vel; //  velocity of the sound source
+  f32 refDistance;  //  Distance at which the sound becomes half as loud
+  f32 rolloff;  //  factor by which the sound is attenuated over distance
+  f32 pitch;
+  static f32 gain;
+  u32 soundBuffer;
+  u32 soundSource;
+  bool looping;
+  bool relative;
+  wsSound(const char* filePath);
+  ~wsSound();
+  void play();
+  void update();
 };
 
-#endif //  WS_DEMO_H_
+#endif //  WS_SOUND_H_

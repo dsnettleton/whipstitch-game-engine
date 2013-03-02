@@ -1,0 +1,9 @@
+//  Whipstitch Model File
+//  This model is for use with the Whipstitch Game Engine
+//  For more information, email dsnettleton@whipstitchgames.com
+
+versionNumber 1.0
+modelName Griswald
+
+numMeshes 1
+numAnimations 3

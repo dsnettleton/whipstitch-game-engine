@@ -1,13 +1,11 @@
-/**
- *  wsDemo.h
- *  March 1, 2013
- *  D. Scott Nettleton
+/*
+ * wsColors.h
  *
- *  This file declares the class wsDemo, which serves as an example
- *  of how to implement a game in the Whipstitch game engine.
+ *  Created on: Sep 26, 2012
+ *      Author: dsnettleton
  *
- *  This class inherits the class wsGame, and implements all operations
- *  specific to this particular game.
+ *      This file declares multiple color constants, stored
+ *      in vector format
  *
  *  This software is provided under the terms of the MIT license
  *  Copyright (c) D. Scott Nettleton, 2013
@@ -32,33 +30,23 @@
  *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *  OTHER DEALINGS IN THE SOFTWARE.
 */
-#ifndef WS_DEMO_H_
-#define WS_DEMO_H_
 
-#include "whipstitch/ws.h"
+#ifndef WS_COLORS_H_
+#define WS_COLORS_H_
 
-class wsDemo : public wsGame {
-  private:
-    //  Private Data Members
-    wsCamera* cam;
-    bool quit;
-    bool animationsPaused;
-  public:
-    //  Constructors and Deconstructors
-    wsDemo() : quit(false), animationsPaused(false) {}
-    //  Setters and Getters
-    //  Go Here
-    //  Operational Methods
-    void handleButtonEvents(u32 btnHash, u32 action);
-    void handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 action, f32 analogVal);
-    void handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action);
-    void handleMouseButtonEvents(u64 action, u64 btnIndex);
-    void handleMouseMotionEvents(i32 posX, i32 posY, f32 dx, f32 dy);
-    //  Inherited Methods
-    void onStart();
-    void onLoop();
-    void onEvent(const wsEvent& event);
-    void onExit();
-};
+#include "../wsUtils.h"
 
-#endif //  WS_DEMO_H_
+const vec4 WHITE(1.0f, 1.0f, 1.0f, 1.0f);
+const vec4 BLACK(0.0f, 0.0f, 0.0f, 1.0f);
+const vec4 RED(1.0f, 0.0f, 0.0f, 1.0f);
+const vec4 GREEN(0.0f, 1.0f, 0.0f, 1.0f);
+const vec4 BLUE(0.0f, 0.0f, 1.0f, 1.0f);
+const vec4 YELLOW(1.0f, 1.0f, 0.0f, 1.0f);
+const vec4 CYAN(0.0f, 1.0f, 1.0f, 1.0f);
+const vec4 MAGENTA(1.0f, 0.0f, 1.0f, 1.0f);
+const vec4 ORANGE(1.0f, 0.5f, 0.0f, 1.0f);
+const vec4 DARK_RED(0.5f, 0.0f, 0.0f, 1.0f);
+const vec4 DARK_GREEN(0.0f, 0.5f, 0.0f, 1.0f);
+const vec4 DARK_BLUE(0.0f, 0.0f, 1.0f, 1.0f);
+
+#endif

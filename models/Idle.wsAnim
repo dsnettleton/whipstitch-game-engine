@@ -2,7 +2,7 @@
 //  This Animation is for use with the Whipstitch Game Engine
 //  For more information, email dsnettleton@whipstitchgames.com
 
-versionNumber 0.9
+versionNumber 1.0
 animationType 1
 animationName Idle
 framesPerSecond 24
@@ -234,6 +234,10 @@ joints {
 keyframes {
   keyframe 0 {
     frameNumber 0.0
+    bounds {
+      min { -6.055943 -29.985046 -18.896046 }
+      max { 5.602698 0.360189 4.255996 }
+    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.005807 0.061678 -0.517377 }
@@ -382,6 +386,10 @@ keyframes {
   }
   keyframe 1 {
     frameNumber 87.0
+    bounds {
+      min { -6.452697 -30.140963 -19.294136 }
+      max { 6.976598 0.360189 4.115664 }
+    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.005807 0.061678 -0.517377 }
@@ -530,6 +538,10 @@ keyframes {
   }
   keyframe 2 {
     frameNumber 128.0
+    bounds {
+      min { -6.062149 -30.124268 -19.858604 }
+      max { 6.932673 0.360189 4.260339 }
+    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.005807 0.061678 -0.517377 }
@@ -678,6 +690,10 @@ keyframes {
   }
   keyframe 3 {
     frameNumber 134.0
+    bounds {
+      min { -6.062149 -30.124268 -19.858604 }
+      max { 6.932673 0.360189 4.260339 }
+    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.005807 0.061678 -0.517377 }
@@ -826,6 +842,10 @@ keyframes {
   }
   keyframe 4 {
     frameNumber 141.0
+    bounds {
+      min { -10.057936 -30.037729 -19.178883 }
+      max { 15.664737 0.360189 4.260166 }
+    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.005807 0.061678 -0.517377 }
@@ -974,6 +994,10 @@ keyframes {
   }
   keyframe 5 {
     frameNumber 184.0
+    bounds {
+      min { -6.057085 -30.094301 -19.111998 }
+      max { 5.866286 0.360189 4.201880 }
+    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.005807 0.061678 -0.517377 }
@@ -1122,6 +1146,10 @@ keyframes {
   }
   keyframe 6 {
     frameNumber 231.0
+    bounds {
+      min { -6.056544 -30.028677 -18.922514 }
+      max { 5.733451 0.360189 4.256351 }
+    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.005807 0.061678 -0.517377 }
@@ -1270,6 +1298,10 @@ keyframes {
   }
   keyframe 7 {
     frameNumber 241.0
+    bounds {
+      min { -6.056220 -30.004290 -18.908386 }
+      max { 5.659524 0.360189 4.256149 }
+    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.005807 0.061678 -0.517377 }
@@ -1418,6 +1450,10 @@ keyframes {
   }
   keyframe 8 {
     frameNumber 256.0
+    bounds {
+      min { -6.055943 -29.985046 -18.896046 }
+      max { 5.602698 0.360189 4.255996 }
+    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.005807 0.061678 -0.517377 }

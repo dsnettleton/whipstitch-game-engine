@@ -26,12 +26,12 @@ PROFILE_OPTIONS= -O0 -g3 -DDEBUG -D_PROFILE
 WINDOWS_OPTIONS= -I/usr/i586-mingw32msvc/include -I/usr/i586s-mingw32msvc/lib
 OPTIONS = -Wall -fmessage-length=0 $(INCLUDE_DIRS)
 
-OBJ_ASSETS = ./wsAssets/wsAnimation.o ./wsAssets/wsAsset.o ./wsAssets/wsButton.o ./wsAssets/wsFont.o ./wsAssets/wsMesh.o ./wsAssets/wsModel.o ./wsAssets/wsPanel.o ./wsAssets/wsPanelElement.o ./wsAssets/wsText.o ./wsAssets/wsTextBox.o
-OBJ_AUDIO = ./wsAudio/wsSoundManager.o ./wsAudio/wsSound.o ./wsAudio/wsMusic.o
-OBJ_GAME_FLOW = ./wsGameFlow/wsController.o ./wsGameFlow/wsEventManager.o ./wsGameFlow/wsGameLoop.o ./wsGameFlow/wsInputManager.o ./wsGameFlow/wsKeyboardInput.o ./wsGameFlow/wsPointerInput.o ./wsGameFlow/wsThreadPool.o
-OBJ_GRAPHICS = ./wsGraphics/wsCamera.o ./wsGraphics/wsRenderSystem.o ./wsGraphics/wsScreen.o ./wsGraphics/wsScreenManager.o ./wsGraphics/wsShader.o
-OBJ_UTILS = ./wsUtils/mat4.o ./wsUtils/quat.o ./wsUtils/vec4.o ./wsUtils/wsLog.o ./wsUtils/wsMemoryStack.o ./wsUtils/wsOperations.o ./wsUtils/wsProfileManager.o ./wsUtils/wsTime.o ./wsUtils/wsTransform.o ./wsUtils/wsTrig.o ./wsUtils/wsTypes.o
-OBJ_WHIPSTITCH = ws.o
+OBJ_ASSETS = whipstitch/wsAssets/wsAnimation.o whipstitch/wsAssets/wsAsset.o whipstitch/wsAssets/wsButton.o whipstitch/wsAssets/wsFont.o whipstitch/wsAssets/wsMesh.o whipstitch/wsAssets/wsModel.o whipstitch/wsAssets/wsPanel.o whipstitch/wsAssets/wsPanelElement.o whipstitch/wsAssets/wsText.o whipstitch/wsAssets/wsTextBox.o
+OBJ_AUDIO = whipstitch/wsAudio/wsSoundManager.o whipstitch/wsAudio/wsSound.o whipstitch/wsAudio/wsMusic.o
+OBJ_GAME_FLOW = whipstitch/wsGameFlow/wsController.o whipstitch/wsGameFlow/wsEventManager.o whipstitch/wsGameFlow/wsGameLoop.o whipstitch/wsGameFlow/wsInputManager.o whipstitch/wsGameFlow/wsKeyboardInput.o whipstitch/wsGameFlow/wsPointerInput.o whipstitch/wsGameFlow/wsThreadPool.o
+OBJ_GRAPHICS = whipstitch/wsGraphics/wsCamera.o whipstitch/wsGraphics/wsRenderSystem.o whipstitch/wsGraphics/wsScreen.o whipstitch/wsGraphics/wsScreenManager.o whipstitch/wsGraphics/wsShader.o
+OBJ_UTILS = whipstitch/wsUtils/mat4.o whipstitch/wsUtils/quat.o whipstitch/wsUtils/vec4.o whipstitch/wsUtils/wsLog.o whipstitch/wsUtils/wsMemoryStack.o whipstitch/wsUtils/wsOperations.o whipstitch/wsUtils/wsProfileManager.o whipstitch/wsUtils/wsTime.o whipstitch/wsUtils/wsTransform.o whipstitch/wsUtils/wsTrig.o whipstitch/wsUtils/wsTypes.o
+OBJ_WHIPSTITCH = whipstitch/ws.o
 OBJS = $(OBJ_UTILS) $(OBJ_GRAPHICS) $(OBJ_GAME_FLOW) $(OBJ_ASSETS) $(OBJ_WHIPSTITCH) $(OBJ_AUDIO) ./main.o ./wsDemo.o
 
 LIBS = -lfreetype -lgomp -lpthread -lboost_system -lboost_filesystem -lglfw -lGL -lGLEW -lGLU -lSOIL -lalut -lopenal -lvorbisfile
@@ -43,7 +43,7 @@ DEFINITIONS = -DWS_DEFAULT_RENDER_MODE=2
 	$(CC) -o "$@" -c "$<" $(OPTIONS)
 	#  Finished building: $<
 
-main.o: main.cpp ws.h
+main.o: main.cpp wsDemo.h
 	#  $(COMPILER_NAME) Compiler - Building: $<
 	$(CC) -o "$@" -c "$<" $(OPTIONS)
 	#  Finished building: $<
