@@ -21,7 +21,7 @@ uniform float zFar;
 varying vec2 texCoords;
 
 const float OUTLINE_THRESHOLD = 0.2;
-const float OUTLINE_THICKNESS = 0.002;
+const float OUTLINE_THICKNESS = 0.0015;
 
 float getDepth(vec2 coord) {
     return 2.0 * zNear * zFar / (zFar + zNear - (2.0 * texture2D(depthMap, coord).x - 1.0) * (zFar - zNear));

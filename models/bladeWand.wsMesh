@@ -2,13 +2,42 @@
 //  This mesh is for use with the Whipstitch Game Engine
 //  For more information, email dsnettleton@whipstitchgames.com
 
-versionNumber 0.9
+versionNumber 1.0
 meshName bladeWand
 numVertices 4174
 numMaterials 5
-hasSkeleton 0
+hasSkeleton 1
+
+skeleton {
+  numJoints 3
+  joint 0 {
+    name handle
+    parent -1
+    pos_start { -0.000000 -0.026520 0.484507 }
+    pos_end { 0.045842 -0.029327 -2.181058 }
+    rotation { -0.000525 -0.008598 -0.000122 0.999963 }
+  }
+  joint 1 {
+    name jewel
+    parent 0
+    pos_start { 0.045842 -0.029327 -2.181058 }
+    pos_end { -0.000000 -0.010612 -2.629463 }
+    rotation { 0.020833 0.050861 0.001155 0.998488 }
+  }
+  joint 2 {
+    name blade
+    parent -1
+    pos_start { -0.000000 -0.026520 0.484507 }
+    pos_end { 0.000000 0.175712 3.038356 }
+    rotation { 0.999220 0.000000 -0.000000 0.039500 }
+  }
+}
 
 vertices {
+  bounds {
+    min { -0.388593 -0.395159 -2.620739 }
+    max { 0.420976 0.490657 3.113716 }
+  }
   vert 0 {
     pos { -0.055669 0.182805 -2.478077 }
     norm { -0.063723 0.165563 -0.984130 }
@@ -33412,7 +33441,8 @@ materials {
     specular { 0.46769604086875916 0.46769604086875916 0.46769604086875916 1.0 }
     emissive { 0.0 0.0 0.0 0.0 }
     maps {
-      colorMap //bladeWand_skin.png
+      bitFlag 1
+      colorMap bladeWand_skin.png
     }
     numTriangles 32
     triangles {
@@ -33593,7 +33623,8 @@ materials {
     specular { 1.0 1.0 1.0 1.0 }
     emissive { 0.14547701741267716 0.3513481491706987 0.15847070231836646 0.3919999897480011 }
     maps {
-      colorMap //bladeWand_skin.png
+      bitFlag 1
+      colorMap bladeWand_skin.png
     }
     numTriangles 224
     triangles {
@@ -34734,7 +34765,8 @@ materials {
     specular { 1.0 1.0 1.0 1.0 }
     emissive { 0.015599999079108251 0.010399999386072167 0.002599999846518042 0.019999999552965164 }
     maps {
-      colorMap //bladeWand_skin.png
+      bitFlag 1
+      colorMap bladeWand_skin.png
     }
     numTriangles 125
     triangles {
@@ -35380,7 +35412,8 @@ materials {
     specular { 1.0 1.0 1.0 1.0 }
     emissive { 0.0 0.0 0.0 0.0 }
     maps {
-      colorMap //bladeWand_skin.png
+      bitFlag 1
+      colorMap bladeWand_skin.png
     }
     numTriangles 400
     triangles {
@@ -37401,7 +37434,8 @@ materials {
     specular { 1.0 1.0 1.0 1.0 }
     emissive { 0.0 0.0 0.0 0.0 }
     maps {
-      colorMap //bladeWand_skin.png
+      bitFlag 1
+      colorMap bladeWand_skin.png
     }
     numTriangles 1155
     triangles {

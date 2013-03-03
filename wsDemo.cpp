@@ -271,14 +271,17 @@ void wsDemo::onStart() {
   wsRenderer.setClearColor(0.4f, 0.6f, 0.4f, 1.0f);
   wsMesh* griswald = wsNew(wsMesh, wsMesh("models/Griswald.wsMesh"));
   wsMesh* bladeWand = wsNew(wsMesh, wsMesh("models/bladeWand.wsMesh"));
+  wsMesh* blueBox = wsNew(wsMesh, wsMesh("models/blueBox.wsMesh"));
   wsModel* Griswald = wsNew(wsModel, wsModel("Griswald", griswald, 7));
   wsModel* BladeWand = wsNew(wsModel, wsModel("BladeWand", bladeWand, 0));
+  wsModel* BlueBox = wsNew(wsModel, wsModel("Blue Box", blueBox, 0));
   wsSound* Click = wsNew(wsSound, wsSound("sounds/btnClick.wav"));
   wsMusic* Resistors = wsNew(wsMusic, wsMusic("sounds/music/07. We're the Resistors.ogg"));
   wsSounds.addSound("Click", Click);
   wsSounds.addMusic("Resistors", Resistors);
   wsRenderer.addModel(Griswald);
   wsRenderer.addModel(BladeWand);
+  wsRenderer.addModel(BlueBox);
   wsAnimation* anim_walk = wsNew(wsAnimation, wsAnimation("models/Walk.wsAnim"));
   wsAnimation* anim_idle = wsNew(wsAnimation, wsAnimation("models/Idle.wsAnim"));
   wsAnimation* anim_jump = wsNew(wsAnimation, wsAnimation("models/Jump.wsAnim"));

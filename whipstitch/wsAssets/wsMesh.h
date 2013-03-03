@@ -37,6 +37,9 @@
 
 #include "wsAsset.h"
 
+#define WS_TEXTURE_MAP_COLOR    0x0001
+#define WS_TEXTURE_MAP_NORMAL   0x0002
+
 struct wsWeight {
   i32 jointIndex;
   f32 influence;
@@ -62,10 +65,11 @@ struct wsMaterial {
   vec4 specular;
   vec4 emissive;
   wsTriangle* tris;
+  wsHashMap<f32> *properties;
   u32 shininess;
   u32 colorMap;
+  u32 normalMap;
   u32 numTriangles;
-  wsHashMap<f32> *properties;
   u32 numProperties;
 };
 

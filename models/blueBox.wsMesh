@@ -1,0 +1,387 @@
+//  Whipstitch Mesh File
+//  This mesh is for use with the Whipstitch Game Engine
+//  For more information, email dsnettleton@whipstitchgames.com
+
+versionNumber 1.0
+meshName blueBox
+numVertices 36
+numMaterials 1
+hasSkeleton 0
+
+vertices {
+  bounds {
+    min { -2.500964 -0.000963 -2.500964 }
+    max { 2.500964 5.000963 2.500964 }
+  }
+  vert 0 {
+    pos { 2.500963 -0.000963 -2.500963 }
+    norm { 0.577349 -0.577349 -0.577349 }
+    tex { 0.996022 0.003710 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 1 {
+    pos { 2.500963 -0.000963 2.500963 }
+    norm { 0.577349 -0.577349 0.577349 }
+    tex { 0.994167 0.997357 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 2 {
+    pos { -2.500963 -0.000963 2.500962 }
+    norm { -0.577349 -0.577349 0.577349 }
+    tex { 0.003262 0.997230 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 3 {
+    pos { 2.500964 5.000963 -2.500962 }
+    norm { 0.577349 0.577349 -0.577349 }
+    tex { 0.002409 0.004091 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 4 {
+    pos { -2.500963 5.000963 -2.500963 }
+    norm { -0.577349 0.577349 -0.577349 }
+    tex { 0.003255 0.997232 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 5 {
+    pos { 2.500962 5.000963 2.500964 }
+    norm { 0.577349 0.577349 0.577349 }
+    tex { 0.996012 0.003706 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 6 {
+    pos { 2.500963 -0.000963 -2.500963 }
+    norm { 0.577349 -0.577349 -0.577349 }
+    tex { 0.996020 0.003710 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 7 {
+    pos { 2.500964 5.000963 -2.500962 }
+    norm { 0.577349 0.577349 -0.577349 }
+    tex { 0.994089 0.997357 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 8 {
+    pos { 2.500962 5.000963 2.500964 }
+    norm { 0.577349 0.577349 0.577349 }
+    tex { 0.003260 0.997230 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 9 {
+    pos { 2.500963 -0.000963 2.500963 }
+    norm { 0.577349 -0.577349 0.577349 }
+    tex { 0.003258 0.997232 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 10 {
+    pos { 2.500962 5.000963 2.500964 }
+    norm { 0.577349 0.577349 0.577349 }
+    tex { 0.002409 0.004091 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 11 {
+    pos { -2.500963 -0.000963 2.500962 }
+    norm { -0.577349 -0.577349 0.577349 }
+    tex { 0.994012 0.997434 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 12 {
+    pos { -2.500963 -0.000963 2.500962 }
+    norm { -0.577349 -0.577349 0.577349 }
+    tex { 0.996009 0.003706 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 13 {
+    pos { -2.500964 5.000963 2.500962 }
+    norm { -0.577349 0.577349 0.577349 }
+    tex { 0.993624 0.997202 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 14 {
+    pos { -2.500963 5.000963 -2.500963 }
+    norm { -0.577349 0.577349 -0.577349 }
+    tex { 0.003249 0.997226 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 15 {
+    pos { 2.500964 5.000963 -2.500962 }
+    norm { 0.577349 0.577349 -0.577349 }
+    tex { 0.996019 0.003710 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 16 {
+    pos { 2.500963 -0.000963 -2.500963 }
+    norm { 0.577349 -0.577349 -0.577349 }
+    tex { 0.994012 0.997357 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 17 {
+    pos { -2.500962 -0.000963 -2.500964 }
+    norm { -0.577349 -0.577349 -0.577349 }
+    tex { 0.003258 0.997230 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 18 {
+    pos { -2.500962 -0.000963 -2.500964 }
+    norm { -0.577349 -0.577349 -0.577349 }
+    tex { 0.002413 0.004089 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 19 {
+    pos { 2.500963 -0.000963 -2.500963 }
+    norm { 0.577349 -0.577349 -0.577349 }
+    tex { 0.996022 0.003710 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 20 {
+    pos { -2.500963 -0.000963 2.500962 }
+    norm { -0.577349 -0.577349 0.577349 }
+    tex { 0.003262 0.997230 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 21 {
+    pos { 2.500962 5.000963 2.500964 }
+    norm { 0.577349 0.577349 0.577349 }
+    tex { 0.002409 0.004091 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 22 {
+    pos { -2.500964 5.000963 2.500962 }
+    norm { -0.577349 0.577349 0.577349 }
+    tex { 0.996019 0.003712 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 23 {
+    pos { -2.500963 -0.000963 2.500962 }
+    norm { -0.577349 -0.577349 0.577349 }
+    tex { 0.994012 0.997434 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 24 {
+    pos { 2.500963 -0.000963 2.500963 }
+    norm { 0.577349 -0.577349 0.577349 }
+    tex { 0.002411 0.004089 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 25 {
+    pos { 2.500963 -0.000963 -2.500963 }
+    norm { 0.577349 -0.577349 -0.577349 }
+    tex { 0.996020 0.003710 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 26 {
+    pos { 2.500962 5.000963 2.500964 }
+    norm { 0.577349 0.577349 0.577349 }
+    tex { 0.003260 0.997230 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 27 {
+    pos { -2.500962 -0.000963 -2.500964 }
+    norm { -0.577349 -0.577349 -0.577349 }
+    tex { 0.002401 0.004086 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 28 {
+    pos { -2.500963 -0.000963 2.500962 }
+    norm { -0.577349 -0.577349 0.577349 }
+    tex { 0.996009 0.003706 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 29 {
+    pos { -2.500963 5.000963 -2.500963 }
+    norm { -0.577349 0.577349 -0.577349 }
+    tex { 0.003249 0.997226 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 30 {
+    pos { -2.500963 5.000963 -2.500963 }
+    norm { -0.577349 0.577349 -0.577349 }
+    tex { 0.002409 0.004089 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 31 {
+    pos { 2.500964 5.000963 -2.500962 }
+    norm { 0.577349 0.577349 -0.577349 }
+    tex { 0.996019 0.003710 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 32 {
+    pos { -2.500962 -0.000963 -2.500964 }
+    norm { -0.577349 -0.577349 -0.577349 }
+    tex { 0.003258 0.997230 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 33 {
+    pos { -2.500963 5.000963 -2.500963 }
+    norm { -0.577349 0.577349 -0.577349 }
+    tex { 0.003255 0.997232 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 34 {
+    pos { -2.500964 5.000963 2.500962 }
+    norm { -0.577349 0.577349 0.577349 }
+    tex { 0.993624 0.997202 }
+    weights {
+      numWeights 0
+    }
+  }
+  vert 35 {
+    pos { 2.500962 5.000963 2.500964 }
+    norm { 0.577349 0.577349 0.577349 }
+    tex { 0.996012 0.003706 }
+    weights {
+      numWeights 0
+    }
+  }
+}
+
+materials {
+  mat 0 {
+    name Material
+    shine 50
+    ambient { 0.800000011920929 0.800000011920929 0.800000011920929 1.0 }
+    diffuse { 0.800000011920929 0.800000011920929 0.800000011920929 1.0 }
+    specular { 1.0 1.0 1.0 1.0 }
+    emissive { 0.0 0.0 0.0 0.0 }
+    maps {
+      bitFlag 3
+      colorMap blueBricks.png
+      normalMap blueBricks_norm.png
+    }
+    numTriangles 12
+    triangles {
+      tri 0 {
+        verts {
+          indices { 0 1 2 }
+        }
+      }
+      tri 1 {
+        verts {
+          indices { 3 4 5 }
+        }
+      }
+      tri 2 {
+        verts {
+          indices { 6 7 8 }
+        }
+      }
+      tri 3 {
+        verts {
+          indices { 9 10 11 }
+        }
+      }
+      tri 4 {
+        verts {
+          indices { 12 13 14 }
+        }
+      }
+      tri 5 {
+        verts {
+          indices { 15 16 17 }
+        }
+      }
+      tri 6 {
+        verts {
+          indices { 18 19 20 }
+        }
+      }
+      tri 7 {
+        verts {
+          indices { 21 22 23 }
+        }
+      }
+      tri 8 {
+        verts {
+          indices { 24 25 26 }
+        }
+      }
+      tri 9 {
+        verts {
+          indices { 27 28 29 }
+        }
+      }
+      tri 10 {
+        verts {
+          indices { 30 31 32 }
+        }
+      }
+      tri 11 {
+        verts {
+          indices { 33 34 35 }
+        }
+      }
+    }
+    properties {
+      numProperties 0
+    }
+  }
+}
+

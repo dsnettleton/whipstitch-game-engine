@@ -1,9 +1,14 @@
-//  main.cpp
-//  D. Scott Nettleton
-/*
- *  This is the test file (driver) for the wsMath functions; it will
- *  also be used to generate a file containing tables for quick trig
- *  lookups.
+/**
+ *  wsGame.h
+ *  March 1, 2013
+ *  D. Scott Nettleton
+ *
+ *  This file declares the abstract base class wsGame.
+ *  The wsGame class is inherited by a game object, which
+ *  is different from one game to another. Eventually, the
+ *  world builder will generate and compile wsGame objects.
+ *  For now, it should be used as a template for implementing
+ *  the Whipstitch Game Engine as an API.
  *
  *  This software is provided under the terms of the MIT license
  *  Copyright (c) D. Scott Nettleton, 2013
@@ -28,28 +33,24 @@
  *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *  OTHER DEALINGS IN THE SOFTWARE.
 */
+#ifndef WS_GAME_H_
+#define WS_GAME_H_
 
-#include "wsDemo.h"
+#include "wsEventManager.h"
 
-int main(int argc, char** argv) {
-  #ifdef _PROFILE
-    wsActiveLogs = (WS_LOG_PROFILING | WS_LOG_MAIN | WS_LOG_UTIL | WS_LOG_ERROR);
-  #else
-    // wsActiveLogs = (WS_LOG_MAIN | WS_LOG_ERROR);
-    // wsActiveLogs = (WS_LOG_DEBUG | WS_LOG_ERROR | WS_LOG_UTIL | WS_LOG_SHADER);
-    // wsActiveLogs = WS_LOG_ALL;
-    wsActiveLogs = WS_LOG_MAIN | WS_LOG_SHADER;
-  #endif
-  wsInit("Whipstitch Game Engine", 1280, 720, false, 512*wsMB, 32*wsMB);  //  512MB, 32MB
+class wsGame {
+  public:
+    //  This is run when the program opens, before the game loop starts.
+    //  It runs immediately after the Engine subsystems are initialized.
+    virtual void onStart() = 0;
+    //  This contains functions which are run once every game loop.
+    virtual void onLoop() = 0;
+    //  This contains functions which handle events in the whipstitch
+    //  game engine.
+    virtual void onEvent(const wsEvent& event) = 0;
+    //  This is run when the program closes, immediately before the
+    //  Engine subsystems are shut down.
+    virtual void onExit() = 0;
+};
 
-  wsDemo* demoGame = wsNew(wsDemo, wsDemo());
-
-  demoGame->onStart();
-
-  wsLoop.beginGame(demoGame);
-
-  demoGame->onExit();
-
-  wsQuit();
-  return 0;
-}
+#endif //  WS_GAME_H_

@@ -12,6 +12,9 @@ MAJOR_VERSION = 1
 MINOR_VERSION = 0
 BLENDER_FPS = 24
 
+WS_TEXTURE_MAP_COLOR  = 0x0001
+WS_TEXTURE_MAP_NORMAL = 0x0002
+
 class wsJointMod:
   def __init__(self, name):
     self.name = name
@@ -129,7 +132,9 @@ class wsMaterial:
     self.numTris = 0
     self.tris = []
     self.shininess = 0
+    self.mapBitFlag = 0
     self.colorMap = ""
+    self.normalMap = ""
     self.properties = []
 
 class wsCustomProperty:
@@ -331,9 +336,20 @@ for my in bpy.data.objects:
                                   myMat.emit * myMat.diffuse_color[2], \
                                   myMat.emit * myMat.alpha ]
       mat.shininess = myMat.specular_hardness
-      mat.colorMap = myMat.active_texture.image.filepath
-      fileStart = mat.colorMap.rfind("/") - 1
-      mat.colorMap = mat.colorMap[fileStart:]
+      for tex in myMat.texture_slots:
+        if tex != None:
+          if tex.use_map_color_diffuse:
+            mat.mapBitFlag |= WS_TEXTURE_MAP_COLOR
+            mat.colorMap = tex.texture.image.filepath
+            fileStart = mat.colorMap.rfind("/") - 1
+            mat.colorMap = mat.colorMap[fileStart:]
+          elif tex.use_map_normal:
+            mat.mapBitFlag |= WS_TEXTURE_MAP_NORMAL
+            mat.normalMap = tex.texture.image.filepath
+            fileStart = mat.normalMap.rfind("/") - 1
+            mat.normalMap = mat.normalMap[fileStart:]
+          #end if this texture has been defined
+        #end for each texture
       # Check for custom material properties
       for prop in myMat.items():
         if prop[0] != "_RNA_UI":
@@ -542,7 +558,11 @@ if (mesh != None):
       str(mat.emissive[2]) +" "+ \
       str(mat.emissive[3]) +" }\n")
     output.write("    maps {\n")
-    output.write("      colorMap "+ mat.colorMap[2:] +"\n")
+    output.write("      bitFlag %u\n" % (mat.mapBitFlag))
+    if (mat.colorMap != ""):
+      output.write("      colorMap "+ mat.colorMap[2:] +"\n")
+    if (mat.normalMap != ""):
+      output.write("      normalMap "+ mat.normalMap[2:] +"\n")
     output.write("    }\n")
     output.write("    numTriangles "+ str(mat.numTris) +"\n")
     output.write("    triangles {\n")

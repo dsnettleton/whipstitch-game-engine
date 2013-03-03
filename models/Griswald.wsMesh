@@ -140806,6 +140806,7 @@ materials {
     specular { 0.11068485677242279 0.11068485677242279 0.11068485677242279 1.0 }
     emissive { 0.0 0.0 0.0 0.0 }
     maps {
+      bitFlag 1
       colorMap chibiGriswaldSkin.png
     }
     numTriangles 3876
@@ -160203,6 +160204,7 @@ materials {
     specular { 0.11068485677242279 0.11068485677242279 0.11068485677242279 1.0 }
     emissive { 0.0 0.0 0.0 0.0 }
     maps {
+      bitFlag 1
       colorMap chibiGriswaldSkin.png
     }
     numTriangles 2076

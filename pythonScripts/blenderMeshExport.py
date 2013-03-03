@@ -5,11 +5,15 @@
 import bpy,os
 from math import sqrt
 from mathutils import Matrix, Vector, Quaternion
+from copy import deepcopy
 
-workingDirectory = os.path.split(bpy.data.filepath)[0] + "/"
-MAJOR_VERSION = 0
-MINOR_VERSION = 9
+workingDirectory = "./"
+MAJOR_VERSION = 1
+MINOR_VERSION = 0
 BLENDER_FPS = 24
+
+WS_TEXTURE_MAP_COLOR  = 0x0001
+WS_TEXTURE_MAP_NORMAL = 0x0002
 
 class wsJointMod:
   def __init__(self, name):
@@ -51,6 +55,7 @@ class wsJoint:
     self.rot = Quaternion((1,0,0,0))
     self.initialRot = Quaternion((1,0,0,0))
     self.parent = -1
+    self.bounds = wsBounds(0,0,0,0,0,0)
 
 class wsSkeleton:
   def __init__(self, name):
@@ -66,6 +71,7 @@ class wsKeyframe:
     self.frameIndex = index
     self.numJointMods = 0
     self.jointMods = []
+    self.bounds = wsBounds(0,0,0,0,0,0)
 
 class wsAnimation:
   def __init__(self, name, skeleton):
@@ -76,19 +82,27 @@ class wsAnimation:
     self.framesPerSecond = BLENDER_FPS
     self.length = 0.0
 
+class wsBounds:
+  def __init__(self, minX, maxX, minY, maxY, minZ, maxZ):
+    self.minX = minX
+    self.maxX = maxX
+    self.minY = minY
+    self.maxY = maxY
+    self.minZ = minZ
+    self.maxZ = maxZ
+
 class wsMesh:
   def __init__(self, name, skeleton):
     self.name = name
     self.numVerts = 0
     self.numMaterials = 0
-    self.numTags = 0
     self.verts = []
     self.materials = []
-    self.tags = []
     self.skeleton = skeleton
     self.location = Vector((0,0,0))
     self.scale = Vector((1,1,1))
     self.rotation = Quaternion((1,0,0,0))
+    self.bounds = wsBounds(0,0,0,0,0,0)
 
 class wsVert:
   def __init__(self):
@@ -118,20 +132,15 @@ class wsMaterial:
     self.numTris = 0
     self.tris = []
     self.shininess = 0
+    self.mapBitFlag = 0
     self.colorMap = ""
+    self.normalMap = ""
     self.properties = []
 
 class wsCustomProperty:
   def __init__(self, name, value):
     self.name = name
     self.value = value
-
-class wsTag:
-  def __init__(self, name):
-    self.name = name
-    self.pos = Vector((0,0,0))
-    self.rot = Quaternion((1,0,0,0))
-    self.parent = -1
 
 class wsFileBuffer:
   def __init__(self, filename, ext):
@@ -144,13 +153,12 @@ class wsFileBuffer:
   def clear(self):
     self.buffer = ""
 
-numTags = 0
 animSkel = None
 animSkelName = ""
 mesh = None
 animations = []
-tags  = []
 hasSkeleton = 0
+bpy.ops.object.mode_set(mode='OBJECT')  # Make sure we're in object mode
 
 #   Calculate Skeletal data
 for my in bpy.data.objects:
@@ -259,8 +267,6 @@ for my in bpy.data.objects:
     mesh.rotation.y = rotation[3]
     mesh.rotation.z = -rotation[2]
     mesh.rotation.w = rotation[0]
-    mesh.tags = tags
-    mesh.numTags = len(tags)
     matCount = 0
     vertIndexCount = 0
     for myMat in my.data.materials:
@@ -275,16 +281,16 @@ for my in bpy.data.objects:
             vert.norm = Vector([ bVert.normal[0], bVert.normal[2], -bVert.normal[1] ])
             if (v == 0):
               vert.texCoords = [ my.data.tessface_uv_textures[0].data[faceNum].uv1[0], \
-                                              my.data.tessface_uv_textures[0].data[faceNum].uv1[1] ]
+                                my.data.tessface_uv_textures[0].data[faceNum].uv1[1] ]
             elif (v == 1):
               vert.texCoords = [ my.data.tessface_uv_textures[0].data[faceNum].uv2[0], \
-                                              my.data.tessface_uv_textures[0].data[faceNum].uv2[1] ]
+                                my.data.tessface_uv_textures[0].data[faceNum].uv2[1] ]
             elif (v == 2):
               vert.texCoords = [ my.data.tessface_uv_textures[0].data[faceNum].uv3[0], \
-                                              my.data.tessface_uv_textures[0].data[faceNum].uv3[1] ]
+                                my.data.tessface_uv_textures[0].data[faceNum].uv3[1] ]
             elif (v == 3):
               vert.texCoords = [ my.data.tessface_uv_textures[0].data[faceNum].uv4[0], \
-                                              my.data.tessface_uv_textures[0].data[faceNum].uv4[1] ]
+                                my.data.tessface_uv_textures[0].data[faceNum].uv4[1] ]
             for g in range(len(bVert.groups)):
               vertGroup = my.vertex_groups[bVert.groups[g].group]
               jointid = -1
@@ -330,7 +336,20 @@ for my in bpy.data.objects:
                                   myMat.emit * myMat.diffuse_color[2], \
                                   myMat.emit * myMat.alpha ]
       mat.shininess = myMat.specular_hardness
-      mat.colorMap = myMat.active_texture.image.filepath
+      for tex in myMat.texture_slots:
+        if tex != None:
+          if tex.use_map_color_diffuse:
+            mat.mapBitFlag |= WS_TEXTURE_MAP_COLOR
+            mat.colorMap = tex.texture.image.filepath
+            fileStart = mat.colorMap.rfind("/") - 1
+            mat.colorMap = mat.colorMap[fileStart:]
+          elif tex.use_map_normal:
+            mat.mapBitFlag |= WS_TEXTURE_MAP_NORMAL
+            mat.normalMap = tex.texture.image.filepath
+            fileStart = mat.normalMap.rfind("/") - 1
+            mat.normalMap = mat.normalMap[fileStart:]
+          #end if this texture has been defined
+        #end for each texture
       # Check for custom material properties
       for prop in myMat.items():
         if prop[0] != "_RNA_UI":
@@ -343,59 +362,10 @@ for my in bpy.data.objects:
       mesh.numVerts = len(mesh.verts)
     #end for each mesh object
 
-#   Calculate Tag Data
-for my in bpy.data.objects:
-  if (my.type == "EMPTY"):
-    if (my.parent_type == "BONE"):
-      tag = wsTag(my.name)
-      parentBone = my.parent.data.bones[my.parent_bone]
-      worldMatrix = my.parent.matrix_world * parentBone.matrix_local * my.matrix_basis
-      tagPos = worldMatrix.to_translation()
-      tagQuat = worldMatrix.to_quaternion()
-
-      tag.pos.x = tagPos.x
-      tag.pos.y = tagPos.z
-      tag.pos.z = -tagPos.y
-      tag.rot.x = tagQuat.x
-      tag.rot.y = tagQuat.z
-      tag.rot.z = -tagQuat.y
-      tag.rot.w = tagQuat.w
-
-      # Find the parent bone
-      jointNum = 0
-      for joint in animSkel.joints:
-        if (joint.name == my.parent_bone):
-          tag.parent = jointNum
-          break
-        jointNum += 1
-        #end for each joint in animSkel
-      tags.append( tag )
-      #end if (parent_type == "BONE")
-    elif (my.parent_type == "OBJECT" and my.parent != None and mesh != None):
-      if (my.parent.name == mesh.name):
-        tag = wsTag(my.name)
-        tag.pos.x = my.location[0]
-        tag.pos.y = my.location[2]
-        tag.pos.z = -my.location[1]
-        tag.rot.x = my.rotation_quaternion[1]
-        tag.rot.y = my.rotation_quaternion[3]
-        tag.rot.z = -my.rotation_quaternion[2]
-        tag.rot.w = my.rotation_quaternion[0]
-        tag.parent = -1
-        tag.pos.x *= mesh.scale.x
-        tag.pos.y *= mesh.scale.y
-        tag.pos.z *= mesh.scale.z
-        tag.pos += mesh.location
-        tag.pos.rotate(mesh.rotation)
-        tags.append( tag )
-        #end if my.parent.name == mesh.name
-      #end if (parent_type == "OBJECT")
-    #end if (type == "EMPTY")
-  #end for each object
-
 #   ADJUST DATA FOR PARENT OBJECT TRANSFORMATIONS
 if (animSkel != None):
   animSkel.numJoints = len(animSkel.joints)
+  boundsInitialized = 0
   for joint in animSkel.joints:
     joint.start.rotate(animSkel.rotation)
     joint.end.rotate(animSkel.rotation)
@@ -412,10 +382,25 @@ if (animSkel != None):
 
     joint.initialRot = joint.rot
     joint.rot = animSkel.rotation * joint.initialRot
+    # Set the joint's bounding box
+    if (boundsInitialized == 0):
+      joint.bounds = wsBounds(min(joint.start.x, joint.end.x), max(joint.start.x, joint.end.x), \
+                              min(joint.start.y, joint.end.y), max(joint.start.y, joint.end.y), \
+                              min(joint.start.z, joint.end.z), max(joint.start.z, joint.end.z))
+      boundsInitialized = 1
+    else:
+      joint.bounds.minX = min(joint.bounds.minX, joint.start.x, joint.end.x)
+      joint.bounds.maxX = max(joint.bounds.maxX, joint.start.x, joint.end.x)
+      joint.bounds.minY = min(joint.bounds.minY, joint.start.y, joint.end.y)
+      joint.bounds.maxY = max(joint.bounds.maxY, joint.start.y, joint.end.y)
+      joint.bounds.minZ = min(joint.bounds.minZ, joint.start.z, joint.end.z)
+      joint.bounds.maxZ = max(joint.bounds.maxZ, joint.start.z, joint.end.z)
+    #end for each joint
+  #end if we have a skeleton
 if (mesh != None):
   mesh.numVerts = len(mesh.verts)
-  mesh.numTags = len(mesh.tags)
   mesh.numMaterials = len(mesh.materials)
+  boundsInitialized = 0
   for mat in mesh.materials:
     mat.numTris = len(mat.tris)
   for vert in mesh.verts:
@@ -425,8 +410,22 @@ if (mesh != None):
     vert.pos += mesh.location
     vert.pos.rotate(mesh.rotation)
     vert.numWeights = len(vert.weights)
+    # Set the default bounding box
+    if (boundsInitialized == 0):
+      mesh.bounds = wsBounds(vert.pos.x, vert.pos.x, vert.pos.y, vert.pos.y, vert.pos.z, vert.pos.z)
+      boundsInitialized = 1
+    else:
+      mesh.bounds.minX = min(mesh.bounds.minX, vert.pos.x)
+      mesh.bounds.maxX = max(mesh.bounds.maxX, vert.pos.x)
+      mesh.bounds.minY = min(mesh.bounds.minY, vert.pos.y)
+      mesh.bounds.maxY = max(mesh.bounds.maxY, vert.pos.y)
+      mesh.bounds.minZ = min(mesh.bounds.minZ, vert.pos.z)
+      mesh.bounds.maxZ = max(mesh.bounds.maxZ, vert.pos.z)
+    #end for each vertex
+  #end if we have a mesh
 for anim in animations:
   anim.numKeyframes = len(anim.keyframes)
+  boundsInitialized = 0
   for key in anim.keyframes:
     key.numJointMods = len(key.jointMods)
     for j in range( key.numJointMods ):
@@ -442,6 +441,43 @@ for anim in animations:
       if (par >= 0):
         diffRot = animSkel.joints[par].initialRot.inverted() * animSkel.joints[j].initialRot
         key.jointMods[j].rotation = key.jointMods[par].rotation * diffRot * key.jointMods[j].initialRot
+      #end for each jointMod
+    # Set the keyframe's bounding box
+    # jointList = wsSkeleton("Temp")
+    #apply the animation to a copy.
+    jointList = deepcopy(animSkel.joints)
+    for j in range(len(jointList)):
+      if (par >= 0):
+        jointList[j].startRel = jointList[j].start - animSkel.joints[par].start
+        jointList[j].startRel.rotate(animSkel.joints[par].rot.inverted())
+      else:
+        jointList[j].startRel = jointList[j].start
+      jointList[j].end -= jointList[j].start
+      jointList[j].end.rotate(jointList[j].rot.inverted())
+    for j in range(len(jointList)):
+      jointList[j].rot = key.jointMods[j].rotation
+      jointList[j].start = jointList[j].startRel
+      if (jointList[j].parent >= 0):
+        jointList[j].start.rotate(jointList[jointList[j].parent].rot)
+        jointList[j].start += jointList[jointList[j].parent].start
+      jointList[j].start += key.jointMods[j].location
+      jointList[j].end.rotate(key.jointMods[j].rotation)
+      jointList[j].end += jointList[j].start
+      if (boundsInitialized == 0):
+        key.bounds = wsBounds(min(jointList[j].start.x, jointList[j].end.x), max(jointList[j].start.x, jointList[j].end.x), \
+                              min(jointList[j].start.y, jointList[j].end.y), max(jointList[j].start.y, jointList[j].end.y), \
+                              min(jointList[j].start.z, jointList[j].end.z), max(jointList[j].start.z, jointList[j].end.z))
+        boundsInitialized = 1
+      else:
+        key.bounds.minX = min(key.bounds.minX, jointList[j].start.x, jointList[j].end.x)
+        key.bounds.maxX = max(key.bounds.maxX, jointList[j].start.x, jointList[j].end.x)
+        key.bounds.minY = min(key.bounds.minY, jointList[j].start.y, jointList[j].end.y)
+        key.bounds.maxY = max(key.bounds.maxY, jointList[j].start.y, jointList[j].end.y)
+        key.bounds.minZ = min(key.bounds.minZ, jointList[j].start.z, jointList[j].end.z)
+        key.bounds.maxZ = max(key.bounds.maxZ, jointList[j].start.z, jointList[j].end.z)
+      #end for each joint
+    #end for each keyframe
+  #end for each animation
         
 #   NOW WE WRITE!
 if (mesh != None):
@@ -453,7 +489,6 @@ if (mesh != None):
   output.write("meshName "+ mesh.name +"\n")
   output.write("numVertices "+ str(mesh.numVerts) +"\n")
   output.write("numMaterials "+ str(mesh.numMaterials) +"\n")
-  output.write("numTags "+ str(mesh.numTags) +"\n\n")
   output.write("hasSkeleton %u\n\n" % hasSkeleton)
   if (hasSkeleton > 0):
     output.write("skeleton {\n")
@@ -461,6 +496,7 @@ if (mesh != None):
     output.write("  numJoints "+ str(skel.numJoints) +"\n") #add one for the root location
     for j in range( skel.numJoints ):
       output.write("  joint "+ str(j) +" {\n")
+      output.write("    name "+ skel.joints[j].name+"\n")
       output.write("    parent "+ str(skel.joints[j].parent) +"\n")
       output.write("    pos_start { %f %f %f }\n" % (skel.joints[j].start.x, skel.joints[j].start.y, skel.joints[j].start.z))
       output.write("    pos_end { %f %f %f }\n" % (skel.joints[j].end.x, skel.joints[j].end.y, skel.joints[j].end.z))
@@ -471,6 +507,10 @@ if (mesh != None):
     output.write("}\n\n")
     #End if hasSkeleton > 0
   output.write("vertices {\n")
+  output.write("  bounds {\n")
+  output.write("    min { %f %f %f }\n" % (mesh.bounds.minX, mesh.bounds.minY, mesh.bounds.minZ))
+  output.write("    max { %f %f %f }\n" % (mesh.bounds.maxX, mesh.bounds.maxY, mesh.bounds.maxZ))
+  output.write("  }\n")
   for v in range( mesh.numVerts ):
     vert = mesh.verts[v]
     output.write("  vert "+ str(v) +" {\n")
@@ -518,7 +558,11 @@ if (mesh != None):
       str(mat.emissive[2]) +" "+ \
       str(mat.emissive[3]) +" }\n")
     output.write("    maps {\n")
-    output.write("      colorMap "+ mat.colorMap +"\n")
+    output.write("      bitFlag %u\n" % (mat.mapBitFlag))
+    if (mat.colorMap != ""):
+      output.write("      colorMap "+ mat.colorMap[2:] +"\n")
+    if (mat.normalMap != ""):
+      output.write("      normalMap "+ mat.normalMap[2:] +"\n")
     output.write("    }\n")
     output.write("    numTriangles "+ str(mat.numTris) +"\n")
     output.write("    triangles {\n")
@@ -546,23 +590,6 @@ if (mesh != None):
     output.write("    }\n")
     output.write("  }\n")
     #end for each material
-  output.write("}\n\n")
-  output.write("tags {\n")
-  for t in range(mesh.numTags):
-    output.write("  tag "+ str(t) +" {\n")
-    output.write("    name "+ mesh.tags[t].name +"\n")
-    output.write("    parentJoint %d\n" % mesh.tags[t].parent)
-    output.write("    pos { "+ \
-      str(mesh.tags[t].pos.x) +" "+ \
-      str(mesh.tags[t].pos.y) +" "+ \
-      str(mesh.tags[t].pos.z) +" }\n")
-    output.write("    dir { "+ \
-      str(mesh.tags[t].rot.x) +" "+ \
-      str(mesh.tags[t].rot.y)+" "+ \
-      str(mesh.tags[t].rot.z) +" "+ \
-      str(mesh.tags[t].rot.w) +" }\n")
-    output.write("  }\n")
-    #end for each tag
   output.write("}\n\n")
   output.apply()
   #end if (mesh exist)s
@@ -604,6 +631,10 @@ for a in range( len(animations) ):
     key = anim.keyframes[k]
     output.write("  keyframe "+ str(k) +" {\n")
     output.write("    frameNumber "+ str(key.frameIndex) +"\n")
+    output.write("    bounds {\n")
+    output.write("      min { %f %f %f }\n" % (key.bounds.minX, key.bounds.minY, key.bounds.minZ))
+    output.write("      max { %f %f %f }\n" % (key.bounds.maxX, key.bounds.maxY, key.bounds.maxZ))
+    output.write("    }\n")
     output.write("    jointsModified "+ str(key.numJointMods) + "\n")
     for j in range( key.numJointMods ):
       output.write("    joint "+ str(j) +" {\n")

@@ -158,12 +158,22 @@ wsMesh::wsMesh(const char* filepath) {
             &mats[m].emissive.g,
             &mats[m].emissive.b,
             &mats[m].emissive.a ) );
-    errorCheck( fscanf( pFile,  "    maps {\n"
-                  "      colorMap %[^\t\n]\n"
-                  "    }\n", nameBuffer ) );
-    char filepath[264] = { "textures/" };
-    strcat(filepath, nameBuffer);
-    wsRenderer.loadTexture(&mats[m].colorMap, filepath);
+    errorCheck( fscanf( pFile, "    maps {\n" ) );
+    u32 mapsBitflag;
+    errorCheck( fscanf( pFile, "      bitFlag %u\n", &mapsBitflag) );
+    if (mapsBitflag & WS_TEXTURE_MAP_COLOR) {
+      errorCheck( fscanf( pFile, "      colorMap %[^\t\n]\n", nameBuffer) );
+      char filepath[264] = { "textures/" };
+      strcat(filepath, nameBuffer);
+      wsRenderer.loadTexture(&mats[m].colorMap, filepath);
+    }
+    if (mapsBitflag & WS_TEXTURE_MAP_NORMAL) {
+      errorCheck( fscanf( pFile, "      normalMap %[^\t\n]\n", nameBuffer) );
+      char filepath[264] = { "textures/" };
+      strcat(filepath, nameBuffer);
+      wsRenderer.loadTexture(&mats[m].normalMap, filepath);
+    }
+    errorCheck( fscanf( pFile, "    }\n") );
     //  Triangles using this material
     errorCheck( fscanf( pFile, "    numTriangles %u\n", &mats[m].numTriangles) );
     mats[m].tris = wsNewArray( wsTriangle, mats[m].numTriangles );

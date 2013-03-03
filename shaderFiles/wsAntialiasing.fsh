@@ -11,11 +11,6 @@ const float SAMPLE_OFFSET = 1.5;
 const float EDGE_TOLERANCE = 0.3;
 const float BLUR_BLEND_FACTOR = 0.5;
 
-const int METHOD_DLAA = 1;
-const int METHOD_SSAA = 2;
-
-const int method = METHOD_DLAA;
-
 float lumRGB(vec3 v) {
   return dot(v, vec3(0.299, 0.587, 0.114)); //  Perceieved luminosity
 }
@@ -74,11 +69,5 @@ vec4 ssaa() {
 }
 
 void  main() {
-  if (method == METHOD_DLAA) {
-    gl_FragData[0] = dlaa();
-  }
-  else if (method == METHOD_SSAA) {
-    gl_FragData[0] = ssaa();
-    // gl_FragData[0] = vec4(vec3(1.0,1.0,1.0) * lumRGB(texture2D(colorMap, texCoords).xyz), 1.0);
-  }
+  gl_FragData[0] = dlaa();
 }

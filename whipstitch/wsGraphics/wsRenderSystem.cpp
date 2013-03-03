@@ -235,6 +235,7 @@ void wsRenderSystem::initializeShaders(u32 width, u32 height) {
     shaders[WS_SHADER_ANTIALIAS] = wsNew(wsShader, wsShader("shaderFiles/wsFullscreen.vsh", "shaderFiles/wsAntialiasing.fsh"));
     //  Set uniform variables
     shaders[WS_SHADER_INITIAL]->setUniformInt("colorMap", 0);
+    shaders[WS_SHADER_INITIAL]->setUniformInt("normalMap", 1);
     shaders[WS_SHADER_FINAL]->setUniformInt("finalTexture", 0);
     shaders[WS_SHADER_POST]->setUniformInt("colorMap", 0);
     shaders[WS_SHADER_POST]->setUniformInt("materialMap", 1);
@@ -907,7 +908,11 @@ void wsRenderSystem::setMaterial(const wsMaterial& mat) {
     glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat*)&mat.specular);
     glMaterialfv(GL_FRONT, GL_EMISSION, (GLfloat*)&mat.emissive);
     glMaterialf(GL_FRONT, GL_SHININESS, mat.shininess);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mat.colorMap);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, mat.normalMap);
+    shaders[WS_SHADER_INITIAL]->setUniformInt("hasNormalMap", mat.normalMap);
   #endif
 }
 
