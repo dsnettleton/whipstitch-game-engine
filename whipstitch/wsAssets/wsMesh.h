@@ -40,10 +40,7 @@
 #define WS_TEXTURE_MAP_COLOR    0x0001
 #define WS_TEXTURE_MAP_NORMAL   0x0002
 
-struct wsWeight {
-  i32 jointIndex;
-  f32 influence;
-};
+#define WS_MAX_JOINT_INFLUENCES   8
 
 struct wsVert {
   vec4 pos;
@@ -51,8 +48,10 @@ struct wsVert {
   f32 tex[2]; //  UV texture coordinates
   vec4 originalPos;
   vec4 originalNorm;
-  wsWeight* weights;
-  u32 numWeights;
+  //  Joint Indices and Weights for animation
+  i32 numWeights;
+  i32 jointIndex[WS_MAX_JOINT_INFLUENCES];
+  f32 influence[WS_MAX_JOINT_INFLUENCES];
 };
 
 struct wsTriangle {
@@ -98,6 +97,8 @@ class wsMesh: public wsAsset {
     wsMaterial* mats;
     wsJoint* joints;
     wsJoint* baseSkel;
+    vec4* jointLocations;
+    quat* jointRotations;
     wsHashMap<u32>* jointIndices;
     wsBounds bounds;
     u32 numVerts;
@@ -112,6 +113,8 @@ class wsMesh: public wsAsset {
     const wsBounds* getBounds() const { return &bounds; }
     const wsJoint* getJoint(const char* jointName) { return &joints[jointIndices->retrieve(wsHash(jointName))]; }
     const wsJoint* getJoints() const { return joints; }
+    const vec4* getJointLocations() { return jointLocations; }
+    const quat* getJointRotations() { return jointRotations; }
     const wsMaterial* getMats() const { return mats; }
     const wsVert* getVerts() const { return verts; }
     u32 getNumJoints() const { return numJoints; }

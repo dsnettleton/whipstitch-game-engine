@@ -62,6 +62,8 @@ wsModel::wsModel(const char* myName, wsMesh* myMesh, const u32 myMaxAnimations =
   else {
     animations = NULL;
   }
+  jointLocations = wsNewArray(vec4, myMesh->getNumJoints());
+  jointRotations = wsNewArray(quat, myMesh->getNumJoints());
   attachment = WS_NULL;
   looping = false;
   timeScale = 1.0f;
@@ -73,7 +75,7 @@ wsModel::wsModel(const char* myName, wsMesh* myMesh, const u32 myMaxAnimations =
     indexArrays = wsNewArray(wsIndexArray, numIndexArrays);
     glGenBuffers(1, &vertexArray);
     glBindBuffer(GL_ARRAY_BUFFER, vertexArray);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(wsVert)*myMesh->getNumVerts(), myMesh->getVerts(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(wsVert)*myMesh->getNumVerts(), myMesh->getVerts(), GL_STATIC_DRAW);
     //  Unbind the buffer
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     //  Generate vertex buffer objects for this mesh
@@ -149,36 +151,9 @@ void wsModel::applyAnimation() {
       joints[i].start += joints[joints[i].parent].start;
     }
     joints[i].start += mods[i].location;
+    jointRotations[i] = joints[i].rot;
+    jointLocations[i] = joints[i].start;
   }
-  quat rot;
-  vec4 pos;
-  vec4 norm;
-  vec4 posSum;
-  vec4 normSum;
-  wsVert* verts = (wsVert*)mesh->getVerts();
-  //  Animate Vertices
-  for (u32 v = 0; v < mesh->getNumVerts(); ++v) {
-    posSum.set(0, 0, 0, 1);
-    normSum.set(0, 0, 0, 1);
-    for (u32 w = 0; w < verts[v].numWeights; ++w) {
-      pos = verts[v].originalPos - mesh->getBaseSkel()[verts[v].weights[w].jointIndex].start;
-      pos.rotate(mesh->getBaseSkel()[verts[v].weights[w].jointIndex].rot.getInverse());
-      pos.rotate(joints[verts[v].weights[w].jointIndex].rot);
-      pos += joints[verts[v].weights[w].jointIndex].start;
-      posSum += pos * verts[v].weights[w].influence;
-      //  Handle Normals
-      norm = verts[v].originalNorm;
-      norm.rotate(mesh->getBaseSkel()[verts[v].weights[w].jointIndex].rot.getInverse());
-      norm.rotate(joints[verts[v].weights[w].jointIndex].rot);
-      normSum += norm;
-    }
-    verts[v].pos = posSum;
-    verts[v].norm = normSum / verts[v].numWeights;
-  }
-  #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
-    glBindBuffer(GL_ARRAY_BUFFER, vertexArray);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(wsVert)*mesh->getNumVerts(), mesh->getVerts());
-  #endif
 }
 
 void wsModel::attachModel(wsModel* myModel, const char* jointName) {

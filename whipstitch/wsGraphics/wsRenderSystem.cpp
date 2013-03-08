@@ -75,6 +75,12 @@ wsRenderSystem wsRenderer;
 #define WS_FBO_TEX_FINAL_A    5
 #define WS_FBO_TEX_FINAL_B    6
 
+#define WS_VERT_ATTRIB_NUM_WEIGHTS      1
+#define WS_VERT_ATTRIB_JOINT_INDEX      2
+#define WS_VERT_ATTRIB_INFLUENCE        3
+#define WS_VERT_ATTRIB_JOINT_INDEX_2    4
+#define WS_VERT_ATTRIB_INFLUENCE_2      5
+
 wsMeshContainer::wsMeshContainer(const wsMesh* my) {
   mesh = my;
   #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
@@ -227,7 +233,17 @@ void wsRenderSystem::initializeShaders(u32 width, u32 height) {
 
     //  Create shader objects
     shaders = wsNewArray(wsShader*, WS_NUM_SHADERS);
-    shaders[WS_SHADER_INITIAL] = wsNew(wsShader, wsShader("shaderFiles/wsInitial.vsh", "shaderFiles/wsInitial.fsh"));
+    shaders[WS_SHADER_INITIAL] = wsNew(wsShader, wsShader("shaderFiles/wsInitial.vsh", "shaderFiles/wsInitial.fsh", true));
+      shaders[WS_SHADER_INITIAL]->setVertexAttribute("numWeights", WS_VERT_ATTRIB_NUM_WEIGHTS);
+      shaders[WS_SHADER_INITIAL]->setVertexAttribute("jointIndex", WS_VERT_ATTRIB_JOINT_INDEX);
+      shaders[WS_SHADER_INITIAL]->setVertexAttribute("influence", WS_VERT_ATTRIB_INFLUENCE);
+      shaders[WS_SHADER_INITIAL]->setVertexAttribute("jointIndex2", WS_VERT_ATTRIB_JOINT_INDEX_2);
+      shaders[WS_SHADER_INITIAL]->setVertexAttribute("influence2", WS_VERT_ATTRIB_INFLUENCE_2);
+    #ifndef NDEBUG
+      wsAssert((shaders[WS_SHADER_INITIAL]->install()), "Could not install initial shader.");
+    #else
+      shaders[WS_SHADER_INITIAL]->install();
+    #endif
     shaders[WS_SHADER_FINAL] = wsNew(wsShader, wsShader("shaderFiles/wsFullscreen.vsh", "shaderFiles/wsFinal.fsh"));
     shaders[WS_SHADER_POST] = wsNew(wsShader, wsShader("shaderFiles/wsFullscreen.vsh", "shaderFiles/wsPost.fsh"));
     shaders[WS_SHADER_HUD] = wsNew(wsShader, wsShader("shaderFiles/wsHud.vsh", "shaderFiles/wsHud.fsh"));
@@ -540,6 +556,12 @@ void wsRenderSystem::drawModel(u32 modelIndex) {
   wsAssert(mats != NULL, "Cannot use material; empty reference.");
   mat4 transform = my->getTransform().toMatrix();
   #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
+    wsAssert((my->getNumJoints() <= WS_MAX_JOINTS), "Cannot have more than the max number of joints in a skeleton.");
+    shaders[WS_SHADER_INITIAL]->setUniformVec4Array("baseBoneLocs", my->getMesh()->getJointLocations(), my->getNumJoints());
+    shaders[WS_SHADER_INITIAL]->setUniformVec4Array("baseBoneRots", (vec4*)my->getMesh()->getJointRotations(), my->getNumJoints());
+    shaders[WS_SHADER_INITIAL]->setUniformVec4Array("boneLocs", my->getJointLocations(), my->getNumJoints());
+    shaders[WS_SHADER_INITIAL]->setUniformVec4Array("boneRots", (vec4*)my->getJointRotations(), my->getNumJoints());
+
     glPushMatrix();
     glMultMatrixf((GLfloat*)&transform);
     if (my->getAttachment() != WS_NULL) {   //  This is attached to another model
@@ -554,9 +576,23 @@ void wsRenderSystem::drawModel(u32 modelIndex) {
     glPointSize(3.0f);
     //enable(WS_DRAW_CULL_FACE);
     glBindBuffer(GL_ARRAY_BUFFER, my->getVertexArray());
+    if (my->getMesh()->getNumJoints()) {
+      glVertexAttribPointer(WS_VERT_ATTRIB_NUM_WEIGHTS, 1, GL_INT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(72));
+      glVertexAttribPointer(WS_VERT_ATTRIB_JOINT_INDEX, 4, GL_INT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(76));
+      glVertexAttribPointer(WS_VERT_ATTRIB_JOINT_INDEX_2, 4, GL_INT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(92));
+      glVertexAttribPointer(WS_VERT_ATTRIB_INFLUENCE, 4, GL_FLOAT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(108));
+      glVertexAttribPointer(WS_VERT_ATTRIB_INFLUENCE_2, 4, GL_FLOAT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(124));
+    }
     glTexCoordPointer(2, GL_FLOAT, sizeof(wsVert), WS_BUFFER_OFFSET(32));
     glNormalPointer(GL_FLOAT, sizeof(wsVert), WS_BUFFER_OFFSET(16));
     glVertexPointer(3, GL_FLOAT, sizeof(wsVert), WS_BUFFER_OFFSET(0));
+    if (my->getMesh()->getNumJoints()) {
+      glEnableVertexAttribArray(WS_VERT_ATTRIB_NUM_WEIGHTS);
+      glEnableVertexAttribArray(WS_VERT_ATTRIB_JOINT_INDEX);
+      glEnableVertexAttribArray(WS_VERT_ATTRIB_INFLUENCE);
+      glEnableVertexAttribArray(WS_VERT_ATTRIB_JOINT_INDEX_2);
+      glEnableVertexAttribArray(WS_VERT_ATTRIB_INFLUENCE_2);
+    }
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -566,6 +602,13 @@ void wsRenderSystem::drawModel(u32 modelIndex) {
       glDrawElements(GL_TRIANGLES, my->getIndexArrays()[m].numIndices, GL_UNSIGNED_INT, WS_BUFFER_OFFSET(0));
     }
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    if (my->getMesh()->getNumJoints()) {
+      glDisableVertexAttribArray(WS_VERT_ATTRIB_NUM_WEIGHTS);
+      glDisableVertexAttribArray(WS_VERT_ATTRIB_JOINT_INDEX);
+      glDisableVertexAttribArray(WS_VERT_ATTRIB_INFLUENCE);
+      glDisableVertexAttribArray(WS_VERT_ATTRIB_JOINT_INDEX_2);
+      glDisableVertexAttribArray(WS_VERT_ATTRIB_INFLUENCE_2);
+    }
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);

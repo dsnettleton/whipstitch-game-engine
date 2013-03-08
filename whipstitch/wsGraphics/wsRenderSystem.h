@@ -71,6 +71,9 @@
 #ifndef WS_MAX_TEXTURES
   #define WS_MAX_TEXTURES 256
 #endif
+#ifndef WS_MAX_JOINTS
+  #define WS_MAX_JOINTS   64
+#endif
 
 struct wsMeshContainer {
   const wsMesh* mesh;

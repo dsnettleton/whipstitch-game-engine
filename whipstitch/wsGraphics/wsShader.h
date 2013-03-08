@@ -44,7 +44,7 @@ class wsShader {
   public:
     /// Constructor
     wsShader();
-    wsShader(const char* vertexShaderPath, const char* fragmentShaderPath);
+    wsShader(const char* vertexShaderPath, const char* fragmentShaderPath, bool delayLinking = false);
     ~wsShader();
     /// Getters
     u32 getProgram() { return shaderProgram; }
@@ -58,6 +58,7 @@ class wsShader {
     void setUniformVec3(const char* varName, const vec4& values);
     void setUniformVec4(const char* varName, const f32 valueX, const f32 valueY, const f32 valueZ, const f32 valueW);
     void setUniformVec4(const char* varName, const vec4& values);
+    void setUniformVec4Array(const char* varName, const vec4* array, const u32 numItems);
     void setUniformMat4(const char* varName, const mat4& values);
     void setVertexAttribute(const char* varName, const u32 attributeIndex);
     /// Operational Member Functions

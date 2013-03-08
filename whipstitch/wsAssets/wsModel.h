@@ -52,6 +52,8 @@ class wsModel: public wsAsset {
     #endif
     wsHashMap<wsAnimation*> *animations;
     wsAnimation* currentAnimation;
+    vec4* jointLocations;
+    quat* jointRotations;
     wsJoint* attachment;  //  Joint, if any, that this model is attached to
     wsTransform transform;  //  Position, direction, and scale
     t64 animTime;
@@ -67,12 +69,16 @@ class wsModel: public wsAsset {
     /// Setters and Getters
     wsJoint* getAttachment() { return attachment; }
     wsIndexArray* getIndexArrays() { return indexArrays; }
+    vec4* getJointLocations() { return jointLocations; }
+    quat* getJointRotations() { return jointRotations; }
     u16 getMaxAnimations() { return animations->getMaxElements(); }
     wsMesh* getMesh() { return mesh; }
     const char* getName() { return name; }
-    const char* getCurrentAnimation() { if (currentAnimation == NULL) { return ""; } return currentAnimation->getName(); }
+    wsAnimation* getCurrentAnimation() { return currentAnimation; }
+    const char* getCurrentAnimationName() { if (currentAnimation == NULL) { return ""; } return currentAnimation->getName(); }
     u16 getNumAnimations() { return animations->getLength(); }
     u32 getNumIndexArrays() { return numIndexArrays; }
+    u32 getNumJoints() { return mesh->getNumJoints(); }
     f32 getTimeScale() { return timeScale; }
     const wsTransform& getTransform() { return transform; }
     u32 getVertexArray() { return vertexArray; }

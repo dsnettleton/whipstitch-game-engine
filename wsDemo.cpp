@@ -63,7 +63,7 @@ void wsDemo::handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 action,
         break;
       case WS_BUTTON_LEFT:
         if (action == WS_PRESS) {
-          const char* anim = wsRenderer.getModel("Griswald")->getCurrentAnimation();
+          const char* anim = wsRenderer.getModel("Griswald")->getCurrentAnimationName();
           if (strcmp(anim, "Walk") == 0) {
             wsRenderer.beginAnimation("Griswald", "Idle");
           }
@@ -125,7 +125,7 @@ void wsDemo::handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action) {
       switch (btnIndex) {
         case WS_KEY_A:
           if (action == WS_PRESS) {
-            const char* anim = wsRenderer.getModel("Griswald")->getCurrentAnimation();
+            const char* anim = wsRenderer.getModel("Griswald")->getCurrentAnimationName();
             if (strcmp(anim, "Walk") == 0) {
               wsRenderer.beginAnimation("Griswald", "Idle");
             }
@@ -273,23 +273,30 @@ void wsDemo::onStart() {
   wsMesh* bladeWand = wsNew(wsMesh, wsMesh("models/bladeWand.wsMesh"));
   wsMesh* blueBox = wsNew(wsMesh, wsMesh("models/blueBox.wsMesh"));
   wsModel* Griswald = wsNew(wsModel, wsModel("Griswald", griswald, 7));
+  wsModel* Griswald2 = wsNew(wsModel, wsModel("Griswald2", griswald, 3));
   wsModel* BladeWand = wsNew(wsModel, wsModel("BladeWand", bladeWand, 0));
   wsModel* BlueBox = wsNew(wsModel, wsModel("Blue Box", blueBox, 0));
+  // Griswald->setPos(vec4(-3.0f, 0.0f, 0.0f));
+  Griswald2->setPos(vec4(-5.0f, 0.0f, 0.0f));
+  BlueBox->setPos(vec4(5.0f, 0.0f, 0.0f));
   wsSound* Click = wsNew(wsSound, wsSound("sounds/btnClick.wav"));
   wsMusic* Resistors = wsNew(wsMusic, wsMusic("sounds/music/07. We're the Resistors.ogg"));
   wsSounds.addSound("Click", Click);
   wsSounds.addMusic("Resistors", Resistors);
   wsRenderer.addModel(Griswald);
+  wsRenderer.addModel(Griswald2);
   wsRenderer.addModel(BladeWand);
   wsRenderer.addModel(BlueBox);
   wsAnimation* anim_walk = wsNew(wsAnimation, wsAnimation("models/Walk.wsAnim"));
   wsAnimation* anim_idle = wsNew(wsAnimation, wsAnimation("models/Idle.wsAnim"));
   wsAnimation* anim_jump = wsNew(wsAnimation, wsAnimation("models/Jump.wsAnim"));
   wsRenderer.addAnimation(anim_walk, "Griswald");
+  wsRenderer.addAnimation(anim_walk, "Griswald2");
   wsRenderer.addAnimation(anim_idle, "Griswald");
   wsRenderer.addAnimation(anim_jump, "Griswald");
   wsLog("Animation Name = \"%s\"", anim_idle->getName());
   wsRenderer.beginAnimation("Griswald", "Idle");
+  wsRenderer.beginAnimation("Griswald2", "Walk");
   // Griswald->setTimeScale(0.5f);
   wsFont* fntUbuntu = wsNew(wsFont, wsFont("/home/dsnettleton/Documents/Programming/Eclipse/workspace/Florin/fonts/Ubuntu-B.ttf", 30));
   wsText* txtHello = wsNew(wsText, wsText(vec4(16, 240, 1024, 256), "Hello World!", fntUbuntu, 0, WS_HUD_VISIBLE));

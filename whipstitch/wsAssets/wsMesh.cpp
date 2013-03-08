@@ -63,6 +63,8 @@ wsMesh::wsMesh(const char* filepath) {
     //  Initialize joint array for this skeleton
     joints = wsNewArray(wsJoint, numJoints);
     baseSkel = wsNewArray(wsJoint, numJoints);
+    jointLocations = wsNewArray(vec4, numJoints);
+    jointRotations = wsNewArray(quat, numJoints);
     jointIndices = wsNew(wsHashMap<u32>, wsHashMap<u32>(numJoints));
     u32 currentJ;
     for (u32 j = 0; j < numJoints; ++j) {
@@ -89,6 +91,8 @@ wsMesh::wsMesh(const char* filepath) {
       if (j >= 0) {
         //  Align to model rotation/location
         baseSkel[j] = joints[j];
+        jointLocations[j] = joints[j].start;
+        jointRotations[j] = joints[j].rot;
         joints[j].end -= joints[j].start;
         if (joints[j].parent >= 0) {
           joints[j].startRel = joints[j].start - joints[joints[j].parent].start;
@@ -121,10 +125,20 @@ wsMesh::wsMesh(const char* filepath) {
     errorCheck( fscanf( pFile, "    tex { %f %f }\n", &verts[v].tex[0], &verts[v].tex[1]) );
     errorCheck( fscanf( pFile, "    weights {\n") );
     errorCheck( fscanf( pFile, "      numWeights %u\n", &verts[v].numWeights) );
-    verts[v].weights = wsNewArray(wsWeight, verts[v].numWeights);
-    for (u32 w = 0; w < verts[v].numWeights; ++w) {
-      errorCheck( fscanf( pFile, "      joint { %d %f }\n", &verts[v].weights[w].jointIndex,
-              &verts[v].weights[w].influence) );
+    for (i32 w = 0; w < verts[v].numWeights; ++w) {
+      if (w < WS_MAX_JOINT_INFLUENCES) {
+        errorCheck( fscanf( pFile, "      joint { %d %f }\n", &verts[v].jointIndex[w], &verts[v].influence[w]) );
+      }
+      else {
+        errorCheck( fscanf( pFile, "      joint { %d %f }\n",
+          &verts[v].jointIndex[WS_MAX_JOINT_INFLUENCES-1],
+          &verts[v].influence[WS_MAX_JOINT_INFLUENCES-1]) );
+      }
+    }
+    if (verts[v].numWeights > WS_MAX_JOINT_INFLUENCES) { verts[v].numWeights = WS_MAX_JOINT_INFLUENCES; }
+    for (i32 w = verts[v].numWeights; w < WS_MAX_JOINT_INFLUENCES; ++w) { //  Initialize the rest to null
+      verts[v].jointIndex[w] = 0;
+      verts[v].influence[w] = 0.0f;
     }
     errorCheck( fscanf( pFile, "    }\n") );
     errorCheck( fscanf( pFile, "  }\n") );

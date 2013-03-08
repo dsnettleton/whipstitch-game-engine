@@ -42,16 +42,20 @@
     fragShader = 0;
   }
 
-  wsShader::wsShader(const char* vertexShaderPath, const char* fragmentShaderPath) {
+  wsShader::wsShader(const char* vertexShaderPath, const char* fragmentShaderPath, bool delayLinking) {
     shaderProgram = glCreateProgram();
     #ifndef NDEBUG
       wsAssert(addVertexShader(vertexShaderPath), "Problem adding vertex shader.");
       wsAssert(addFragmentShader(fragmentShaderPath), "Problem adding fragment shader.");
-      wsAssert(install(), "Problem installing shader program.");
+      if (!delayLinking) {
+        wsAssert(install(), "Problem installing shader program.");
+      }
     #else
       addVertexShader(vertexShaderPath);
       addFragmentShader(fragmentShaderPath);
-      install();
+      if (!delayLinking) {
+        install();
+      }
     #endif
   }
 
@@ -269,6 +273,18 @@
       glUseProgram(shaderProgram);
     }
     glUniform4f(glGetUniformLocation(shaderProgram, varName), values.x, values.y, values.z, values.w);
+    if (currentProgram != (i64)shaderProgram) {
+      glUseProgram(currentProgram);
+    }
+  }
+
+  void wsShader::setUniformVec4Array(const char* varName, const vec4* array, const u32 numItems) {
+    i32 currentProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    if (currentProgram != (i64)shaderProgram) {
+      glUseProgram(shaderProgram);
+    }
+    glUniform4fv(glGetUniformLocation(shaderProgram, varName), numItems, (GLfloat*)array);
     if (currentProgram != (i64)shaderProgram) {
       glUseProgram(currentProgram);
     }
