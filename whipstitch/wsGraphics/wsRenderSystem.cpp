@@ -75,11 +75,14 @@ wsRenderSystem wsRenderer;
 #define WS_FBO_TEX_FINAL_A    5
 #define WS_FBO_TEX_FINAL_B    6
 
-#define WS_VERT_ATTRIB_NUM_WEIGHTS      1
-#define WS_VERT_ATTRIB_JOINT_INDEX      2
-#define WS_VERT_ATTRIB_INFLUENCE        3
-#define WS_VERT_ATTRIB_JOINT_INDEX_2    4
-#define WS_VERT_ATTRIB_INFLUENCE_2      5
+#define WS_VERT_ATTRIB_POSITION         0
+#define WS_VERT_ATTRIB_NORMAL           1
+#define WS_VERT_ATTRIB_TEX_COORDS       2
+#define WS_VERT_ATTRIB_NUM_WEIGHTS      3
+#define WS_VERT_ATTRIB_JOINT_INDEX      4
+#define WS_VERT_ATTRIB_INFLUENCE        5
+#define WS_VERT_ATTRIB_JOINT_INDEX_2    6
+#define WS_VERT_ATTRIB_INFLUENCE_2      7
 
 wsMeshContainer::wsMeshContainer(const wsMesh* my) {
   mesh = my;
@@ -148,8 +151,6 @@ void wsRenderSystem::startUp() {
   meshes = wsNew(wsHashMap<wsMeshContainer*>, wsHashMap<wsMeshContainer*>(101));
   models = wsNew(wsHashMap<wsModel*>, wsHashMap<wsModel*>(101));
   panels = wsNew(wsOrderedHashMap<wsPanel*>, wsOrderedHashMap<wsPanel*>(101));
-  // wsCamera* defaultCam = wsNew(wsCamera, wsCamera("wsDefault", vec4(9.0f, 17.0f, 9.0f), vec4(0.0f, 0.0f, 1.0f), vec4(0.0f, 1.0f, 0.0f),
-  //     vec4(0.0f, 0.0f, 1280.0f, 720.0f), WS_RENDER_MODE_CEL, WS_CAMERA_MODE_PERSP, 60.0f, 16.0f/9.0f, 0.01f, 100.0f));
   if (!(drawFeatures & WS_DRAW_CURSOR)) {
     #if WS_SCREEN_BACKEND == WS_BACKEND_GLFW
       glfwDisable(GLFW_MOUSE_CURSOR);
@@ -205,7 +206,6 @@ void wsRenderSystem::initializeShaders(u32 width, u32 height) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_DEPTH], 0);
-      //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, frameBufferTextures[WS_FBO_TEX_DEPTH], 0);
     glBindTexture(GL_TEXTURE_2D, 0);
     wsAssert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Problem configuring WS_FBO_PRIMARY.");
 
@@ -234,6 +234,9 @@ void wsRenderSystem::initializeShaders(u32 width, u32 height) {
     //  Create shader objects
     shaders = wsNewArray(wsShader*, WS_NUM_SHADERS);
     shaders[WS_SHADER_INITIAL] = wsNew(wsShader, wsShader("shaderFiles/wsInitial.vsh", "shaderFiles/wsInitial.fsh", true));
+      shaders[WS_SHADER_INITIAL]->setVertexAttribute("vert_position", WS_VERT_ATTRIB_POSITION);
+      shaders[WS_SHADER_INITIAL]->setVertexAttribute("vert_normal", WS_VERT_ATTRIB_NORMAL);
+      shaders[WS_SHADER_INITIAL]->setVertexAttribute("vert_texCoords", WS_VERT_ATTRIB_TEX_COORDS);
       shaders[WS_SHADER_INITIAL]->setVertexAttribute("numWeights", WS_VERT_ATTRIB_NUM_WEIGHTS);
       shaders[WS_SHADER_INITIAL]->setVertexAttribute("jointIndex", WS_VERT_ATTRIB_JOINT_INDEX);
       shaders[WS_SHADER_INITIAL]->setVertexAttribute("influence", WS_VERT_ATTRIB_INFLUENCE);
@@ -443,111 +446,111 @@ void wsRenderSystem::disable(u32 renderingFeatures) {
   renderingFeatures ^= drawFeatures;
   drawFeatures &= renderingFeatures;
 }
+/*
+  void wsRenderSystem::drawMesh(u32 meshIndex) {
+    wsAssert(_mInitialized, "Must initialize the rendering system first.");
+    const wsMeshContainer* my = meshes->getArrayItem(meshIndex);
+    wsAssert(my != NULL, "Cannot draw mesh; empty reference.");
+    const wsMaterial* mats = my->mesh->getMats();
+    wsAssert(mats != NULL, "Cannot use material; empty reference.");
+    #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
+      glEnable(GL_TEXTURE_2D);
+      glDisable(GL_COLOR_MATERIAL);
+      glPointSize(3.0f);
+      glDisable(GL_CULL_FACE);
+      glBindBuffer(GL_ARRAY_BUFFER, my->vertexArray);
+      glTexCoordPointer(2, GL_FLOAT, sizeof(wsVert), WS_BUFFER_OFFSET(32));
+      glNormalPointer(GL_FLOAT, sizeof(wsVert), WS_BUFFER_OFFSET(16));
+      glVertexPointer(3, GL_FLOAT, sizeof(wsVert), WS_BUFFER_OFFSET(0));
+      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+      glEnableClientState(GL_NORMAL_ARRAY);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      for (u32 m = 0; m < my->mesh->getNumMaterials(); ++m) {
+        setMaterial(mats[m]);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, my->indexArrays[m].handle);
+        glDrawElements(GL_TRIANGLES, my->indexArrays[m].numIndices, GL_UNSIGNED_INT, WS_BUFFER_OFFSET(0));
+      }
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+      glDisableClientState(GL_NORMAL_ARRAY);
+      glDisableClientState(GL_VERTEX_ARRAY);
+      if ((drawFeatures & WS_DRAW_BONES) && my->mesh->getNumJoints()) {
+        const wsJoint* joints = my->mesh->getJoints();
+        glDisable(GL_LIGHTING);
+        glEnable(GL_COLOR_MATERIAL);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_DEPTH_TEST);
+        vec4 startPos, endPos;
+        glLineWidth(3.0f);
+        //  Draw Joints
+        glBegin(GL_LINES);
+        for (u32 j = 0; j < my->mesh->getNumJoints(); ++j) {
+          startPos = joints[j].start;
+          endPos = joints[j].end;
+          if (joints[j].parent >= 0) {
+            startPos.rotate(joints[0].rot);
+            endPos.rotate(joints[0].rot);
+            startPos += joints[0].end;
+            endPos += joints[0].end;
+          }
+          if (j) {
+            glColor4fv((GLfloat*)&YELLOW);
+            glVertex3fv((GLfloat*)&startPos);
+            glColor4fv((GLfloat*)&ORANGE);
+            glVertex3fv((GLfloat*)&endPos);
+          }
+        }
+        glEnd();
+        glEnable(GL_LIGHTING);
+        glDisable(GL_COLOR_MATERIAL);
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_DEPTH_TEST);
+      }
+    #endif
+  }
 
-void wsRenderSystem::drawMesh(u32 meshIndex) {
-  wsAssert(_mInitialized, "Must initialize the rendering system first.");
-  const wsMeshContainer* my = meshes->getArrayItem(meshIndex);
-  wsAssert(my != NULL, "Cannot draw mesh; empty reference.");
-  const wsMaterial* mats = my->mesh->getMats();
-  wsAssert(mats != NULL, "Cannot use material; empty reference.");
-  #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
+  void wsRenderSystem::drawMeshes() {
+    wsAssert(_mInitialized, "Must initialize the rendering system first.");
+    vec4 lightPos(10.0f, 20.0f, 10.0f, 1.0f);
+    vec4 lightCol(1.0f, 1.0f, 1.0f, 1.0f);
+    vec4 lightAmb(0.1f, 0.1f, 0.1f, 1.0f);
+    glLightfv(GL_LIGHT0, GL_POSITION, (GLfloat*)&lightPos);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, (GLfloat*)&lightAmb);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, (GLfloat*)&lightCol);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, (GLfloat*)&lightCol);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+    //  Actual Drawing of Meshes goes here
+    glShadeModel(GL_SMOOTH);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_TEXTURE_2D);
+    wsHashMap<wsMeshContainer*>::iterator it = meshes->begin();
+    for (u32 i = 0; i < meshes->getLength(); ++i) {
+      drawMesh(it.mCurrentElement);
+      ++it;
+    }
+    //  Draw Axes
+    glEnable(GL_COLOR_MATERIAL);
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glLineWidth(1.0f);
+    glBegin(GL_LINES);
+    glColor4fv((GLfloat*)&RED);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    glVertex3f(10.0f, 0.0f, 0.0f);
+    glColor4fv((GLfloat*)&GREEN);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    glVertex3f(0.0f, 10.0f, 0.0f);
+    glColor4fv((GLfloat*)&BLUE);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    glVertex3f(0.0f, 0.0f, 10.0f);
+    glEnd();
     glEnable(GL_TEXTURE_2D);
     glDisable(GL_COLOR_MATERIAL);
-    glPointSize(3.0f);
-    glDisable(GL_CULL_FACE);
-    glBindBuffer(GL_ARRAY_BUFFER, my->vertexArray);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(wsVert), WS_BUFFER_OFFSET(32));
-    glNormalPointer(GL_FLOAT, sizeof(wsVert), WS_BUFFER_OFFSET(16));
-    glVertexPointer(3, GL_FLOAT, sizeof(wsVert), WS_BUFFER_OFFSET(0));
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    for (u32 m = 0; m < my->mesh->getNumMaterials(); ++m) {
-      setMaterial(mats[m]);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, my->indexArrays[m].handle);
-      glDrawElements(GL_TRIANGLES, my->indexArrays[m].numIndices, GL_UNSIGNED_INT, WS_BUFFER_OFFSET(0));
-    }
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
-    if ((drawFeatures & WS_DRAW_BONES) && my->mesh->getNumJoints()) {
-      const wsJoint* joints = my->mesh->getJoints();
-      glDisable(GL_LIGHTING);
-      glEnable(GL_COLOR_MATERIAL);
-      glDisable(GL_TEXTURE_2D);
-      glDisable(GL_DEPTH_TEST);
-      vec4 startPos, endPos;
-      glLineWidth(3.0f);
-      //  Draw Joints
-      glBegin(GL_LINES);
-      for (u32 j = 0; j < my->mesh->getNumJoints(); ++j) {
-        startPos = joints[j].start;
-        endPos = joints[j].end;
-        if (joints[j].parent >= 0) {
-          startPos.rotate(joints[0].rot);
-          endPos.rotate(joints[0].rot);
-          startPos += joints[0].end;
-          endPos += joints[0].end;
-        }
-        if (j) {
-          glColor4fv((GLfloat*)&YELLOW);
-          glVertex3fv((GLfloat*)&startPos);
-          glColor4fv((GLfloat*)&ORANGE);
-          glVertex3fv((GLfloat*)&endPos);
-        }
-      }
-      glEnd();
-      glEnable(GL_LIGHTING);
-      glDisable(GL_COLOR_MATERIAL);
-      glEnable(GL_TEXTURE_2D);
-      glEnable(GL_DEPTH_TEST);
-    }
-  #endif
-}
-
-void wsRenderSystem::drawMeshes() {
-  wsAssert(_mInitialized, "Must initialize the rendering system first.");
-  vec4 lightPos(10.0f, 20.0f, 10.0f, 1.0f);
-  vec4 lightCol(1.0f, 1.0f, 1.0f, 1.0f);
-  vec4 lightAmb(0.1f, 0.1f, 0.1f, 1.0f);
-  glLightfv(GL_LIGHT0, GL_POSITION, (GLfloat*)&lightPos);
-  glLightfv(GL_LIGHT0, GL_AMBIENT, (GLfloat*)&lightAmb);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, (GLfloat*)&lightCol);
-  glLightfv(GL_LIGHT0, GL_SPECULAR, (GLfloat*)&lightCol);
-  glEnable(GL_LIGHTING);
-  glEnable(GL_LIGHT0);
-
-  //  Actual Drawing of Meshes goes here
-  glShadeModel(GL_SMOOTH);
-  glEnable(GL_CULL_FACE);
-  glEnable(GL_TEXTURE_2D);
-  wsHashMap<wsMeshContainer*>::iterator it = meshes->begin();
-  for (u32 i = 0; i < meshes->getLength(); ++i) {
-    drawMesh(it.mCurrentElement);
-    ++it;
+    glEnable(GL_LIGHTING);
   }
-  //  Draw Axes
-  glEnable(GL_COLOR_MATERIAL);
-  glDisable(GL_TEXTURE_2D);
-  glDisable(GL_LIGHTING);
-  glLineWidth(1.0f);
-  glBegin(GL_LINES);
-  glColor4fv((GLfloat*)&RED);
-  glVertex3f(0.0f, 0.0f, 0.0f);
-  glVertex3f(10.0f, 0.0f, 0.0f);
-  glColor4fv((GLfloat*)&GREEN);
-  glVertex3f(0.0f, 0.0f, 0.0f);
-  glVertex3f(0.0f, 10.0f, 0.0f);
-  glColor4fv((GLfloat*)&BLUE);
-  glVertex3f(0.0f, 0.0f, 0.0f);
-  glVertex3f(0.0f, 0.0f, 10.0f);
-  glEnd();
-  glEnable(GL_TEXTURE_2D);
-  glDisable(GL_COLOR_MATERIAL);
-  glEnable(GL_LIGHTING);
-}
-
+//*/
 void wsRenderSystem::drawModel(u32 modelIndex) {
   wsAssert(_mInitialized, "Must initialize the rendering system first.");
   wsModel* my = models->getArrayItem(modelIndex);
@@ -564,54 +567,50 @@ void wsRenderSystem::drawModel(u32 modelIndex) {
 
     glPushMatrix();
     glMultMatrixf((GLfloat*)&transform);
-    if (my->getAttachment() != WS_NULL) {   //  This is attached to another model
+    if (my->getAttachmentLoc() != WS_NULL && my->getAttachmentRot() != WS_NULL) {   //  This is attached to another model
       transform.loadIdentity();
-      transform.setRotation(my->getAttachment()->rot);
-      transform.setTranslation(my->getAttachment()->start);
+      transform.setRotation(*my->getAttachmentRot());
+      transform.setTranslation(*my->getAttachmentLoc());
       glMultMatrixf((GLfloat*)&transform);
     }
-
-    //enable(WS_DRAW_TEXTURES);
     glDisable(GL_COLOR_MATERIAL);
     glPointSize(3.0f);
-    //enable(WS_DRAW_CULL_FACE);
     glBindBuffer(GL_ARRAY_BUFFER, my->getVertexArray());
+    glVertexAttribPointer(WS_VERT_ATTRIB_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(0));
+    glVertexAttribPointer(WS_VERT_ATTRIB_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(16));
+    glVertexAttribPointer(WS_VERT_ATTRIB_TEX_COORDS, 2, GL_FLOAT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(32));
+    glVertexAttribPointer(WS_VERT_ATTRIB_NUM_WEIGHTS, 1, GL_INT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(40));
     if (my->getMesh()->getNumJoints()) {
-      glVertexAttribPointer(WS_VERT_ATTRIB_NUM_WEIGHTS, 1, GL_INT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(72));
-      glVertexAttribPointer(WS_VERT_ATTRIB_JOINT_INDEX, 4, GL_INT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(76));
-      glVertexAttribPointer(WS_VERT_ATTRIB_JOINT_INDEX_2, 4, GL_INT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(92));
-      glVertexAttribPointer(WS_VERT_ATTRIB_INFLUENCE, 4, GL_FLOAT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(108));
-      glVertexAttribPointer(WS_VERT_ATTRIB_INFLUENCE_2, 4, GL_FLOAT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(124));
+      glVertexAttribPointer(WS_VERT_ATTRIB_JOINT_INDEX, 4, GL_INT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(44));
+      glVertexAttribPointer(WS_VERT_ATTRIB_JOINT_INDEX_2, 4, GL_INT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(60));
+      glVertexAttribPointer(WS_VERT_ATTRIB_INFLUENCE, 4, GL_FLOAT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(76));
+      glVertexAttribPointer(WS_VERT_ATTRIB_INFLUENCE_2, 4, GL_FLOAT, GL_FALSE, sizeof(wsVert), WS_BUFFER_OFFSET(92));
     }
-    glTexCoordPointer(2, GL_FLOAT, sizeof(wsVert), WS_BUFFER_OFFSET(32));
-    glNormalPointer(GL_FLOAT, sizeof(wsVert), WS_BUFFER_OFFSET(16));
-    glVertexPointer(3, GL_FLOAT, sizeof(wsVert), WS_BUFFER_OFFSET(0));
+    // glTexCoordPointer(2, GL_FLOAT, sizeof(wsVert), WS_BUFFER_OFFSET(32));
     if (my->getMesh()->getNumJoints()) {
-      glEnableVertexAttribArray(WS_VERT_ATTRIB_NUM_WEIGHTS);
       glEnableVertexAttribArray(WS_VERT_ATTRIB_JOINT_INDEX);
       glEnableVertexAttribArray(WS_VERT_ATTRIB_INFLUENCE);
       glEnableVertexAttribArray(WS_VERT_ATTRIB_JOINT_INDEX_2);
       glEnableVertexAttribArray(WS_VERT_ATTRIB_INFLUENCE_2);
     }
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableVertexAttribArray(WS_VERT_ATTRIB_NUM_WEIGHTS);
+    glEnableVertexAttribArray(WS_VERT_ATTRIB_TEX_COORDS);
+    glEnableVertexAttribArray(WS_VERT_ATTRIB_NORMAL);
+    glEnableVertexAttribArray(WS_VERT_ATTRIB_POSITION);
     for (u32 m = 0; m < my->getMesh()->getNumMaterials(); ++m) {
       setMaterial(mats[m]);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, my->getIndexArrays()[m].handle);
       glDrawElements(GL_TRIANGLES, my->getIndexArrays()[m].numIndices, GL_UNSIGNED_INT, WS_BUFFER_OFFSET(0));
     }
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    if (my->getMesh()->getNumJoints()) {
-      glDisableVertexAttribArray(WS_VERT_ATTRIB_NUM_WEIGHTS);
-      glDisableVertexAttribArray(WS_VERT_ATTRIB_JOINT_INDEX);
-      glDisableVertexAttribArray(WS_VERT_ATTRIB_INFLUENCE);
-      glDisableVertexAttribArray(WS_VERT_ATTRIB_JOINT_INDEX_2);
-      glDisableVertexAttribArray(WS_VERT_ATTRIB_INFLUENCE_2);
-    }
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableVertexAttribArray(WS_VERT_ATTRIB_NUM_WEIGHTS);
+    glDisableVertexAttribArray(WS_VERT_ATTRIB_JOINT_INDEX);
+    glDisableVertexAttribArray(WS_VERT_ATTRIB_INFLUENCE);
+    glDisableVertexAttribArray(WS_VERT_ATTRIB_JOINT_INDEX_2);
+    glDisableVertexAttribArray(WS_VERT_ATTRIB_INFLUENCE_2);
+    glDisableVertexAttribArray(WS_VERT_ATTRIB_TEX_COORDS);
+    glDisableVertexAttribArray(WS_VERT_ATTRIB_NORMAL);
+    glDisableVertexAttribArray(WS_VERT_ATTRIB_POSITION);
     if ((drawFeatures & WS_DRAW_BONES) && my->getMesh()->getNumJoints()) {
       const wsJoint* joints = my->getMesh()->getJoints();
       glEnable(GL_COLOR_MATERIAL);

@@ -43,15 +43,13 @@
 #define WS_MAX_JOINT_INFLUENCES   8
 
 struct wsVert {
-  vec4 pos;
-  vec4 norm;
-  f32 tex[2]; //  UV texture coordinates
-  vec4 originalPos;
-  vec4 originalNorm;
+  vec4 pos; //  (BUFFER OFFSET = 0)
+  vec4 norm;  //  (BUFFER OFFSET = 16)
+  f32 tex[2]; //  UV texture coordinates   (BUFFER OFFSET = 32)
   //  Joint Indices and Weights for animation
-  i32 numWeights;
-  i32 jointIndex[WS_MAX_JOINT_INFLUENCES];
-  f32 influence[WS_MAX_JOINT_INFLUENCES];
+  i32 numWeights; //    (BUFFER OFFSET = 40)
+  i32 jointIndex[WS_MAX_JOINT_INFLUENCES];  //    (BUFFER OFFSET = 44, 60)
+  f32 influence[WS_MAX_JOINT_INFLUENCES];   //    (BUFFER OFFSET = 76, 92)
 };
 
 struct wsTriangle {
@@ -96,7 +94,6 @@ class wsMesh: public wsAsset {
     wsVert* verts;
     wsMaterial* mats;
     wsJoint* joints;
-    wsJoint* baseSkel;
     vec4* jointLocations;
     quat* jointRotations;
     wsHashMap<u32>* jointIndices;
@@ -109,10 +106,10 @@ class wsMesh: public wsAsset {
     wsMesh(const char* filepath);
     ~wsMesh();
     //  Getters
-    const wsJoint* getBaseSkel() const { return baseSkel; }
     const wsBounds* getBounds() const { return &bounds; }
     const wsJoint* getJoint(const char* jointName) { return &joints[jointIndices->retrieve(wsHash(jointName))]; }
     const wsJoint* getJoints() const { return joints; }
+    const u32 getJointIndex(const char* jointName) { return jointIndices->retrieve(wsHash(jointName)); }
     const vec4* getJointLocations() { return jointLocations; }
     const quat* getJointRotations() { return jointRotations; }
     const wsMaterial* getMats() const { return mats; }

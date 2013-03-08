@@ -64,7 +64,8 @@ wsModel::wsModel(const char* myName, wsMesh* myMesh, const u32 myMaxAnimations =
   }
   jointLocations = wsNewArray(vec4, myMesh->getNumJoints());
   jointRotations = wsNewArray(quat, myMesh->getNumJoints());
-  attachment = WS_NULL;
+  attachmentLoc = WS_NULL;
+  attachmentRot = WS_NULL;
   looping = false;
   timeScale = 1.0f;
   animPaused = false;
@@ -159,7 +160,9 @@ void wsModel::applyAnimation() {
 void wsModel::attachModel(wsModel* myModel, const char* jointName) {
   wsAssert(myModel != NULL, "Cannot attach a null model");
   //u32 nameHash = wsHash(jointName);
-  myModel->attachment = (wsJoint*)mesh->getJoint(jointName);
+  u32 index = mesh->getJointIndex(jointName);
+  myModel->attachmentLoc = &jointLocations[index];   //(wsJoint*)mesh->getJoint(jointName);
+  myModel->attachmentRot = &jointRotations[index];
 }
 
 void wsModel::beginAnimation(const char* animName) {

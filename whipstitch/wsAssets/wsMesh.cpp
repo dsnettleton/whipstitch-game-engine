@@ -62,7 +62,6 @@ wsMesh::wsMesh(const char* filepath) {
     errorCheck( fscanf( pFile, "  numJoints %u\n", &numJoints) );
     //  Initialize joint array for this skeleton
     joints = wsNewArray(wsJoint, numJoints);
-    baseSkel = wsNewArray(wsJoint, numJoints);
     jointLocations = wsNewArray(vec4, numJoints);
     jointRotations = wsNewArray(quat, numJoints);
     jointIndices = wsNew(wsHashMap<u32>, wsHashMap<u32>(numJoints));
@@ -90,7 +89,6 @@ wsMesh::wsMesh(const char* filepath) {
       jointIndices->insert(wsHash(nameBuffer), j);
       if (j >= 0) {
         //  Align to model rotation/location
-        baseSkel[j] = joints[j];
         jointLocations[j] = joints[j].start;
         jointRotations[j] = joints[j].rot;
         joints[j].end -= joints[j].start;
@@ -107,9 +105,10 @@ wsMesh::wsMesh(const char* filepath) {
     errorCheck( fscanf( pFile, "}\n\n") );
   }// End if (hasSkeleton)
   else {
-    joints = NULL;
-    baseSkel = NULL;
-    numJoints = 0;
+    joints = WS_NULL;
+    jointLocations = WS_NULL;
+    jointRotations = WS_NULL;
+    jointIndices = WS_NULL;
   }
   errorCheck( fscanf( pFile, "vertices {\n") );
   errorCheck( fscanf( pFile, "  bounds {\n") );
@@ -122,6 +121,8 @@ wsMesh::wsMesh(const char* filepath) {
     wsAssert( (currentIndex == v), "Current index does not relate to current vertex.");
     errorCheck( fscanf( pFile, "    pos { %f %f %f }\n", &verts[v].pos.x, &verts[v].pos.y, &verts[v].pos.z) );
     errorCheck( fscanf( pFile, "    norm { %f %f %f }\n", &verts[v].norm.x, &verts[v].norm.y, &verts[v].norm.z) );
+    verts[v].pos.w = 1.0f;
+    verts[v].norm.w = 1.0f;
     errorCheck( fscanf( pFile, "    tex { %f %f }\n", &verts[v].tex[0], &verts[v].tex[1]) );
     errorCheck( fscanf( pFile, "    weights {\n") );
     errorCheck( fscanf( pFile, "      numWeights %u\n", &verts[v].numWeights) );
@@ -142,8 +143,6 @@ wsMesh::wsMesh(const char* filepath) {
     }
     errorCheck( fscanf( pFile, "    }\n") );
     errorCheck( fscanf( pFile, "  }\n") );
-    verts[v].originalPos = verts[v].pos;
-    verts[v].originalNorm = verts[v].norm;
   }
   errorCheck( fscanf( pFile, "}\n\nmaterials {\n") );
   for (u32 m = 0; m < numMaterials; ++m) {

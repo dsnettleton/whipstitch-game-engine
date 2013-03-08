@@ -54,7 +54,8 @@ class wsModel: public wsAsset {
     wsAnimation* currentAnimation;
     vec4* jointLocations;
     quat* jointRotations;
-    wsJoint* attachment;  //  Joint, if any, that this model is attached to
+    vec4* attachmentLoc;  //  Joint, if any, that this model is attached to
+    quat* attachmentRot;  //  Joint, if any, that this model is attached to
     wsTransform transform;  //  Position, direction, and scale
     t64 animTime;
     f32 timeScale;
@@ -67,7 +68,8 @@ class wsModel: public wsAsset {
     wsModel(const char* myName, wsMesh* myMesh, const u32 myMaxAnimations);
     ~wsModel();
     /// Setters and Getters
-    wsJoint* getAttachment() { return attachment; }
+    vec4* getAttachmentLoc() { return attachmentLoc; }
+    quat* getAttachmentRot() { return attachmentRot; }
     wsIndexArray* getIndexArrays() { return indexArrays; }
     vec4* getJointLocations() { return jointLocations; }
     quat* getJointRotations() { return jointRotations; }

@@ -10,20 +10,23 @@
 //	This software is released under the terms of the
 //	Lesser GNU Public License (LGPL).
 
-varying vec3 vertPos;
-varying vec3 vertNorm;
-varying vec2 texCoords;
+out vec3 vertPos;
+out vec3 vertNorm;
+out vec2 texCoords;
 
 uniform vec4 baseBoneLocs[64];
 uniform vec4 baseBoneRots[64];
 uniform vec4 boneLocs[64];
 uniform vec4 boneRots[64];
 
-attribute int numWeights;
-attribute vec4 jointIndex;
-attribute vec4 jointIndex2; //  For numWeights > 4
-attribute vec4 influence;
-attribute vec4 influence2;  //  For numWeights > 4
+in vec4 vert_position;
+in vec3 vert_normal;
+in vec2 vert_texCoords;
+in int numWeights;
+in vec4 jointIndex;
+in vec4 jointIndex2; //  For numWeights > 4
+in vec4 influence;
+in vec4 influence2;  //  For numWeights > 4
 
 invariant gl_Position;
 
@@ -50,116 +53,112 @@ vec4 rotateByQuat(vec4 vector, vec4 quat) {
 void main() {
   //  Animate!
   int index;
-  vec4 position;
-  vec3 normal;
   vec3 posSum = vec3(0.0f, 0.0f, 0.0f);
   vec3 normSum = vec3(0.0f, 0.0f, 0.0f);
-  vec4 myPos;
-  vec4 myNorm;
+  vec4 tmpPos;
+  vec4 tmpNorm;
   if (numWeights > 0) {
     index = int(jointIndex.x);
-    myPos = gl_Vertex - baseBoneLocs[index];
-    myPos = rotateByQuat(myPos, quatInvert(baseBoneRots[index]));
-    myPos = rotateByQuat(myPos, boneRots[index]);
-    myPos += boneLocs[index];
-    posSum += myPos.xyz * influence.x;
-    myNorm = vec4(gl_Normal, 0.0);
-    myNorm = rotateByQuat(myNorm, quatInvert(baseBoneRots[index]));
-    myNorm = rotateByQuat(myNorm, boneRots[index]);
-    normSum += myNorm.xyz * influence.x;
+    tmpPos = vert_position - baseBoneLocs[index];
+    tmpPos = rotateByQuat(tmpPos, quatInvert(baseBoneRots[index]));
+    tmpPos = rotateByQuat(tmpPos, boneRots[index]);
+    tmpPos += boneLocs[index];
+    posSum += tmpPos.xyz * influence.x;
+    tmpNorm = vec4(vert_normal, 0.0);
+    tmpNorm = rotateByQuat(tmpNorm, quatInvert(baseBoneRots[index]));
+    tmpNorm = rotateByQuat(tmpNorm, boneRots[index]);
+    normSum += tmpNorm.xyz * influence.x;
   }
   else {
-    posSum = gl_Vertex.xyz;
-    normSum = gl_Normal;
+    posSum = vert_position.xyz;
+    normSum = vert_normal;
   }
   if (numWeights > 1) {
     index = int(jointIndex.y);
-    myPos = gl_Vertex - baseBoneLocs[index];
-    myPos = rotateByQuat(myPos, quatInvert(baseBoneRots[index]));
-    myPos = rotateByQuat(myPos, boneRots[index]);
-    myPos += boneLocs[index];
-    posSum += myPos.xyz * influence.y;
-    myNorm = vec4(gl_Normal, 0.0);
-    myNorm = rotateByQuat(myNorm, quatInvert(baseBoneRots[index]));
-    myNorm = rotateByQuat(myNorm, boneRots[index]);
-    normSum += myNorm.xyz * influence.y;
+    tmpPos = vert_position - baseBoneLocs[index];
+    tmpPos = rotateByQuat(tmpPos, quatInvert(baseBoneRots[index]));
+    tmpPos = rotateByQuat(tmpPos, boneRots[index]);
+    tmpPos += boneLocs[index];
+    posSum += tmpPos.xyz * influence.y;
+    tmpNorm = vec4(vert_normal, 0.0);
+    tmpNorm = rotateByQuat(tmpNorm, quatInvert(baseBoneRots[index]));
+    tmpNorm = rotateByQuat(tmpNorm, boneRots[index]);
+    normSum += tmpNorm.xyz * influence.y;
   }
   if (numWeights > 2) {
     index = int(jointIndex.z);
-    myPos = gl_Vertex - baseBoneLocs[index];
-    myPos = rotateByQuat(myPos, quatInvert(baseBoneRots[index]));
-    myPos = rotateByQuat(myPos, boneRots[index]);
-    myPos += boneLocs[index];
-    posSum += myPos.xyz * influence.z;
-    myNorm = vec4(gl_Normal, 0.0);
-    myNorm = rotateByQuat(myNorm, quatInvert(baseBoneRots[index]));
-    myNorm = rotateByQuat(myNorm, boneRots[index]);
-    normSum += myNorm.xyz * influence.z;
+    tmpPos = vert_position - baseBoneLocs[index];
+    tmpPos = rotateByQuat(tmpPos, quatInvert(baseBoneRots[index]));
+    tmpPos = rotateByQuat(tmpPos, boneRots[index]);
+    tmpPos += boneLocs[index];
+    posSum += tmpPos.xyz * influence.z;
+    tmpNorm = vec4(vert_normal, 0.0);
+    tmpNorm = rotateByQuat(tmpNorm, quatInvert(baseBoneRots[index]));
+    tmpNorm = rotateByQuat(tmpNorm, boneRots[index]);
+    normSum += tmpNorm.xyz * influence.z;
   }
   if (numWeights > 3) {
     index = int(jointIndex.w);
-    myPos = gl_Vertex - baseBoneLocs[index];
-    myPos = rotateByQuat(myPos, quatInvert(baseBoneRots[index]));
-    myPos = rotateByQuat(myPos, boneRots[index]);
-    myPos += boneLocs[index];
-    posSum += myPos.xyz * influence.w;
-    myNorm = vec4(gl_Normal, 0.0);
-    myNorm = rotateByQuat(myNorm, quatInvert(baseBoneRots[index]));
-    myNorm = rotateByQuat(myNorm, boneRots[index]);
-    normSum += myNorm.xyz * influence.w;
+    tmpPos = vert_position - baseBoneLocs[index];
+    tmpPos = rotateByQuat(tmpPos, quatInvert(baseBoneRots[index]));
+    tmpPos = rotateByQuat(tmpPos, boneRots[index]);
+    tmpPos += boneLocs[index];
+    posSum += tmpPos.xyz * influence.w;
+    tmpNorm = vec4(vert_normal, 0.0);
+    tmpNorm = rotateByQuat(tmpNorm, quatInvert(baseBoneRots[index]));
+    tmpNorm = rotateByQuat(tmpNorm, boneRots[index]);
+    normSum += tmpNorm.xyz * influence.w;
   }
   if (numWeights > 4) {
     index = int(jointIndex2.x);
-    myPos = gl_Vertex - baseBoneLocs[index];
-    myPos = rotateByQuat(myPos, quatInvert(baseBoneRots[index]));
-    myPos = rotateByQuat(myPos, boneRots[index]);
-    myPos += boneLocs[index];
-    posSum += myPos.xyz * influence2.x;
-    myNorm = vec4(gl_Normal, 0.0);
-    myNorm = rotateByQuat(myNorm, quatInvert(baseBoneRots[index]));
-    myNorm = rotateByQuat(myNorm, boneRots[index]);
-    normSum += myNorm.xyz * influence2.x;
+    tmpPos = vert_position - baseBoneLocs[index];
+    tmpPos = rotateByQuat(tmpPos, quatInvert(baseBoneRots[index]));
+    tmpPos = rotateByQuat(tmpPos, boneRots[index]);
+    tmpPos += boneLocs[index];
+    posSum += tmpPos.xyz * influence2.x;
+    tmpNorm = vec4(vert_normal, 0.0);
+    tmpNorm = rotateByQuat(tmpNorm, quatInvert(baseBoneRots[index]));
+    tmpNorm = rotateByQuat(tmpNorm, boneRots[index]);
+    normSum += tmpNorm.xyz * influence2.x;
   }
   if (numWeights > 5) {
     index = int(jointIndex2.y);
-    myPos = gl_Vertex - baseBoneLocs[index];
-    myPos = rotateByQuat(myPos, quatInvert(baseBoneRots[index]));
-    myPos = rotateByQuat(myPos, boneRots[index]);
-    myPos += boneLocs[index];
-    posSum += myPos.xyz * influence2.y;
-    myNorm = vec4(gl_Normal, 0.0);
-    myNorm = rotateByQuat(myNorm, quatInvert(baseBoneRots[index]));
-    myNorm = rotateByQuat(myNorm, boneRots[index]);
-    normSum += myNorm.xyz * influence2.y;
+    tmpPos = vert_position - baseBoneLocs[index];
+    tmpPos = rotateByQuat(tmpPos, quatInvert(baseBoneRots[index]));
+    tmpPos = rotateByQuat(tmpPos, boneRots[index]);
+    tmpPos += boneLocs[index];
+    posSum += tmpPos.xyz * influence2.y;
+    tmpNorm = vec4(vert_normal, 0.0);
+    tmpNorm = rotateByQuat(tmpNorm, quatInvert(baseBoneRots[index]));
+    tmpNorm = rotateByQuat(tmpNorm, boneRots[index]);
+    normSum += tmpNorm.xyz * influence2.y;
   }
   if (numWeights > 6) {
     index = int(jointIndex2.z);
-    myPos = gl_Vertex - baseBoneLocs[index];
-    myPos = rotateByQuat(myPos, quatInvert(baseBoneRots[index]));
-    myPos = rotateByQuat(myPos, boneRots[index]);
-    myPos += boneLocs[index];
-    posSum += myPos.xyz * influence2.z;
-    myNorm = vec4(gl_Normal, 0.0);
-    myNorm = rotateByQuat(myNorm, quatInvert(baseBoneRots[index]));
-    myNorm = rotateByQuat(myNorm, boneRots[index]);
-    normSum += myNorm.xyz * influence2.z;
+    tmpPos = vert_position - baseBoneLocs[index];
+    tmpPos = rotateByQuat(tmpPos, quatInvert(baseBoneRots[index]));
+    tmpPos = rotateByQuat(tmpPos, boneRots[index]);
+    tmpPos += boneLocs[index];
+    posSum += tmpPos.xyz * influence2.z;
+    tmpNorm = vec4(vert_normal, 0.0);
+    tmpNorm = rotateByQuat(tmpNorm, quatInvert(baseBoneRots[index]));
+    tmpNorm = rotateByQuat(tmpNorm, boneRots[index]);
+    normSum += tmpNorm.xyz * influence2.z;
   }
   if (numWeights > 7) {
     index = int(jointIndex2.w);
-    myPos = gl_Vertex - baseBoneLocs[index];
-    myPos = rotateByQuat(myPos, quatInvert(baseBoneRots[index]));
-    myPos = rotateByQuat(myPos, boneRots[index]);
-    myPos += boneLocs[index];
-    posSum += myPos.xyz * influence2.w;
-    myNorm = vec4(gl_Normal, 0.0);
-    myNorm = rotateByQuat(myNorm, quatInvert(baseBoneRots[index]));
-    myNorm = rotateByQuat(myNorm, boneRots[index]);
-    normSum += myNorm.xyz * influence2.w;
+    tmpPos = vert_position - baseBoneLocs[index];
+    tmpPos = rotateByQuat(tmpPos, quatInvert(baseBoneRots[index]));
+    tmpPos = rotateByQuat(tmpPos, boneRots[index]);
+    tmpPos += boneLocs[index];
+    posSum += tmpPos.xyz * influence2.w;
+    tmpNorm = vec4(vert_normal, 0.0);
+    tmpNorm = rotateByQuat(tmpNorm, quatInvert(baseBoneRots[index]));
+    tmpNorm = rotateByQuat(tmpNorm, boneRots[index]);
+    normSum += tmpNorm.xyz * influence2.w;
   }
-  position = vec4(posSum, 1.0);
-  normal = normSum;
-  vertNorm = gl_NormalMatrix*normal;
-  vertPos = vec3(gl_ModelViewMatrix*position);
-  texCoords = gl_MultiTexCoord0.st;
-  gl_Position = gl_ModelViewProjectionMatrix * position;
+  vertNorm = gl_NormalMatrix*normSum;
+  vertPos = vec3(gl_ModelViewMatrix*vec4(posSum,1.0));
+  texCoords = vert_texCoords;
+  gl_Position = gl_ModelViewProjectionMatrix * vec4(posSum,1.0);
 }

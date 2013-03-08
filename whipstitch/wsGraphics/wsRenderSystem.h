@@ -111,7 +111,7 @@ class wsRenderSystem {
     //  True only when the startUp function has been called
     bool _mInitialized;
     //  Private Methods
-    void drawMesh(u32 meshIndex);
+    // void drawMesh(u32 meshIndex);
     void drawModel(u32 modelIndex);
     // void drawPanel(wsPanel* pan);
     void initializeShaders(u32 width, u32 height);
@@ -142,7 +142,7 @@ class wsRenderSystem {
     void continueAnimation(const char* modelName);
     void continueAnimations();
     void disable(u32 renderingFeatures);
-    void drawMeshes();
+    // void drawMeshes();
     void drawModels();
     void drawPanels();
     void drawPost();    //  Post-processing effects

@@ -10,10 +10,9 @@
 //  This software is released under the terms of the
 //  Lesser GNU Public License (LGPL).
 
-varying vec3 vertPos;
-varying vec3 vertNorm;
-
-varying vec2 texCoords;
+in vec3 vertPos;
+in vec3 vertNorm;
+in vec2 texCoords;
 
 uniform sampler2D colorMap;
 uniform sampler2D normalMap;
