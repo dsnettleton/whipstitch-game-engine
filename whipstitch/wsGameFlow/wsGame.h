@@ -37,9 +37,12 @@
 #define WS_GAME_H_
 
 #include "wsEventManager.h"
+#include "wsScene.h"
 
 class wsGame {
   public:
+    //  This returns the scene object to be updated by the game loop.
+    virtual wsScene* getCurrentScene() = 0;
     //  This is run when the program opens, before the game loop starts.
     //  It runs immediately after the Engine subsystems are initialized.
     virtual void onStart() = 0;

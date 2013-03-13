@@ -63,26 +63,28 @@ void wsDemo::handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 action,
         break;
       case WS_BUTTON_LEFT:
         if (action == WS_PRESS) {
-          const char* anim = wsRenderer.getModel("Griswald")->getCurrentAnimationName();
+          //*
+          const char* anim = scene->getModel("Griswald")->getCurrentAnimationName();
           if (strcmp(anim, "Walk") == 0) {
-            wsRenderer.beginAnimation("Griswald", "Idle");
+            scene->beginAnimation("Griswald", "Idle");
           }
           else if (strcmp(anim, "Idle") == 0) {
-            wsRenderer.beginAnimation("Griswald", "Jump");
+            scene->beginAnimation("Griswald", "Jump");
           }
           else if (strcmp(anim, "Jump") == 0) {
-            wsRenderer.beginAnimation("Griswald", "Walk");
+            scene->beginAnimation("Griswald", "Walk");
           }
+          //*/
         }
         break;
       case WS_BUTTON_START:
         if (action  == WS_PRESS) {
           if (animationsPaused) {
-            wsRenderer.continueAnimations();
+            scene->continueAnimations();
             animationsPaused = false;
           }
           else {
-            wsRenderer.pauseAnimations();
+            scene->pauseAnimations();
             animationsPaused = true;
           }
         }
@@ -101,14 +103,12 @@ void wsDemo::handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 action,
       case WS_ANALOG_L_AXIS_X:
         if (analogVal) {
           f32 rotationSpeed = 4.0f;
-          //glRotatef(-analogVal*rotationSpeed, 0.0f, 1.0f, 0.0f);
           cam->orbit(vec4(0.0f, 9.0f), Y_AXIS, -analogVal*rotationSpeed);
         }
         break;
       case WS_ANALOG_L_AXIS_Y:
         if (analogVal) {
           f32 rotationSpeed = 4.0f;
-          //glRotatef(-analogVal*rotationSpeed, 0.0f, 1.0f, 0.0f);
           cam->orbit(vec4(0.0f, 9.0f), cam->getRightDir(), -analogVal*rotationSpeed);
         }
         break;
@@ -125,15 +125,15 @@ void wsDemo::handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action) {
       switch (btnIndex) {
         case WS_KEY_A:
           if (action == WS_PRESS) {
-            const char* anim = wsRenderer.getModel("Griswald")->getCurrentAnimationName();
+            const char* anim = scene->getModel("Griswald")->getCurrentAnimationName();
             if (strcmp(anim, "Walk") == 0) {
-              wsRenderer.beginAnimation("Griswald", "Idle");
+              scene->beginAnimation("Griswald", "Idle");
             }
             else if (strcmp(anim, "Idle") == 0) {
-              wsRenderer.beginAnimation("Griswald", "Jump");
+              scene->beginAnimation("Griswald", "Jump");
             }
             else if (strcmp(anim, "Jump") == 0) {
-              wsRenderer.beginAnimation("Griswald", "Walk");
+              scene->beginAnimation("Griswald", "Walk");
             }
           }
           break;
@@ -175,11 +175,11 @@ void wsDemo::handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action) {
         case WS_KEY_P:
           if (action == WS_PRESS) {
             if (animationsPaused) {
-              wsRenderer.continueAnimations();
+              scene->continueAnimations();
               animationsPaused = false;
             }
             else {
-              wsRenderer.pauseAnimations();
+              scene->pauseAnimations();
               animationsPaused = true;
             }
           }
@@ -263,10 +263,11 @@ void wsDemo::handleMouseMotionEvents(i32 posX, i32 posY, f32 dx, f32 dy) {
 /*  Inherited Methods */
 
 void wsDemo::onStart() {
+  scene =  wsNew(wsScene, wsScene());
   cam = wsNew(wsCamera, wsCamera("MainCam", vec4(9.0f, 17.0f, 9.0f), vec4(0.0f, 0.0f, 1.0f), vec4(0.0f, 1.0f, 0.0f),
     vec4(0.0f, 0.0f, wsScreenWidth, wsScreenHeight), WS_CAMERA_MODE_PERSP, 60.0f, wsScreenWidth/wsScreenHeight, 0.01f, 100.0f));
   cam->lookAt(vec4(0.0f, 9.0f, 0.0f));
-  wsRenderer.addCamera(cam);
+  scene->addCamera(cam);
 
   wsRenderer.setClearColor(0.4f, 0.6f, 0.4f, 1.0f);
   wsMesh* griswald = wsNew(wsMesh, wsMesh("models/Griswald.wsMesh"));
@@ -283,20 +284,20 @@ void wsDemo::onStart() {
   wsMusic* Resistors = wsNew(wsMusic, wsMusic("sounds/music/07. We're the Resistors.ogg"));
   wsSounds.addSound("Click", Click);
   wsSounds.addMusic("Resistors", Resistors);
-  wsRenderer.addModel(Griswald);
-  wsRenderer.addModel(Griswald2);
-  wsRenderer.addModel(BladeWand);
-  wsRenderer.addModel(BlueBox);
+  scene->addModel(Griswald);
+  scene->addModel(Griswald2);
+  scene->addModel(BladeWand);
+  scene->addModel(BlueBox);
   wsAnimation* anim_walk = wsNew(wsAnimation, wsAnimation("models/Walk.wsAnim"));
   wsAnimation* anim_idle = wsNew(wsAnimation, wsAnimation("models/Idle.wsAnim"));
   wsAnimation* anim_jump = wsNew(wsAnimation, wsAnimation("models/Jump.wsAnim"));
-  wsRenderer.addAnimation(anim_walk, "Griswald");
-  wsRenderer.addAnimation(anim_walk, "Griswald2");
-  wsRenderer.addAnimation(anim_idle, "Griswald");
-  wsRenderer.addAnimation(anim_jump, "Griswald");
+  scene->addAnimation(anim_walk, "Griswald");
+  scene->addAnimation(anim_walk, "Griswald2");
+  scene->addAnimation(anim_idle, "Griswald");
+  scene->addAnimation(anim_jump, "Griswald");
   wsLog("Animation Name = \"%s\"", anim_idle->getName());
-  wsRenderer.beginAnimation("Griswald", "Idle");
-  wsRenderer.beginAnimation("Griswald2", "Walk");
+  scene->beginAnimation("Griswald", "Idle");
+  scene->beginAnimation("Griswald2", "Walk");
   // Griswald->setTimeScale(0.5f);
   wsFont* fntUbuntu = wsNew(wsFont, wsFont("/home/dsnettleton/Documents/Programming/Eclipse/workspace/Florin/fonts/Ubuntu-B.ttf", 30));
   wsText* txtHello = wsNew(wsText, wsText(vec4(16, 240, 1024, 256), "Hello World!", fntUbuntu, 0, WS_HUD_VISIBLE));
@@ -306,8 +307,8 @@ void wsDemo::onStart() {
   txtLine2->setColor(vec4(0.945f, 0.69f, 0.114f, 1.0f));
   txtLine3->setColor(txtLine2->getColor());
 
-  //wsRenderer.setScale("Griswald", 2.0f);
-  //wsRenderer.setScale("BladeWand", 2.0f);
+  //scene->setScale("Griswald", 2.0f);
+  //scene->setScale("BladeWand", 2.0f);
   // BladeWand->setPos( vec4(0.0f, 8.0f, 2.0f) );
   // BladeWand->setRotation( quat(0.0f, 0.0f, 0.707f, 0.707f) );
   Griswald->attachModel(BladeWand,"tag_Hand.r");

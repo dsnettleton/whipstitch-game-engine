@@ -109,7 +109,7 @@ void wsGameLoop::iterateLoop() {
   //  Update the gamestate and draw the game
   updateGameState();
   //drawGameState();
-  wsRenderer.drawScene();
+  wsRenderer.drawScene(game->getCurrentScene());
   //  Get the ending time of our state update
   t32 timeDiff = wsGetTime() - beginTime;
   t32 sleepTime = frameDuration - timeDiff;
@@ -141,7 +141,7 @@ void wsGameLoop::updateGameState() {
   handleEvents();
   if (quit) { return; }
 
-  wsRenderer.updateAnimations(frameDuration);
+  game->getCurrentScene()->updateAnimations(frameDuration);
 
   wsMem.swapFrames(); //  Swap the current memory buffer on the frame stack
 }

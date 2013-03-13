@@ -42,7 +42,7 @@
 #include "wsShader.h"
 #include "../wsUtils.h"
 #include "../wsAssets.h"
-#include "wsCamera.h"
+#include "../wsGameFlow/wsScene.h"
  
 #ifndef WS_GLEW_INCLUDED_
   #include "GL/glew.h"
@@ -101,9 +101,7 @@ class wsRenderSystem {
     u32 renderMode, finalFramebuffer;
     i32 shaderWidth, shaderHeight;
     //  Drawing components
-    wsHashMap<wsCamera*>* cameras;  //  Change to ordered hashmap
     wsHashMap<u32>* imageIndices;
-    wsHashMap<wsModel*>* models;
     wsHashMap<wsMeshContainer*>* meshes;
     wsOrderedHashMap<wsPanel*>* panels;
     u32 currentPostBuffer;
@@ -111,9 +109,6 @@ class wsRenderSystem {
     //  True only when the startUp function has been called
     bool _mInitialized;
     //  Private Methods
-    // void drawMesh(u32 meshIndex);
-    void drawModel(u32 modelIndex);
-    // void drawPanel(wsPanel* pan);
     void initializeShaders(u32 width, u32 height);
   public:
     /*  Default Constructor and Deconstructor */
@@ -126,47 +121,29 @@ class wsRenderSystem {
     bool isEnabled(u32 features) { return ((drawFeatures & features) == features); }
     u32 getRenderMode() { return renderMode; }
     void setRenderMode(const u32 my) { renderMode = my; }
-    wsCamera* getCamera(const char* cameraName) { return cameras->retrieve(wsHash(cameraName)); }
-    wsModel* getModel(const char* modelName) { return models->retrieve(wsHash(modelName)); }
     /*  Operational Methods */
-    void addAnimation(wsAnimation* myAnim, const char* modelName);
-    u32 addCamera(wsCamera* myCam);
     u32 addMesh(const char* filepath);  //  Adds a mesh and return the mesh's index
-    u32 addModel(const char* filepath); //  Adds a 3D model and returns its index
-    u32 addModel(const char* modelName, wsMesh* myMesh, u32 maxAnimations = 7);
-    u32 addModel(wsModel* myModel);
     u32 addPanel(const char* panelName, wsPanel* myPanel);
-    void beginAnimation(const char* modelName, const char* animName);
     void checkExtensions();
     void clearScreen();
-    void continueAnimation(const char* modelName);
-    void continueAnimations();
     void disable(u32 renderingFeatures);
-    // void drawMeshes();
-    void drawModels();
+    void drawModels(wsHashMap<wsModel*>* models);
     void drawPanels();
     void drawPost();    //  Post-processing effects
-    void drawScene();
+    void drawScene(wsScene* myScene);
     void enable(u32 renderingFeatures);
     void loadIdentity();
     void loadTexture(u32* index, const char* filename, bool autoSmooth = true);
     void modelviewMatrix();
     void nextRenderMode();
-    void pauseAnimation(const char* modelName);
-    void pauseAnimations();
     void projectionMatrix();
+    void resize(const u32 newWidth, const u32 newHeight);
     void scanHUD(); //  Use mouse position from wsInputs to test ui panels for events, etc.
-    void setCameraMode(const char* cameraName, u32 cameraMode);
     void setClearColor(const vec4& clearColor);
     void setClearColor(f32 r, f32 g, f32 b, f32 a);
     void setMaterial(const wsMaterial& mat);
-    void setPos(const char* modelName, const vec4& pos);
-    void setRotation(const char* modelName, const quat& rot);
-    void setScale(const char* modelName, const f32 scale);
     void swapBuffers();
     void swapPostBuffer();
-    void updateAnimation(const char* modelName, t32 increment);
-    void updateAnimations(t32 increment);
     //  Uninitializes the renderer
     void shutDown();
     //  Initializes the renderer

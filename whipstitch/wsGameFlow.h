@@ -36,5 +36,6 @@
 #include "wsGameFlow/wsGameLoop.h"
 #include "wsGameFlow/wsInputManager.h"
 #include "wsGameFlow/wsEventManager.h"
+#include "wsGameFlow/wsScene.h"
 
 #endif  //  WS_GAME_FLOW_H_
