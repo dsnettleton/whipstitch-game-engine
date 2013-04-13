@@ -33,28 +33,67 @@
 */
 #ifndef WS_SCENE_H_
 #define WS_SCENE_H_
+
 #include "../wsAssets.h"
 #include "../wsGraphics/wsCamera.h"
+#include "../wsPrimitives.h"
+
+#define WS_BACKEND_BULLET     0 //  Bullet physics engine
+
+#ifndef WS_PHYSICS_BACKEND
+ #define WS_PHYSICS_BACKEND WS_BACKEND_BULLET
+#endif
+
+#if WS_PHYSICS_BACKEND == WS_BACKEND_BULLET
+  #include "btBulletDynamicsCommon.h"
+  #include "btBulletCollisionCommon.h"
+#endif
+
+#ifndef WS_MAX_MODELS
+  #define WS_MAX_MODELS 101
+#endif
+
+#ifndef WS_MAX_CAMERAS
+  #define WS_MAX_CAMERAS 17
+#endif
+
+#ifndef WS_MAX_PRIMITIVES
+  #define WS_MAX_PRIMITIVES 101
+#endif
 
 class wsScene {
   private:
     //  Private Data Members
+    vec4 gravity;
     wsHashMap<wsCamera*>* cameras;
     wsHashMap<wsModel*>* models;
+    wsPrimitive** primitives;
+    #if WS_PHYSICS_BACKEND == WS_BACKEND_BULLET
+      wsHashMap<btRigidBody*>* rigidBodies;
+      btBroadphaseInterface* broadphase;  //  Eliminates object pairs that should not collide
+      btDefaultCollisionConfiguration* collisionConfig; //  fine-tunes collision algorithms
+      btCollisionDispatcher* dispatcher;
+      btSequentialImpulseConstraintSolver* solver;  //  solves physics interface
+      btDiscreteDynamicsWorld* physicsWorld;
+    #endif
+    u32 numPrimitives;
   public:
     //  Constructors and Deconstructors
-    wsScene();
+    wsScene(vec4 myGravity = vec4(0.0f, 0.0f, 0.0f, 0.0f));
     //  Setters and Getters
     wsCamera* getCamera(const char* cameraName) { return cameras->retrieve(wsHash(cameraName)); }
     wsHashMap<wsCamera*>* getCameras() { return cameras; }
     wsModel* getModel(const char* modelName) { return models->retrieve(wsHash(modelName)); }
     wsHashMap<wsModel*>* getModels() { return models; }
+    u32 getNumPrimitives() { return numPrimitives; }
+    wsPrimitive** getPrimitives() { return primitives; }
     //  Operational Methods
     void addAnimation(wsAnimation* myAnim, const char* modelName);
     u32 addCamera(wsCamera* myCam);
     u32 addModel(const char* filepath); //  Adds a 3D model and returns its index
     u32 addModel(const char* modelName, wsMesh* myMesh, u32 maxAnimations = 7);
     u32 addModel(wsModel* myModel);
+    u32 addPrimitive(wsPrimitive* myPrimitive);
     void beginAnimation(const char* modelName, const char* animName);
     void continueAnimation(const char* modelName);
     void continueAnimations();
@@ -66,6 +105,7 @@ class wsScene {
     void setScale(const char* modelName, const f32 scale);
     void updateAnimation(const char* modelName, t32 increment);
     void updateAnimations(t32 increment);
+    void updatePhysics(const t32 increment);
 };
 
 #endif //  WS_SCENE_H_

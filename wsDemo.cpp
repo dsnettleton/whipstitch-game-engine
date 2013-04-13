@@ -103,7 +103,7 @@ void wsDemo::handleControllerEvents(u64 controllerNum, u64 btnIndex, u32 action,
       case WS_ANALOG_L_AXIS_X:
         if (analogVal) {
           f32 rotationSpeed = 4.0f;
-          cam->orbit(vec4(0.0f, 9.0f), Y_AXIS, -analogVal*rotationSpeed);
+          cam->orbit(vec4(0.0f, 9.0f), WS_Y_AXIS, -analogVal*rotationSpeed);
         }
         break;
       case WS_ANALOG_L_AXIS_Y:
@@ -139,11 +139,11 @@ void wsDemo::handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action) {
           break;
         case WS_KEY_B:
           if (action == WS_PRESS) {
-            if (wsRenderer.isEnabled(WS_DRAW_BONES)) {
-              wsRenderer.disable(WS_DRAW_BONES);
+            if (wsRenderer.isEnabled(WS_DRAW_BOUNDS)) {
+              wsRenderer.disable(WS_DRAW_BOUNDS);
             }
             else {
-              wsRenderer.enable(WS_DRAW_BONES);
+              wsRenderer.enable(WS_DRAW_BOUNDS);
             }
           }
           break;
@@ -157,9 +157,29 @@ void wsDemo::handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action) {
             }
           }
           break;
+        case WS_KEY_J:
+          if (action == WS_PRESS) {
+            if (wsRenderer.isEnabled(WS_DRAW_BONES)) {
+              wsRenderer.disable(WS_DRAW_BONES);
+            }
+            else {
+              wsRenderer.enable(WS_DRAW_BONES);
+            }
+          }
+          break;
         case WS_KEY_M:
           if (action == WS_PRESS) {
             wsSounds.playMusic("Resistors");
+          }
+          break;
+        case WS_KEY_N:
+          if (action == WS_PRESS) {
+            if (wsRenderer.isEnabled(WS_DRAW_NORM_MAPS)) {
+              wsRenderer.disable(WS_DRAW_NORM_MAPS);
+            }
+            else {
+              wsRenderer.enable(WS_DRAW_NORM_MAPS);
+            }
           }
           break;
         case WS_KEY_O:
@@ -200,10 +220,10 @@ void wsDemo::handleKeyboardEvents(u64 keyType, u64 btnIndex, u32 action) {
           }
           break;
         case WS_KEY_LEFT:
-          cam->orbit(vec4(0.0f, 9.0f, 0.0f), Y_AXIS, -3.0f);
+          cam->orbit(vec4(0.0f, 9.0f, 0.0f), WS_Y_AXIS, -3.0f);
           break;
         case WS_KEY_RIGHT:
-          cam->orbit(vec4(0.0f, 9.0f, 0.0f), Y_AXIS, 3.0f);
+          cam->orbit(vec4(0.0f, 9.0f, 0.0f), WS_Y_AXIS, 3.0f);
           break;
         case WS_KEY_DOWN:
           cam->orbit(vec4(0.0f, 9.0f, 0.0f), cam->getRightDir(), 3.0f);
@@ -252,7 +272,7 @@ void wsDemo::handleMouseMotionEvents(i32 posX, i32 posY, f32 dx, f32 dy) {
   if (wsInputs.getMouseDown(WS_MOUSE_BUTTON_RIGHT)) {
     f32 rotationSpeed = 0.5f;
     if (dx) {
-      cam->orbit(vec4(0.0f, 9.0f, 0.0f), Y_AXIS, -dx*rotationSpeed);
+      cam->orbit(vec4(0.0f, 9.0f, 0.0f), WS_Y_AXIS, -dx*rotationSpeed);
     }
     if (dy) {
       cam->orbit(vec4(0.0f, 9.0f, 0.0f), cam->getRightDir(), -dy*rotationSpeed);
@@ -263,7 +283,7 @@ void wsDemo::handleMouseMotionEvents(i32 posX, i32 posY, f32 dx, f32 dy) {
 /*  Inherited Methods */
 
 void wsDemo::onStart() {
-  scene =  wsNew(wsScene, wsScene());
+  scene =  wsNew(wsScene, wsScene(vec4(0.0f, -15.0f, 0.0f, 0.0f)));
   cam = wsNew(wsCamera, wsCamera("MainCam", vec4(9.0f, 17.0f, 9.0f), vec4(0.0f, 0.0f, 1.0f), vec4(0.0f, 1.0f, 0.0f),
     vec4(0.0f, 0.0f, wsScreenWidth, wsScreenHeight), WS_CAMERA_MODE_PERSP, 60.0f, wsScreenWidth/wsScreenHeight, 0.01f, 100.0f));
   cam->lookAt(vec4(0.0f, 9.0f, 0.0f));
@@ -274,30 +294,30 @@ void wsDemo::onStart() {
   wsMesh* bladeWand = wsNew(wsMesh, wsMesh("models/bladeWand.wsMesh"));
   wsMesh* blueBox = wsNew(wsMesh, wsMesh("models/blueBox.wsMesh"));
   wsModel* Griswald = wsNew(wsModel, wsModel("Griswald", griswald, 7));
-  wsModel* Griswald2 = wsNew(wsModel, wsModel("Griswald2", griswald, 3));
+  // wsModel* Griswald2 = wsNew(wsModel, wsModel("Griswald2", griswald, 3));
   wsModel* BladeWand = wsNew(wsModel, wsModel("BladeWand", bladeWand, 0));
-  wsModel* BlueBox = wsNew(wsModel, wsModel("Blue Box", blueBox, 0));
+  wsModel* BlueBox = wsNew(wsModel, wsModel("Blue Box", blueBox, 0, 1.0f));
   // Griswald->setPos(vec4(-3.0f, 0.0f, 0.0f));
-  Griswald2->setPos(vec4(-5.0f, 0.0f, 0.0f));
-  BlueBox->setPos(vec4(5.0f, 0.0f, 0.0f));
+  // Griswald2->setPos(vec4(-5.0f, 0.0f, 0.0f));
+  BlueBox->setPos(vec4(10.0f, 5.0f, -3.0f));
   wsSound* Click = wsNew(wsSound, wsSound("sounds/btnClick.wav"));
   wsMusic* Resistors = wsNew(wsMusic, wsMusic("sounds/music/07. We're the Resistors.ogg"));
   wsSounds.addSound("Click", Click);
   wsSounds.addMusic("Resistors", Resistors);
   scene->addModel(Griswald);
-  scene->addModel(Griswald2);
+  // scene->addModel(Griswald2);
   scene->addModel(BladeWand);
   scene->addModel(BlueBox);
   wsAnimation* anim_walk = wsNew(wsAnimation, wsAnimation("models/Walk.wsAnim"));
   wsAnimation* anim_idle = wsNew(wsAnimation, wsAnimation("models/Idle.wsAnim"));
   wsAnimation* anim_jump = wsNew(wsAnimation, wsAnimation("models/Jump.wsAnim"));
   scene->addAnimation(anim_walk, "Griswald");
-  scene->addAnimation(anim_walk, "Griswald2");
+  // scene->addAnimation(anim_walk, "Griswald2");
   scene->addAnimation(anim_idle, "Griswald");
   scene->addAnimation(anim_jump, "Griswald");
   wsLog("Animation Name = \"%s\"", anim_idle->getName());
   scene->beginAnimation("Griswald", "Idle");
-  scene->beginAnimation("Griswald2", "Walk");
+  // scene->beginAnimation("Griswald2", "Walk");
   // Griswald->setTimeScale(0.5f);
   wsFont* fntUbuntu = wsNew(wsFont, wsFont("/home/dsnettleton/Documents/Programming/Eclipse/workspace/Florin/fonts/Ubuntu-B.ttf", 30));
   wsText* txtHello = wsNew(wsText, wsText(vec4(16, 240, 1024, 256), "Hello World!", fntUbuntu, 0, WS_HUD_VISIBLE));
@@ -329,6 +349,12 @@ void wsDemo::onStart() {
 
   wsTextBox* testBox = wsNew(wsTextBox, wsTextBox("Test Box", vec4(94, 15, 256, 64), 32, 14, 10, 5, "textBox.png", WS_HUD_VISIBLE));
   textBlock->addElement(testBox);
+
+  wsCube* myFloor = wsNew(wsCube, wsCube(40.0f, 5.0f, 40.0f, vec4(0.0f, -2.5f, 0.0f), quat(0.0f, 0.0f, 0.0f, 1.0f),
+    WS_PRIMITIVE_VISIBLE, 10.0f, "textures/blueStones.png", "textures/blueStones_norm.png"));
+  // myFloor->setPos();
+  scene->addPrimitive(myFloor);
+
 }
 
 void wsDemo::onLoop() {

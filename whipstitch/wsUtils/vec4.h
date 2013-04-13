@@ -80,7 +80,7 @@ struct vec4 {
     //  Default constructor uses SSE to initialize all values to zero
     vec4() : mReg(_mm_setzero_ps()) { w = 1.0f; }
     //  Secondary constructor allows explicit setting of values
-    vec4(f32 myX, f32 myY = 0.0f, f32 myZ = 0.0f, f32 myW = 0.0f) :
+    vec4(f32 myX, f32 myY = 0.0f, f32 myZ = 0.0f, f32 myW = 1.0f) :
                     mReg(_mm_set_ps(myW, myZ, myY, myX)) {}
     vec4(const vec4& other) : mReg(other.mReg) {}
     vec4(__m128 reg) : mReg(reg) {}
@@ -152,8 +152,8 @@ struct vec4 {
     void print(u16 printLog = WS_LOG_MAIN) const;
 };
 
-extern const vec4 X_AXIS;
-extern const vec4 Y_AXIS;
-extern const vec4 Z_AXIS;
+extern const vec4 WS_X_AXIS;
+extern const vec4 WS_Y_AXIS;
+extern const vec4 WS_Z_AXIS;
 
 #endif /* WS_VEC4_H_ */

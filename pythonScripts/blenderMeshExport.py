@@ -9,7 +9,7 @@ from copy import deepcopy
 
 workingDirectory = "./"
 MAJOR_VERSION = 1
-MINOR_VERSION = 0
+MINOR_VERSION = 2
 BLENDER_FPS = 24
 
 WS_TEXTURE_MAP_COLOR  = 0x0001
@@ -81,6 +81,7 @@ class wsAnimation:
     self.skeleton = skeleton
     self.framesPerSecond = BLENDER_FPS
     self.length = 0.0
+    self.bounds = wsBounds(0,0,0,0,0,0)
 
 class wsBounds:
   def __init__(self, minX, maxX, minY, maxY, minZ, maxZ):
@@ -90,6 +91,9 @@ class wsBounds:
     self.maxY = maxY
     self.minZ = minZ
     self.maxZ = maxZ
+    self.halfX = 0.0
+    self.halfY = 0.0
+    self.halfZ = 0.0
 
 class wsMesh:
   def __init__(self, name, skeleton):
@@ -158,6 +162,7 @@ animSkelName = ""
 mesh = None
 animations = []
 hasSkeleton = 0
+boundsInitialized = 0
 bpy.ops.object.mode_set(mode='OBJECT')  # Make sure we're in object mode
 
 #   Calculate Skeletal data
@@ -362,41 +367,6 @@ for my in bpy.data.objects:
       mesh.numVerts = len(mesh.verts)
     #end for each mesh object
 
-#   ADJUST DATA FOR PARENT OBJECT TRANSFORMATIONS
-if (animSkel != None):
-  animSkel.numJoints = len(animSkel.joints)
-  boundsInitialized = 0
-  for joint in animSkel.joints:
-    joint.start.rotate(animSkel.rotation)
-    joint.end.rotate(animSkel.rotation)
-
-    joint.start.x *= animSkel.scale.x
-    joint.start.y *= animSkel.scale.y
-    joint.start.z *= animSkel.scale.z
-    joint.end.x *= animSkel.scale.x
-    joint.end.y *= animSkel.scale.y
-    joint.end.z *= animSkel.scale.z
-
-    joint.start += animSkel.location
-    joint.end += animSkel.location
-
-    joint.initialRot = joint.rot
-    joint.rot = animSkel.rotation * joint.initialRot
-    # Set the joint's bounding box
-    if (boundsInitialized == 0):
-      joint.bounds = wsBounds(min(joint.start.x, joint.end.x), max(joint.start.x, joint.end.x), \
-                              min(joint.start.y, joint.end.y), max(joint.start.y, joint.end.y), \
-                              min(joint.start.z, joint.end.z), max(joint.start.z, joint.end.z))
-      boundsInitialized = 1
-    else:
-      joint.bounds.minX = min(joint.bounds.minX, joint.start.x, joint.end.x)
-      joint.bounds.maxX = max(joint.bounds.maxX, joint.start.x, joint.end.x)
-      joint.bounds.minY = min(joint.bounds.minY, joint.start.y, joint.end.y)
-      joint.bounds.maxY = max(joint.bounds.maxY, joint.start.y, joint.end.y)
-      joint.bounds.minZ = min(joint.bounds.minZ, joint.start.z, joint.end.z)
-      joint.bounds.maxZ = max(joint.bounds.maxZ, joint.start.z, joint.end.z)
-    #end for each joint
-  #end if we have a skeleton
 if (mesh != None):
   mesh.numVerts = len(mesh.verts)
   mesh.numMaterials = len(mesh.materials)
@@ -422,10 +392,50 @@ if (mesh != None):
       mesh.bounds.minZ = min(mesh.bounds.minZ, vert.pos.z)
       mesh.bounds.maxZ = max(mesh.bounds.maxZ, vert.pos.z)
     #end for each vertex
+  mesh.bounds.halfX = (mesh.bounds.maxX - mesh.bounds.minX) / 2.0
+  mesh.bounds.halfY = (mesh.bounds.maxY - mesh.bounds.minY) / 2.0
+  mesh.bounds.halfZ = (mesh.bounds.maxZ - mesh.bounds.minZ) / 2.0
+  mesh.location.x = (mesh.bounds.maxX + mesh.bounds.minX) / 2.0
+  mesh.location.y = (mesh.bounds.maxY + mesh.bounds.minY) / 2.0
+  mesh.location.z = (mesh.bounds.maxZ + mesh.bounds.minZ) / 2.0
   #end if we have a mesh
+
+#   ADJUST DATA FOR PARENT OBJECT TRANSFORMATIONS
+if (animSkel != None):
+  animSkel.numJoints = len(animSkel.joints)
+  boundsInitialized = 0
+  for joint in animSkel.joints:
+    joint.start.rotate(animSkel.rotation)
+    joint.end.rotate(animSkel.rotation)
+
+    joint.start.x *= animSkel.scale.x
+    joint.start.y *= animSkel.scale.y
+    joint.start.z *= animSkel.scale.z
+    joint.end.x *= animSkel.scale.x
+    joint.end.y *= animSkel.scale.y
+    joint.end.z *= animSkel.scale.z
+
+    joint.start += animSkel.location
+    joint.end += animSkel.location
+    joint.initialRot = joint.rot
+    joint.rot = animSkel.rotation * joint.initialRot
+    # Set the joint's bounding box
+    if (boundsInitialized == 0):
+      joint.bounds = wsBounds(min(joint.start.x, joint.end.x), max(joint.start.x, joint.end.x), \
+                              min(joint.start.y, joint.end.y), max(joint.start.y, joint.end.y), \
+                              min(joint.start.z, joint.end.z), max(joint.start.z, joint.end.z))
+      boundsInitialized = 1
+    else:
+      joint.bounds.minX = min(joint.bounds.minX, joint.start.x, joint.end.x)
+      joint.bounds.maxX = max(joint.bounds.maxX, joint.start.x, joint.end.x)
+      joint.bounds.minY = min(joint.bounds.minY, joint.start.y, joint.end.y)
+      joint.bounds.maxY = max(joint.bounds.maxY, joint.start.y, joint.end.y)
+      joint.bounds.minZ = min(joint.bounds.minZ, joint.start.z, joint.end.z)
+      joint.bounds.maxZ = max(joint.bounds.maxZ, joint.start.z, joint.end.z)
+    #end for each joint
+  #end if we have a skeleton
 for anim in animations:
   anim.numKeyframes = len(anim.keyframes)
-  boundsInitialized = 0
   for key in anim.keyframes:
     key.numJointMods = len(key.jointMods)
     for j in range( key.numJointMods ):
@@ -442,17 +452,21 @@ for anim in animations:
         diffRot = animSkel.joints[par].initialRot.inverted() * animSkel.joints[j].initialRot
         key.jointMods[j].rotation = key.jointMods[par].rotation * diffRot * key.jointMods[j].initialRot
       #end for each jointMod
+    #end for each keyframe
+
+  for key in anim.keyframes:
+    boundsInitialized = 0
     # Set the keyframe's bounding box
-    # jointList = wsSkeleton("Temp")
     #apply the animation to a copy.
     jointList = deepcopy(animSkel.joints)
     for j in range(len(jointList)):
+      par = animSkel.joints[j].parent
+      jointList[j].end -= jointList[j].start
       if (par >= 0):
         jointList[j].startRel = jointList[j].start - animSkel.joints[par].start
         jointList[j].startRel.rotate(animSkel.joints[par].rot.inverted())
       else:
         jointList[j].startRel = jointList[j].start
-      jointList[j].end -= jointList[j].start
       jointList[j].end.rotate(jointList[j].rot.inverted())
     for j in range(len(jointList)):
       jointList[j].rot = key.jointMods[j].rotation
@@ -476,7 +490,16 @@ for anim in animations:
         key.bounds.minZ = min(key.bounds.minZ, jointList[j].start.z, jointList[j].end.z)
         key.bounds.maxZ = max(key.bounds.maxZ, jointList[j].start.z, jointList[j].end.z)
       #end for each joint
+    key.bounds.halfX = (key.bounds.maxX - key.bounds.minX) / 2.0
+    key.bounds.halfY = (key.bounds.maxY - key.bounds.minY) / 2.0
+    key.bounds.halfZ = (key.bounds.maxZ - key.bounds.minZ) / 2.0
+    anim.bounds.halfX += key.bounds.halfX
+    anim.bounds.halfY += key.bounds.halfY
+    anim.bounds.halfZ += key.bounds.halfZ
     #end for each keyframe
+  anim.bounds.halfX /= len(anim.keyframes)
+  anim.bounds.halfY /= len(anim.keyframes)
+  anim.bounds.halfZ /= len(anim.keyframes)
   #end for each animation
         
 #   NOW WE WRITE!
@@ -489,6 +512,7 @@ if (mesh != None):
   output.write("meshName "+ mesh.name +"\n")
   output.write("numVertices "+ str(mesh.numVerts) +"\n")
   output.write("numMaterials "+ str(mesh.numMaterials) +"\n")
+  output.write("defaultPos { %f %f %f }\n" % (mesh.location.x, mesh.location.y, mesh.location.z))
   output.write("hasSkeleton %u\n\n" % hasSkeleton)
   if (hasSkeleton > 0):
     output.write("skeleton {\n")
@@ -507,10 +531,7 @@ if (mesh != None):
     output.write("}\n\n")
     #End if hasSkeleton > 0
   output.write("vertices {\n")
-  output.write("  bounds {\n")
-  output.write("    min { %f %f %f }\n" % (mesh.bounds.minX, mesh.bounds.minY, mesh.bounds.minZ))
-  output.write("    max { %f %f %f }\n" % (mesh.bounds.maxX, mesh.bounds.maxY, mesh.bounds.maxZ))
-  output.write("  }\n")
+  output.write("  bounds { %f %f %f }\n" % (mesh.bounds.halfX, mesh.bounds.halfY, mesh.bounds.halfZ) )
   for v in range( mesh.numVerts ):
     vert = mesh.verts[v]
     output.write("  vert "+ str(v) +" {\n")
@@ -597,6 +618,7 @@ if (mesh != None):
 for a in range( len(animations) ):
   anim = animations[a]
   skel = anim.skeleton
+  debug = wsFileBuffer(anim.name, "wsDebug")
   output = wsFileBuffer(anim.name, "wsAnim")
   output.write("//  Whipstitch Animation File\n")
   output.write("//  This Animation is for use with the Whipstitch Game Engine\n")
@@ -606,8 +628,8 @@ for a in range( len(animations) ):
   output.write("animationName "+ anim.name +"\n")
   output.write("framesPerSecond "+ str(anim.framesPerSecond) +"\n\n")
   output.write("numJoints "+str(skel.numJoints)+"\n") #add one for the root location
-  output.write("numKeyFrames "+ str(anim.numKeyframes) +"\n\n")
-  output.write("//  Animation files store a collection of joint rotations; matrices are computed on loading\n\n")
+  output.write("numKeyFrames "+ str(anim.numKeyframes) +"\n")
+  output.write("bounds { %f %f %f }\n\n" % (anim.bounds.halfX, anim.bounds.halfY, anim.bounds.halfZ) )
   output.write("joints {\n")
   for j in range( skel.numJoints ):
     joint = skel.joints[j]
@@ -629,12 +651,9 @@ for a in range( len(animations) ):
   output.write("keyframes {\n")
   for k in range( anim.numKeyframes ):
     key = anim.keyframes[k]
+    debug.write("keyframe %u - bounds { %f %f %f }\n" % (k, key.bounds.halfX, key.bounds.halfY, key.bounds.halfZ))
     output.write("  keyframe "+ str(k) +" {\n")
     output.write("    frameNumber "+ str(key.frameIndex) +"\n")
-    output.write("    bounds {\n")
-    output.write("      min { %f %f %f }\n" % (key.bounds.minX, key.bounds.minY, key.bounds.minZ))
-    output.write("      max { %f %f %f }\n" % (key.bounds.maxX, key.bounds.maxY, key.bounds.maxZ))
-    output.write("    }\n")
     output.write("    jointsModified "+ str(key.numJointMods) + "\n")
     for j in range( key.numJointMods ):
       output.write("    joint "+ str(j) +" {\n")
@@ -649,6 +668,7 @@ for a in range( len(animations) ):
     #end for each keyframe
   output.write("}\n")
   output.apply()
+  debug.apply()
   #end for each animation
 
 

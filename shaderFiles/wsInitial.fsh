@@ -184,9 +184,15 @@ vec3 normVec;
 void main() {
   //  Adjust Vert normal by normal map
   if (hasNormalMap != 0) {
+    //*
     normVec = normalize(texture2D(normalMap, texCoords).xyz*2.0 - 1.0);
     normVec = reflect(vertNorm, normVec);
     normVec.z *= -1;
+    /*/
+    normVec = normalize(texture2D(normalMap, texCoords).xyz*2.0 - 1.0);
+    normVec = reflect(vertNorm, -normVec);
+    normVec.z *= -1;
+    //*/
   }
   else {
     normVec = vertNorm;

@@ -79,16 +79,6 @@ struct wsJoint {
   i32 parent;
 };
 
-struct wsBounds {
-  f32 minX;
-  f32 maxX;
-  f32 minY;
-  f32 maxY;
-  f32 minZ;
-  f32 maxZ;
-  wsBounds() : minX(0.0f), maxX(0.0f), minY(0.0f), maxY(0.0f), minZ(0.0f), maxZ(0.0f) {}
-};
-
 class wsMesh: public wsAsset {
   private:
     wsVert* verts;
@@ -97,7 +87,8 @@ class wsMesh: public wsAsset {
     vec4* jointLocations;
     quat* jointRotations;
     wsHashMap<u32>* jointIndices;
-    wsBounds bounds;
+    vec4 defaultPos;
+    vec4 bounds;
     u32 numVerts;
     u32 numMaterials;
     u32 numJoints;
@@ -106,7 +97,8 @@ class wsMesh: public wsAsset {
     wsMesh(const char* filepath);
     ~wsMesh();
     //  Getters
-    const wsBounds* getBounds() const { return &bounds; }
+    const vec4* getBounds() const { return &bounds; }
+    const vec4& getDefaultPos() const { return defaultPos; }
     const wsJoint* getJoint(const char* jointName) { return &joints[jointIndices->retrieve(wsHash(jointName))]; }
     const wsJoint* getJoints() const { return joints; }
     const u32 getJointIndex(const char* jointName) { return jointIndices->retrieve(wsHash(jointName)); }

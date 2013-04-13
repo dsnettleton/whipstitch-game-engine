@@ -79,7 +79,6 @@ class wsGameLoop {
     /*  Operational Methods */
     void beginGame(wsGame* myGame);
     void continueLoop();
-    void drawGameState();
     void exit() { quit = true; }
     void handleEvents();
     void handleInputs();  //  Temporary until full HID subsystem is in place

@@ -76,15 +76,6 @@ void wsGameLoop::continueLoop() {
   }
 }
 
-void wsGameLoop::drawGameState() {
-  wsAssert(_mInitialized, "The object wsGame must be initialized via the startUp() method before use.");
-  /*
-  wsRenderer.clearScreen();
-  wsRenderer.drawModels();
-  wsRenderer.swapBuffers();
-  //*/
-}
-
 void wsGameLoop::handleEvents() {
   while (wsEvents.isNotEmpty()) {
     wsEvent my = wsEvents.pop();
@@ -108,7 +99,6 @@ void wsGameLoop::iterateLoop() {
   u32 framesSkipped = 0;
   //  Update the gamestate and draw the game
   updateGameState();
-  //drawGameState();
   wsRenderer.drawScene(game->getCurrentScene());
   //  Get the ending time of our state update
   t32 timeDiff = wsGetTime() - beginTime;
@@ -138,6 +128,8 @@ void wsGameLoop::updateGameState() {
   wsSounds.updateStreams();
   game->onLoop();
   handleInputs();
+  //  Update physics
+  game->getCurrentScene()->updatePhysics(frameDuration);
   handleEvents();
   if (quit) { return; }
 

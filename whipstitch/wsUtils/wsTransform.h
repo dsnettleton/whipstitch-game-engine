@@ -56,6 +56,14 @@ struct wsTransform {
     wsTransform(f32 myScale, const quat& myRotation, f32 myTranslationX, f32 myTranslationY, f32 myTranslationZ);
     //  Setters and Getters
     vec4 getTranslation() const;
+    wsTransform& setRotation(const quat& myRot) {
+      rotation = myRot;
+      return *this;
+    }
+    wsTransform& setRotation(const f32 x, const f32 y, const f32 z, const f32 w) {
+      rotation.set(x, y, z, w);
+      return *this;
+    }
     wsTransform& setTranslation(f32 x, f32 y, f32 z) {
         translationX = x; translationY = y; translationZ = z;
         return *this;

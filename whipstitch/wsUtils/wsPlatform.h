@@ -53,7 +53,7 @@
     #define WS_SUPPORTS_SSE4    WS_FALSE
 #endif
 
-const u32 WS_NUM_CORES = omp_get_num_procs();
+#define WS_NUM_CORES omp_get_num_procs()
 const u32 WS_BIT_ENVIRONMENT = sizeof(void*) * 8;
 
 #define WS_OS_UNKNOWN   0x00
@@ -141,7 +141,7 @@ const u32 WS_BIT_ENVIRONMENT = sizeof(void*) * 8;
         }
 #else   //  If this is Release mode
     #define WS_CURRENT_MODE WS_MODE_GAME
-    #define wsAssert(expr, message) //  Evaluates to null to avoid assertions in game mode
+    #define wsAssert(expr, message) expr //  Evaluates to the expression to avoid assertions in game mode
 #endif
 
 #endif /* WSPLATFORM_H_ */

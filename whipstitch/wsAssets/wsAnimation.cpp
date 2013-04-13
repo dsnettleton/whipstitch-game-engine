@@ -48,16 +48,16 @@ wsAnimation::wsAnimation(const char* filepath) {
   f32 versionNumber;
   errorCheck( fscanf( pFile, "versionNumber %f\n", &versionNumber) );
   errorCheck( fscanf( pFile, "animationType %u\n", &animType) );
-  char nameBuffer[255];
+  char nameBuffer[256];
   errorCheck( fscanf( pFile, "animationName %[^\t\n]\n", nameBuffer) );
   errorCheck( fscanf( pFile, "framesPerSecond %f\n\n", &framesPerSecond) );
   errorCheck( fscanf( pFile, "numJoints %u\n", &numJoints) );
-  errorCheck( fscanf( pFile, "numKeyFrames %u\n\n", &numKeyframes) );
+  errorCheck( fscanf( pFile, "numKeyFrames %u\n", &numKeyframes) );
+  errorCheck( fscanf( pFile, "bounds { %f %f %f }\n\n", &bounds.x, &bounds.y, &bounds.z) );
   //  Generate object arrays and place them on the current stack
   joints = wsNewArray(wsAnimJoint, numJoints);
   keyframes = wsNewArray(wsKeyframe, numKeyframes);
   strcpy(name, nameBuffer);
-  errorCheck( fscanf( pFile, "//  Animation files store a collection of joint rotations; matrices are computed on loading\n\n") );
   errorCheck( fscanf( pFile, "joints {\n") );
   u32 jointIndex = 0;
   for (u32 j = 0; j < numJoints; ++j) {
@@ -76,10 +76,10 @@ wsAnimation::wsAnimation(const char* filepath) {
     errorCheck( fscanf( pFile, "  keyframe %u {\n", &frameIndex) );
     wsAssert( (frameIndex == k), "Current index does not relate to current keyframe.");
     errorCheck( fscanf( pFile, "    frameNumber %f\n", &keyframes[k].frameIndex) );
-    errorCheck( fscanf( pFile, "    bounds {\n") );
-    errorCheck( fscanf( pFile, "      min { %f %f %f }\n", &keyframes[k].minX, &keyframes[k].minY, &keyframes[k].minZ) );
-    errorCheck( fscanf( pFile, "      max { %f %f %f }\n", &keyframes[k].maxX, &keyframes[k].maxY, &keyframes[k].maxZ) );
-    errorCheck( fscanf( pFile, "    }\n") );
+    // errorCheck( fscanf( pFile, "    bounds {\n") );
+    // errorCheck( fscanf( pFile, "      min { %f %f %f }\n", &keyframes[k].minX, &keyframes[k].minY, &keyframes[k].minZ) );
+    // errorCheck( fscanf( pFile, "      max { %f %f %f }\n", &keyframes[k].maxX, &keyframes[k].maxY, &keyframes[k].maxZ) );
+    // errorCheck( fscanf( pFile, "    }\n") );
     errorCheck( fscanf( pFile, "    jointsModified %u\n", &keyframes[k].numJointsModified) );
     keyframes[k].mods = wsNewArray(wsJointMod, keyframes[k].numJointsModified);
     for (u32 j = 0; j < keyframes[k].numJointsModified; ++j) {

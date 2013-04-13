@@ -158,6 +158,17 @@ void main() {
     normSum += tmpNorm.xyz * influence2.w;
   }
   vertNorm = gl_NormalMatrix*normSum;
+  /*
+  vec3 tanCrossZ = cross(normSum, vec3(0.0f, 0.0f, 1.0f));
+  vec3 tanCrossY = cross(normSum, vec3(0.0f, 1.0f, 0.0f));
+  if (length(tanCrossZ) > length(tanCrossY)) {
+    vertTan = gl_NormalMatrix*normalize(tanCrossZ);
+  }
+  else {
+    vertTan = gl_NormalMatrix*normalize(tanCrossY);
+  }
+  */
+
   vertPos = vec3(gl_ModelViewMatrix*vec4(posSum,1.0));
   texCoords = vert_texCoords;
   gl_Position = gl_ModelViewProjectionMatrix * vec4(posSum,1.0);

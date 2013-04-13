@@ -2,10 +2,11 @@
 //  This mesh is for use with the Whipstitch Game Engine
 //  For more information, email dsnettleton@whipstitchgames.com
 
-versionNumber 1.0
+versionNumber 1.1
 meshName bladeWand
 numVertices 4174
 numMaterials 5
+defaultPos { 0.016191 0.047749 0.246488 }
 hasSkeleton 1
 
 skeleton {
@@ -34,10 +35,7 @@ skeleton {
 }
 
 vertices {
-  bounds {
-    min { -0.388593 -0.395159 -2.620739 }
-    max { 0.420976 0.490657 3.113716 }
-  }
+  bounds { 0.404785 0.442908 2.867227 }
   vert 0 {
     pos { -0.055669 0.182805 -2.478077 }
     norm { -0.063723 0.165563 -0.984130 }

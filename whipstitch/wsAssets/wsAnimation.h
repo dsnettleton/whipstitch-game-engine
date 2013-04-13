@@ -59,16 +59,17 @@ struct wsKeyframe {
     u32 numJointsModified;
     wsJointMod* mods;
     //  Bounding box information
-    f32 minX, minY, minZ;
-    f32 maxX, maxY, maxZ;
+    // f32 minX, minY, minZ;
+    // f32 maxX, maxY, maxZ;
 };
 
 class wsAnimation: public wsAsset {
     private:
-        char name[255];
-        u32 animType;
+        char name[256];
+        vec4 bounds;
         wsAnimJoint* joints;
         wsKeyframe* keyframes;
+        u32 animType;
         u32 numJoints;
         u32 numKeyframes;
         f32 framesPerSecond;
@@ -79,6 +80,7 @@ class wsAnimation: public wsAsset {
         ~wsAnimation();
         //  Getters
         const t32 getAnimLength() { return animLength; }
+        const vec4& getBounds() { return bounds; }
         const f32 getFramesPerSecond() { return framesPerSecond; }
         const wsAnimJoint* getJoints() { return joints; }
         const wsKeyframe* getKeyframes() { return keyframes; }

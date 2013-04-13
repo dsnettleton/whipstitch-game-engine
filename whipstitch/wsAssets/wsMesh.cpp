@@ -52,8 +52,9 @@ wsMesh::wsMesh(const char* filepath) {
   errorCheck( fscanf( pFile, "meshName %[^\t\n]\n", nameBuffer) );
   errorCheck( fscanf( pFile, "numVertices %u\n", &numVerts) );
   errorCheck( fscanf( pFile, "numMaterials %u\n", &numMaterials) );
+  errorCheck( fscanf( pFile, "defaultPos { %f %f %f }\n", &defaultPos.x, &defaultPos.y, &defaultPos.z) );
   errorCheck( fscanf( pFile, "hasSkeleton %u\n\n", &hasSkeleton) );
-  wsLog("meshName = %s, numVertices = %u, numMaterials = %u, hasSkeleton = %u\n", nameBuffer, numVerts, numMaterials, hasSkeleton);
+  wsLog(WS_LOG_GRAPHICS, "meshName = %s, numVertices = %u, numMaterials = %u, hasSkeleton = %u\n", nameBuffer, numVerts, numMaterials, hasSkeleton);
   //  Generate object arrays and place them on the current stack
   mats = wsNewArray(wsMaterial, numMaterials);
   verts = wsNewArray(wsVert, numVerts);
@@ -111,10 +112,14 @@ wsMesh::wsMesh(const char* filepath) {
     jointIndices = WS_NULL;
   }
   errorCheck( fscanf( pFile, "vertices {\n") );
-  errorCheck( fscanf( pFile, "  bounds {\n") );
-  errorCheck( fscanf( pFile, "    min { %f %f %f }\n", &bounds.minX, &bounds.minY, &bounds.minZ) );
-  errorCheck( fscanf( pFile, "    max { %f %f %f }\n", &bounds.maxX, &bounds.maxY, &bounds.maxZ) );
-  errorCheck( fscanf( pFile, "  }\n") );
+  errorCheck( fscanf( pFile, "  bounds { %f %f %f }\n", &bounds.x, &bounds.y, &bounds.z) );
+  // f32 minX, minY, minZ, maxX, maxY, maxZ;
+  // errorCheck( fscanf( pFile, "    min { %f %f %f }\n", &minX, &minY, &minZ) );
+  // errorCheck( fscanf( pFile, "    max { %f %f %f }\n", &maxX, &maxY, &maxZ) );
+  // errorCheck( fscanf( pFile, "  }\n") );
+  // bounds.x = (minX+maxX)/4.0f;
+  // bounds.y = (minY+maxY)/4.0f;
+  // bounds.z = (minZ+maxZ)/4.0f;
   u32 currentIndex;
   for (u32 v = 0; v < numVerts; ++v) {
     errorCheck( fscanf( pFile, "  vert %u {\n", &currentIndex) );

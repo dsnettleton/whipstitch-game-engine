@@ -2,10 +2,11 @@
 //  This mesh is for use with the Whipstitch Game Engine
 //  For more information, email dsnettleton@whipstitchgames.com
 
-versionNumber 1.0
+versionNumber 1.2
 meshName Griswald
 numVertices 15040
 numMaterials 2
+defaultPos { 0.072505 7.936144 0.452544 }
 hasSkeleton 1
 
 skeleton {
@@ -265,10 +266,7 @@ skeleton {
 }
 
 vertices {
-  bounds {
-    min { -5.174786 0.088370 -1.700359 }
-    max { 5.319796 15.783918 2.605447 }
-  }
+  bounds { 5.247291 7.847774 2.152903 }
   vert 0 {
     pos { 0.411192 11.148897 -0.085926 }
     norm { 0.633900 -0.443739 -0.633442 }

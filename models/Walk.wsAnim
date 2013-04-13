@@ -2,15 +2,14 @@
 //  This Animation is for use with the Whipstitch Game Engine
 //  For more information, email dsnettleton@whipstitchgames.com
 
-versionNumber 1.0
+versionNumber 1.2
 animationType 1
 animationName Walk
 framesPerSecond 24
 
 numJoints 36
 numKeyFrames 7
-
-//  Animation files store a collection of joint rotations; matrices are computed on loading
+bounds { 1.991211 6.472679 1.827859 }
 
 joints {
   joint 0 {
@@ -234,10 +233,6 @@ joints {
 keyframes {
   keyframe 0 {
     frameNumber 0.0
-    bounds {
-      min { -6.155448 -30.072462 -17.946472 }
-      max { 5.286609 0.334608 5.002976 }
-    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.003227 0.036097 -0.287489 }
@@ -386,10 +381,6 @@ keyframes {
   }
   keyframe 1 {
     frameNumber 3.0
-    bounds {
-      min { -6.357038 -30.272718 -16.179867 }
-      max { 5.263508 0.245181 5.191667 }
-    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.003227 -0.053330 -0.287503 }
@@ -538,10 +529,6 @@ keyframes {
   }
   keyframe 2 {
     frameNumber 6.0
-    bounds {
-      min { -6.325142 -30.391113 -15.050453 }
-      max { 5.264318 0.155792 5.366752 }
-    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.003226 -0.142719 -0.287517 }
@@ -690,10 +677,6 @@ keyframes {
   }
   keyframe 3 {
     frameNumber 12.0
-    bounds {
-      min { -6.155448 -30.072462 -17.946476 }
-      max { 5.303416 0.334608 5.002976 }
-    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.003227 0.036097 -0.287489 }
@@ -842,10 +825,6 @@ keyframes {
   }
   keyframe 4 {
     frameNumber 15.0
-    bounds {
-      min { -5.621297 -30.119696 -19.486528 }
-      max { 6.325536 0.257972 5.191669 }
-    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.003226 -0.040538 -0.287501 }
@@ -994,10 +973,6 @@ keyframes {
   }
   keyframe 5 {
     frameNumber 18.0
-    bounds {
-      min { -5.544181 -30.249165 -22.363575 }
-      max { 5.385121 0.155792 5.162813 }
-    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.003226 -0.142719 -0.287517 }
@@ -1146,10 +1121,6 @@ keyframes {
   }
   keyframe 6 {
     frameNumber 24.0
-    bounds {
-      min { -6.155448 -30.072462 -17.946472 }
-      max { 5.286609 0.334608 5.002976 }
-    }
     jointsModified 36
     joint 0 {
       jointTranslation { -0.003227 0.036097 -0.287489 }

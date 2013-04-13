@@ -48,9 +48,9 @@
 #include "mat4.h"
 #include "quat.h"
 
-const vec4 X_AXIS(1.0f, 0.0f, 0.0f, 1.0f);
-const vec4 Y_AXIS(0.0f, 1.0f, 0.0f, 1.0f);
-const vec4 Z_AXIS(0.0f, 0.0f, 1.0f, 1.0f);
+const vec4 WS_X_AXIS(1.0f, 0.0f, 0.0f, 1.0f);
+const vec4 WS_Y_AXIS(0.0f, 1.0f, 0.0f, 1.0f);
+const vec4 WS_Z_AXIS(0.0f, 0.0f, 1.0f, 1.0f);
 
 #if WS_SUPPORTS_SSE4 == WS_TRUE
 

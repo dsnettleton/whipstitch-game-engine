@@ -49,10 +49,11 @@ wsModel::wsModel(const char* filepath) {
   animPaused = false;
 }
 
-wsModel::wsModel(const char* myName, wsMesh* myMesh, const u32 myMaxAnimations = WS_DEFAULT_MAX_ANIMATIONS) {
+wsModel::wsModel(const char* myName, wsMesh* myMesh, const u32 myMaxAnimations, const f32 myMass) {
   assetType = WS_ASSET_TYPE_MODEL;
   mesh = myMesh;
   name = myName;
+  bounds = *mesh->getBounds();
   defaultAnimation = 0;
   animTime = 0.0;
   currentAnimation = NULL;
@@ -69,6 +70,7 @@ wsModel::wsModel(const char* myName, wsMesh* myMesh, const u32 myMaxAnimations =
   looping = false;
   timeScale = 1.0f;
   animPaused = false;
+  mass = myMass;
   //  Initialize Drawing variables
   const wsMaterial* mats = myMesh->getMats();
   #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
@@ -168,6 +170,10 @@ void wsModel::attachModel(wsModel* myModel, const char* jointName) {
 void wsModel::beginAnimation(const char* animName) {
   currentAnimation = animations->retrieve(wsHash(animName));
   animTime = 0.0;
+  //  Update bounding box
+  //*
+  bounds = currentAnimation->getBounds();
+  //*/
   applyAnimation();
 }
 
