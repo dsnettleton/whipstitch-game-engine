@@ -9,7 +9,7 @@ from copy import deepcopy
 
 workingDirectory = "./"
 MAJOR_VERSION = 1
-MINOR_VERSION = 2
+MINOR_VERSION = 3
 BLENDER_FPS = 24
 
 WS_TEXTURE_MAP_COLOR  = 0x0001
@@ -490,16 +490,13 @@ for anim in animations:
         key.bounds.minZ = min(key.bounds.minZ, jointList[j].start.z, jointList[j].end.z)
         key.bounds.maxZ = max(key.bounds.maxZ, jointList[j].start.z, jointList[j].end.z)
       #end for each joint
-    key.bounds.halfX = (key.bounds.maxX - key.bounds.minX) / 2.0
-    key.bounds.halfY = (key.bounds.maxY - key.bounds.minY) / 2.0
-    key.bounds.halfZ = (key.bounds.maxZ - key.bounds.minZ) / 2.0
-    anim.bounds.halfX += key.bounds.halfX
-    anim.bounds.halfY += key.bounds.halfY
-    anim.bounds.halfZ += key.bounds.halfZ
+    key.bounds.halfX = max(abs(key.bounds.maxX-mesh.location.x), abs(key.bounds.minX-mesh.location.x))
+    key.bounds.halfY = max(abs(key.bounds.maxY-mesh.location.y), abs(key.bounds.minY-mesh.location.y))
+    key.bounds.halfZ = max(abs(key.bounds.maxZ-mesh.location.z), abs(key.bounds.minZ-mesh.location.z))
+    anim.bounds.halfX = max(anim.bounds.halfX, key.bounds.halfX);
+    anim.bounds.halfY = max(anim.bounds.halfY, key.bounds.halfY);
+    anim.bounds.halfZ = max(anim.bounds.halfZ, key.bounds.halfZ);
     #end for each keyframe
-  anim.bounds.halfX /= len(anim.keyframes)
-  anim.bounds.halfY /= len(anim.keyframes)
-  anim.bounds.halfZ /= len(anim.keyframes)
   #end for each animation
         
 #   NOW WE WRITE!
@@ -629,7 +626,8 @@ for a in range( len(animations) ):
   output.write("framesPerSecond "+ str(anim.framesPerSecond) +"\n\n")
   output.write("numJoints "+str(skel.numJoints)+"\n") #add one for the root location
   output.write("numKeyFrames "+ str(anim.numKeyframes) +"\n")
-  output.write("bounds { %f %f %f }\n\n" % (anim.bounds.halfX, anim.bounds.halfY, anim.bounds.halfZ) )
+  output.write("bounds { %f %f %f }\n" % (anim.bounds.halfX, anim.bounds.halfY, anim.bounds.halfZ) )
+  # output.write("defaultPos { %f %f %f }\n\n" % (anim.location.x, anim.location.y, anim.location.z) )
   output.write("joints {\n")
   for j in range( skel.numJoints ):
     joint = skel.joints[j]

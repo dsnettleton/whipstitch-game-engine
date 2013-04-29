@@ -43,82 +43,82 @@ void wsInit(const char* title, const i32 width, const i32 height, bool fullscree
       wsFile::create_directory(ws_path_log_dir);
     #endif
   }
-  wsLog("Initializing Whipstitch Engine\n");
-  wsLog("  CWD =  %s\n  HOME = %s\n  LOGS = %s\n", ws_path_cwd.string().c_str(),
+  wsEcho("Initializing Whipstitch Engine\n");
+  wsEcho("  CWD =  %s\n  HOME = %s\n  LOGS = %s\n", ws_path_cwd.string().c_str(),
           ws_path_home.string().c_str(), ws_path_log_dir.string().c_str());
   switch (WS_CURRENT_MODE) {
     case WS_MODE_DEBUG:
-      wsLog((WS_LOG_MAIN | WS_LOG_PLATFORM), "MODE = DEBUG\n");
+      wsEcho((WS_LOG_MAIN | WS_LOG_PLATFORM), "MODE = DEBUG\n");
       break;
     case WS_MODE_PROFILE:
-      wsLog((WS_LOG_MAIN | WS_LOG_PLATFORM), "MODE = PROFILE\n");
+      wsEcho((WS_LOG_MAIN | WS_LOG_PLATFORM), "MODE = PROFILE\n");
       break;
     case WS_MODE_GAME:
-      wsLog((WS_LOG_MAIN | WS_LOG_PLATFORM), "MODE = RELEASE\n");
+      wsEcho((WS_LOG_MAIN | WS_LOG_PLATFORM), "MODE = RELEASE\n");
       break;
   }
   switch (WS_CURRENT_OS) {
     case WS_OS_LINUX:
-      wsLog((WS_LOG_MAIN | WS_LOG_PLATFORM), "Platform = Linux\n");
+      wsEcho((WS_LOG_MAIN | WS_LOG_PLATFORM), "Platform = Linux\n");
       break;
     case WS_OS_WINDOWS:
-      wsLog((WS_LOG_MAIN | WS_LOG_PLATFORM), "Platform = Windows\n");
+      wsEcho((WS_LOG_MAIN | WS_LOG_PLATFORM), "Platform = Windows\n");
       break;
     case WS_OS_UNIX:
-      wsLog((WS_LOG_MAIN | WS_LOG_PLATFORM), "Platform = Unix\n");
+      wsEcho((WS_LOG_MAIN | WS_LOG_PLATFORM), "Platform = Unix\n");
       break;
     case WS_OS_MAC_OSX:
-      wsLog((WS_LOG_MAIN | WS_LOG_PLATFORM), "Plaform = Mac OSX\n");
+      wsEcho((WS_LOG_MAIN | WS_LOG_PLATFORM), "Plaform = Mac OSX\n");
       break;
     default:
     case WS_OS_UNKNOWN:
-      wsLog((WS_LOG_MAIN | WS_LOG_PLATFORM), "Platform = Unknown\n");
+      wsEcho((WS_LOG_MAIN | WS_LOG_PLATFORM), "Platform = Unknown\n");
       break;
   }
   switch (WS_CURRENT_ENDIAN) {
     case WS_LITTLE_ENDIAN:
-      wsLog((WS_LOG_MAIN | WS_LOG_PLATFORM), "Byte Order: Little Endian\n");
+      wsEcho((WS_LOG_MAIN | WS_LOG_PLATFORM), "Byte Order: Little Endian\n");
       break;
     case WS_BIG_ENDIAN:
-      wsLog((WS_LOG_MAIN | WS_LOG_PLATFORM), "Byte Order: Big Endian\n");
+      wsEcho((WS_LOG_MAIN | WS_LOG_PLATFORM), "Byte Order: Big Endian\n");
       break;
     case WS_UNKNOWN_ENDIAN:
-      wsLog((WS_LOG_MAIN | WS_LOG_PLATFORM), "Byte Order: Unknown\n");
+      wsEcho((WS_LOG_MAIN | WS_LOG_PLATFORM), "Byte Order: Unknown\n");
       break;
   }
   switch (WS_CURRENT_ARCHITECTURE) {
     case WS_ARCH_AMD64:
-      wsLog(WS_LOG_PLATFORM, "Architecture: AMD64\n");
+      wsEcho(WS_LOG_PLATFORM, "Architecture: AMD64\n");
       break;
     case WS_ARCH_I32:
-      wsLog(WS_LOG_PLATFORM, "Architecture: Intel 32\n");
+      wsEcho(WS_LOG_PLATFORM, "Architecture: Intel 32\n");
       break;
     case WS_ARCH_ARM:
-      wsLog(WS_LOG_PLATFORM, "Architecture: ARM\n");
+      wsEcho(WS_LOG_PLATFORM, "Architecture: ARM\n");
       break;
     case WS_ARCH_PPC:
-      wsLog(WS_LOG_PLATFORM, "Architecture: PowerPC\n");
+      wsEcho(WS_LOG_PLATFORM, "Architecture: PowerPC\n");
       break;
     case WS_ARCH_UNKNOWN:
-      wsLog(WS_LOG_PLATFORM, "Architecture: Unknown\n");
+      wsEcho(WS_LOG_PLATFORM, "Architecture: Unknown\n");
       break;
   }
   wsAssert((WS_BIT_ENVIRONMENT == 32 || WS_BIT_ENVIRONMENT == 64),
           "Only 32-bit and 64-bit systems are supported.");
-  wsLog((WS_LOG_MAIN | WS_LOG_PLATFORM), "Environment: %u bits\n", WS_BIT_ENVIRONMENT);
+  wsEcho((WS_LOG_MAIN | WS_LOG_PLATFORM), "Environment: %u bits\n", WS_BIT_ENVIRONMENT);
   if (WS_SUPPORTS_SSE4) {
-    wsLog(WS_LOG_PLATFORM, "Supports SSE4\n");
+    wsEcho(WS_LOG_PLATFORM, "Supports SSE4\n");
   }
   else {
-    wsLog(WS_LOG_PLATFORM, "Does not support SSE4\n");
+    wsEcho(WS_LOG_PLATFORM, "Does not support SSE4\n");
   }
-  wsLog(WS_LOG_PLATFORM, "Number of Processor Cores: %u\n", WS_NUM_CORES);
-  wsLog(WS_LOG_UTIL, "Generating Lookup Tables, Initializing Random Number Generator\n");
+  wsEcho(WS_LOG_PLATFORM, "Number of Processor Cores: %u\n", WS_NUM_CORES);
+  wsEcho(WS_LOG_UTIL, "Generating Lookup Tables, Initializing Random Number Generator\n");
   wsBenchmarkBegin();
   genLookupTables();
   wsBuildCRC32HashTable();
   wsInitRandomizer( wsGetTime() );
-  wsLog(WS_LOG_UTIL, "Benchmarked at: %f\n", wsBenchmarkEnd());
+  wsEcho(WS_LOG_UTIL, "Benchmarked at: %f\n", wsBenchmarkEnd());
 
   /*  Begin Starting Up Engine Subsystems  */
   wsMem.startUp(mainMem, frameStackMem);
@@ -136,8 +136,15 @@ void wsInit(const char* title, const i32 width, const i32 height, bool fullscree
   wsLoop.startUp();
 }
 
+void wsBegin(wsGame* myGame) {
+  myGame->onStart();
+  wsLoop.beginGame(myGame);
+  myGame->onExit();
+  wsQuit();
+}
+
 void wsQuit() {
-  wsLog(WS_LOG_MAIN, "Shutting Down Whipstitch Engine\n");
+  wsEcho(WS_LOG_MAIN, "Shutting Down Whipstitch Engine\n");
   /*  Shut Down Engine Subsystems in reverse order of StartUp  */
   wsLoop.shutDown();
   wsInputs.shutDown();
@@ -150,7 +157,7 @@ void wsQuit() {
   wsProfiles.shutDown();
 #endif
   wsMem.shutDown();
-  wsLog(WS_LOG_MAIN, "Whipstitch Engine Shut Down Successfully. G'Bye.");
+  wsEcho(WS_LOG_MAIN, "Whipstitch Engine Shut Down Successfully. G'Bye.");
 }
 
 

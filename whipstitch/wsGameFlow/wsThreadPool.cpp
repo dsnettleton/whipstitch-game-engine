@@ -58,7 +58,7 @@ void* wsRunThread(void* threadID) {
     while (!wsThreads.killSignalReceived()) {
         wsThreads.lockMutex(listMutex);
         if (tasks->isNotEmpty()) {
-            wsLog(WS_LOG_THREADS, "Removing task from front of queue; running on thread number %u", threadNum);
+            wsEcho(WS_LOG_THREADS, "Removing task from front of queue; running on thread number %u", threadNum);
             myTask = tasks->pop();
         }
         wsThreads.unlockMutex(listMutex);
@@ -68,7 +68,7 @@ void* wsRunThread(void* threadID) {
         }
     }
     wsThreads.lockMutex(logMutex);
-    wsLog(WS_LOG_THREADS, "Exiting thread number %u", threadNum);
+    wsEcho(WS_LOG_THREADS, "Exiting thread number %u", threadNum);
     wsThreads.unlockMutex(logMutex);
     pthread_exit(NULL);
 }
@@ -79,7 +79,7 @@ void wsThreadPool::startUp() {
     _mInitialized = true;
     numThreads = maxThreads = WS_NUM_CORES - 1; //  Save one processor for the main thread
     if (numThreads <= 0) {
-        wsLog(WS_LOG_THREADS, "No extra threads have been created.");
+        wsEcho(WS_LOG_THREADS, "No extra threads have been created.");
     }
     threads = wsNewArray(pthread_t, numThreads);
     threadIndices = wsNewArray(u32, numThreads);
@@ -98,7 +98,7 @@ void wsThreadPool::startUp() {
     wsInitMutex(logMutex);
     taskList = wsNew(wsQueue<wsTask*>, wsQueue<wsTask*>(WS_MAX_TASK_QUEUE_SIZE));
     tasksRunning = 0;
-    wsLog(WS_LOG_THREADS, "Initializing %u Worker Threads", numThreads);
+    wsEcho(WS_LOG_THREADS, "Initializing %u Worker Threads", numThreads);
     for (u32 i = 0; i < numThreads; ++i) {
         runThread(i);
     }

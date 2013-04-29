@@ -39,6 +39,7 @@
 #ifndef WS_RENDER_SYSTEM_H_
 #define WS_RENDER_SYSTEM_H_
 
+#include "../wsConfig.h"
 #include "wsShader.h"
 #include "../wsUtils.h"
 #include "../wsAssets.h"
@@ -49,69 +50,6 @@
   #include "GL/glew.h"
   #define WS_GLEW_INCLUDED_
 #endif
-
-#define WS_BACKEND_OPENGL   0x10
-#define WS_BACKEND_SDL  0x20  //  For potential future use
-#define WS_BACKEND_DIRECTX  0x40  //  For potential future use
-
-//  Default (preferred) backend is OpenGL
-#define WS_GRAPHICS_BACKEND WS_BACKEND_OPENGL
-
-//  Drawing Features
-#define WS_DRAW_CULL_FACE     0x00000001
-#define WS_DRAW_LIGHTING      0x00000002
-#define WS_DRAW_DEPTH         0x00000004
-#define WS_DRAW_BONES         0x00000008
-#define WS_DRAW_CEL           0x00000010
-#define WS_DRAW_AXES          0x00000020
-#define WS_DRAW_TEXTURES      0x00000040
-#define WS_DRAW_OUTLINE       0x00000080
-#define WS_DRAW_CURSOR        0x00000100  //  If enabled, default system cursor is shown
-#define WS_DRAW_ANTIALIAS     0x00000200
-#define WS_DRAW_BOUNDS        0x00000400  //  Draws bounding boxes for objects
-#define WS_DRAW_NORM_MAPS     0x00000800
-
-#ifndef WS_MAX_TEXTURES
-  #define WS_MAX_TEXTURES 256
-#endif
-#ifndef WS_MAX_JOINTS
-  #define WS_MAX_JOINTS   64
-#endif
-
-//  Indices for framebuffer object array
-#define WS_NUM_FRAMEBUFFERS   3
-#define WS_FBO_PRIMARY        0
-#define WS_FBO_POST_A         1
-#define WS_FBO_POST_B         2
-
-#define WS_NUM_SHADERS        8
-#define WS_SHADER_INITIAL     0
-#define WS_SHADER_FINAL       1
-#define WS_SHADER_POST        2
-#define WS_SHADER_HUD         3
-#define WS_SHADER_OUTLINE     4
-#define WS_SHADER_ANTIALIAS   5
-#define WS_SHADER_DEBUG       6
-#define WS_SHADER_SOLID_COLOR 7
-
-#define WS_NUM_FBO_TEX        7
-#define WS_FBO_TEX_POS        0
-#define WS_FBO_TEX_NORM       1
-#define WS_FBO_TEX_TEXTURE    2
-#define WS_FBO_TEX_MAT        3
-#define WS_FBO_TEX_DEPTH      4
-#define WS_FBO_TEX_FINAL_A    5
-#define WS_FBO_TEX_FINAL_B    6
-
-#define WS_VERT_ATTRIB_POSITION         0
-#define WS_VERT_ATTRIB_NORMAL           1
-#define WS_VERT_ATTRIB_TEX_COORDS       2
-#define WS_VERT_ATTRIB_COLOR            3
-#define WS_VERT_ATTRIB_NUM_WEIGHTS      4
-#define WS_VERT_ATTRIB_JOINT_INDEX      5
-#define WS_VERT_ATTRIB_INFLUENCE        6
-#define WS_VERT_ATTRIB_JOINT_INDEX_2    7
-#define WS_VERT_ATTRIB_INFLUENCE_2      8
 
 struct wsMeshContainer {
   const wsMesh* mesh;

@@ -89,7 +89,7 @@ class wsMemoryPool {
 
 template <class T>
 wsMemoryPool<T>::wsMemoryPool(u32 numObjects) {
-    wsLog(WS_LOG_MEMORY, "Initializing memory pool of %u objects\n", numObjects);
+    wsEcho(WS_LOG_MEMORY, "Initializing memory pool of %u objects\n", numObjects);
     wsAssert( (sizeof(T) >= sizeof(u32)),
                     "Object is too small for memory pool. Must be >= 4 bytes");
     mNumObjects = numObjects;
@@ -107,7 +107,7 @@ wsMemoryPool<T>::wsMemoryPool(u32 numObjects) {
 
 template <class T>
 T* wsMemoryPool<T>::add() {
-    wsLog(WS_LOG_MEMORY, "Adding a value to the memory pool\n");
+    wsEcho(WS_LOG_MEMORY, "Adding a value to the memory pool\n");
     wsAssert( (mFirstFreeBlock != NULL), "Has the Memory Pool been initialized?\n");
     void** nextPtr = (void**)mFirstFreeBlock;
     mFirstFreeBlock = *nextPtr;
@@ -117,7 +117,7 @@ T* wsMemoryPool<T>::add() {
 
 template <class T>
 T* wsMemoryPool<T>::allocate() {
-    wsLog(WS_LOG_MEMORY, "Allocating space in the memory pool\n");
+    wsEcho(WS_LOG_MEMORY, "Allocating space in the memory pool\n");
     wsAssert( (mFirstFreeBlock != NULL), "Has the Memory Pool been initialized?\n");
     T* myClassPtr = (T*)mFirstFreeBlock;
     void** nextPtr = (void**)mFirstFreeBlock;
@@ -127,7 +127,7 @@ T* wsMemoryPool<T>::allocate() {
 
 template <class T>
 void wsMemoryPool<T>::deallocate(T* pointer) {
-    wsLog(WS_LOG_MEMORY, "Freeing space in the memory pool.\n");
+    wsEcho(WS_LOG_MEMORY, "Freeing space in the memory pool.\n");
     wsAssert( (pointer != NULL), "Cannot remove a null pointer");
     wsAssert( ((u64)pointer >= (u64)&mObjects[0] &&
                     (u64)pointer <= &mObjects[mNumObjects-1]),
@@ -139,7 +139,7 @@ void wsMemoryPool<T>::deallocate(T* pointer) {
 
 template <class T>
 void wsMemoryPool<T>::remove(T* pointer) {
-    wsLog(WS_LOG_MEMORY, "Freeing space in the memory pool.\n");
+    wsEcho(WS_LOG_MEMORY, "Freeing space in the memory pool.\n");
     wsAssert( (pointer != NULL), "Cannot remove a null pointer");
     wsAssert( ((u64)pointer >= (u64)&mObjects[0] &&
                     (u64)pointer <= &mObjects[mNumObjects-1]),

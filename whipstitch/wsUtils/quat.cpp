@@ -227,7 +227,7 @@
   }
 
   void quat::print(u16 printLog) const {
-    wsLog(printLog, "{ %f, %f, %f, %f }\n", x, y, z, w);
+    wsEcho(printLog, "{ %f, %f, %f, %f }\n", x, y, z, w);
   }
 
 #else   //  If this does not support SSE4
@@ -458,7 +458,12 @@
   }
 
   void quat::print(u16 printLog) const {
-    wsLog(printLog, "{ %f, %f, %f, %f }\n", x, y, z, w);
+    wsEcho(printLog, "{ %f, %f, %f, %f }\n", x, y, z, w);
+  }
+
+  quat& quat::rotate(const vec4& axis, const f32 angle) {
+    *this *= quat(axis, angle);
+    return *this;
   }
 
 #endif /*   WS_SUPPORTS_SSE4  */

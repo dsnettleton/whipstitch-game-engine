@@ -52,8 +52,50 @@ wsScene::wsScene(vec4 myGravity) {
 }
 
 void wsScene::addAnimation(wsAnimation* myAnim, const char* modelName) {
-  models->retrieve(wsHash(modelName))->addAnimation(myAnim);
-}
+  wsModel* myModel = models->retrieve(wsHash(modelName));
+  myModel->addAnimation(myAnim);
+  #if WS_PHYSICS_BACKEND == WS_BACKEND_BULLET
+    char animName[512];
+    strcpy(animName, modelName);
+    strcat(animName, myAnim->getName());
+    u32 boundsHash = wsHash(animName);
+    const vec4 dimensions = myAnim->getBounds();
+    btCollisionShape* boundsShape;
+    if (myModel->getCollisionShape() == WS_NULL) {
+      boundsShape = wsNew(btBoxShape, btBoxShape(btVector3(dimensions.x, dimensions.y, dimensions.z)));
+    }
+    else {
+      wsCollisionShape* shape = myModel->getCollisionShape();
+      switch (shape->getType()) {
+        default:
+          boundsShape = wsNew(btBoxShape, btBoxShape(btVector3(dimensions.x, dimensions.y, dimensions.z)));
+          break;
+        case WS_SHAPE_CAPSULE:
+          boundsShape = wsNew(btCapsuleShape, btCapsuleShape(shape->getDim0(), shape->getDim1()));
+          break;
+        case WS_SHAPE_CUBE:
+          boundsShape = wsNew(btBoxShape, btBoxShape(btVector3(shape->getDim0(), shape->getDim1(), shape->getDim2())));
+          break;
+        case WS_SHAPE_CYLINDER:
+          boundsShape = wsNew(btCylinderShape,
+            btCylinderShape(btVector3(shape->getDim0(), shape->getDim1()/2.0f, shape->getDim0())));
+          break;
+        case WS_SHAPE_SPHERE:
+          boundsShape = wsNew(btSphereShape, btSphereShape(shape->getDim0()));
+          break;
+      }
+    }
+    f32 mass = myModel->getMass();
+    btVector3 myInertia(0.0f, 0.0f, 0.0f);
+    boundsShape->calculateLocalInertia(mass, myInertia);
+    btRigidBody::btRigidBodyConstructionInfo animRigidBodyCI(mass, myModel->getTransformp(), boundsShape, myInertia);
+    btRigidBody* animRigidBody = wsNew(btRigidBody, btRigidBody(animRigidBodyCI));
+    if (myModel->getProperties() & WS_MODEL_LOCK_HORIZ_ROTATIONS) {
+      animRigidBody->setAngularFactor(btVector3(0.0f, 0.0f, 0.0f));
+    }
+    rigidBodies->insert(boundsHash, animRigidBody);
+  #endif
+}// End addAnimation method
 
 u32 wsScene::addCamera(wsCamera* myCam) {
   u32 camHash = wsHash(myCam->getName());
@@ -61,70 +103,50 @@ u32 wsScene::addCamera(wsCamera* myCam) {
     return camHash;
   }
   return WS_NULL;
-}
-
-u32 wsScene::addModel(const char* filepath) {
-  wsModel* myModel = wsNew(wsModel, wsModel(filepath));
-  u32 modelHash = wsHash(filepath);
-  if (models->insert(modelHash, myModel) == WS_SUCCESS) {
-    #if WS_PHYSICS_BACKEND == WS_BACKEND_BULLET
-      const vec4 dimensions = myModel->getBounds();
-      const vec4 pos = myModel->getPos();
-      const quat rot = myModel->getRot();
-      btCollisionShape* boundingBox = wsNew(btBoxShape, btBoxShape(btVector3(dimensions.x, dimensions.y, dimensions.z)));
-      btDefaultMotionState* boundsState = wsNew(btDefaultMotionState, btDefaultMotionState(btTransform(btQuaternion(rot.x, rot.y, rot.z, rot.w), btVector3(pos.x, pos.y, pos.z))));
-      f32 mass = 1.0f;
-      btVector3 fallInertia(0.0f, 0.0f, 0.0f);
-      boundingBox->calculateLocalInertia(mass, fallInertia);
-      btRigidBody::btRigidBodyConstructionInfo modelRigidBodyCI(mass, boundsState, boundingBox, fallInertia);
-      btRigidBody* modelRigidBody = wsNew(btRigidBody, btRigidBody(modelRigidBodyCI));
-      rigidBodies->insert(modelHash, modelRigidBody);
-      physicsWorld->addRigidBody(modelRigidBody);
-    #endif
-    return modelHash;
-  }
-  return WS_NULL;
-}// End addModel(filepath) method
-
-u32 wsScene::addModel(const char* modelName, wsMesh* myMesh, const u32 maxAnimations) {
-  wsModel* myModel = wsNew(wsModel, wsModel(modelName, myMesh, maxAnimations));
-  u32 modelHash = wsHash(myModel->getName());
-  if (models->insert(modelHash, myModel) == WS_SUCCESS) {
-    #if WS_PHYSICS_BACKEND == WS_BACKEND_BULLET
-      const vec4 dimensions = myModel->getBounds();
-      const vec4 pos = myModel->getPos();
-      const quat rot = myModel->getRot();
-      btCollisionShape* boundingBox = wsNew(btBoxShape, btBoxShape(btVector3(dimensions.x, dimensions.y, dimensions.z)));
-      btDefaultMotionState* boundsState = wsNew(btDefaultMotionState, btDefaultMotionState(btTransform(btQuaternion(rot.x, rot.y, rot.z, rot.w), btVector3(pos.x, pos.y, pos.z))));
-      f32 mass = 1.0f;
-      btVector3 fallInertia(0.0f, 0.0f, 0.0f);
-      boundingBox->calculateLocalInertia(mass, fallInertia);
-      btRigidBody::btRigidBodyConstructionInfo modelRigidBodyCI(mass, boundsState, boundingBox, fallInertia);
-      btRigidBody* modelRigidBody = wsNew(btRigidBody, btRigidBody(modelRigidBodyCI));
-      rigidBodies->insert(modelHash, modelRigidBody);
-      physicsWorld->addRigidBody(modelRigidBody);
-    #endif
-    return modelHash;
-  }
-  return WS_NULL;
-}// End addModel(mesh, maxAnimations) method
+}// End addCamera method
 
 u32 wsScene::addModel(wsModel* myModel) {
   u32 modelHash = wsHash(myModel->getName());
   if (models->insert(modelHash, myModel) == WS_SUCCESS) {
     #if WS_PHYSICS_BACKEND == WS_BACKEND_BULLET
       const vec4 dimensions = myModel->getBounds();
-      const vec4 pos = myModel->getPos();
-      const quat rot = myModel->getRot();
-      btCollisionShape* boundingBox = wsNew(btBoxShape, btBoxShape(btVector3(dimensions.x, dimensions.y, dimensions.z)));
-      btDefaultMotionState* boundsState = wsNew(btDefaultMotionState, btDefaultMotionState(btTransform(btQuaternion(rot.x, rot.y, rot.z, rot.w), btVector3(pos.x, pos.y, pos.z))));
+      btCollisionShape* boundsShape;
+      if (myModel->getCollisionShape() == WS_NULL) {
+        boundsShape = wsNew(btBoxShape, btBoxShape(btVector3(dimensions.x, dimensions.y, dimensions.z)));
+      }
+      else {
+        wsCollisionShape* shape = myModel->getCollisionShape();
+        switch (shape->getType()) {
+          default:
+            boundsShape = wsNew(btBoxShape, btBoxShape(btVector3(dimensions.x, dimensions.y, dimensions.z)));
+            break;
+          case WS_SHAPE_CAPSULE:
+            boundsShape = wsNew(btCapsuleShape, btCapsuleShape(shape->getDim0(), shape->getDim1()));
+            break;
+          case WS_SHAPE_CUBE:
+            boundsShape = wsNew(btBoxShape, btBoxShape(btVector3(shape->getDim0(), shape->getDim1(), shape->getDim2())));
+            break;
+          case WS_SHAPE_CYLINDER:
+            boundsShape = wsNew(btCylinderShape,
+              btCylinderShape(btVector3(shape->getDim0(), shape->getDim1()/2.0f, shape->getDim0())));
+            break;
+          case WS_SHAPE_SPHERE:
+            boundsShape = wsNew(btSphereShape, btSphereShape(shape->getDim0()));
+            break;
+        }
+      }
       f32 mass = myModel->getMass();
-      btVector3 fallInertia(0.0f, 0.0f, 0.0f);
-      boundingBox->calculateLocalInertia(mass, fallInertia);
-      btRigidBody::btRigidBodyConstructionInfo modelRigidBodyCI(mass, boundsState, boundingBox, fallInertia);
+      btVector3 myInertia(0.0f, 0.0f, 0.0f);
+      boundsShape->calculateLocalInertia(mass, myInertia);
+      btRigidBody::btRigidBodyConstructionInfo modelRigidBodyCI(mass, myModel->getTransformp(), boundsShape, myInertia);
       btRigidBody* modelRigidBody = wsNew(btRigidBody, btRigidBody(modelRigidBodyCI));
+      if (myModel->getProperties() & WS_MODEL_LOCK_HORIZ_ROTATIONS) {
+        modelRigidBody->setAngularFactor(btVector3(0.0f, 0.0f, 0.0f));
+      }
+      modelRigidBody->setActivationState(DISABLE_DEACTIVATION);
       rigidBodies->insert(modelHash, modelRigidBody);
-      physicsWorld->addRigidBody(modelRigidBody);
+      physicsWorld->addRigidBody(modelRigidBody, myModel->getCollisionClass(),
+        collisionClasses[(u32)wsLog2(myModel->getCollisionClass())]);
     #endif
     return modelHash;
   }
@@ -144,7 +166,8 @@ u32 wsScene::addPrimitive(wsPrimitive* myPrimitive) {
           btDefaultMotionState* planeState = wsNew(btDefaultMotionState, btDefaultMotionState(btTransform(btQuaternion(0.0f, 0.0f, 0.0f, 1.0f), btVector3(0.0f, 0.0f, 0.0f))));
           btRigidBody::btRigidBodyConstructionInfo planeRigidBodyCI(0, planeState, planeShape, btVector3(0,0,0));
           btRigidBody* groundRigidBody = wsNew(btRigidBody, btRigidBody(planeRigidBodyCI));
-          physicsWorld->addRigidBody(groundRigidBody);
+          physicsWorld->addRigidBody(groundRigidBody, myPrimitive->getCollisionClass(),
+            collisionClasses[(u32)wsLog2(myPrimitive->getCollisionClass())]);
         }
         break;
       case WS_PRIM_TYPE_CUBE:
@@ -157,7 +180,8 @@ u32 wsScene::addPrimitive(wsPrimitive* myPrimitive) {
           btDefaultMotionState* cubeState = wsNew(btDefaultMotionState, btDefaultMotionState(btTransform(btQuaternion(rot.x, rot.y, rot.z, rot.w), btVector3(pos.x, pos.y, pos.z))));
           btRigidBody::btRigidBodyConstructionInfo cubeRigidBodyCI(0, cubeState, cubeShape, btVector3(0, 0, 0));
           btRigidBody* cubeRigidBody = wsNew(btRigidBody, btRigidBody(cubeRigidBodyCI));
-          physicsWorld->addRigidBody(cubeRigidBody);
+          physicsWorld->addRigidBody(cubeRigidBody, myPrimitive->getCollisionClass(),
+            collisionClasses[(u32)wsLog2(myPrimitive->getCollisionClass())]);
         }
         break;
       default:
@@ -167,9 +191,33 @@ u32 wsScene::addPrimitive(wsPrimitive* myPrimitive) {
   return numPrimitives++;
 }
 
+void wsScene::attachModel(const char* modelSource, const char* modelDest, const char* jointName) {
+  models->retrieve(wsHash(modelDest))->attachModel(models->retrieve(wsHash(modelSource)), jointName);
+}
+
 void wsScene::beginAnimation(const char* modelName, const char* animName) {
-  wsLog(WS_LOG_GRAPHICS, "Model %s - Beginning Animation: %s\n", modelName, animName);
-  models->retrieve(wsHash(modelName))->beginAnimation(animName);
+  wsEcho(WS_LOG_GRAPHICS, "Model %s - Beginning Animation: %s\n", modelName, animName);
+  wsModel* myModel = models->retrieve(wsHash(modelName));
+  #if WS_PHYSICS_BACKEND == WS_BACKEND_BULLET
+    char myAnim[512];
+    if (myModel->getCurrentAnimation() == NULL) {
+      physicsWorld->removeRigidBody(rigidBodies->retrieve(wsHash(modelName)));
+    }
+    else {
+      strcpy(myAnim, modelName);
+      strcat(myAnim, myModel->getCurrentAnimationName());
+      physicsWorld->removeRigidBody(rigidBodies->retrieve(wsHash(myAnim)));
+    }
+    strcpy(myAnim, modelName);
+    strcat(myAnim, animName);
+    btRigidBody* myRigidBody = rigidBodies->retrieve(wsHash(myAnim));
+    myRigidBody->setMotionState(myModel->getTransformp());
+    // myRigidBody->setCollisionFlags(myRigidBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+    myRigidBody->setActivationState(DISABLE_DEACTIVATION);
+    physicsWorld->addRigidBody(myRigidBody, myModel->getCollisionClass(),
+      collisionClasses[(u32)wsLog2(myModel->getCollisionClass())]);
+  #endif
+  myModel->beginAnimation(animName);
 }
 
 void wsScene::continueAnimation(const char* modelName) {
@@ -184,6 +232,68 @@ void wsScene::continueAnimations() {
   }
 }
 
+void wsScene::moveModel(const char* modelName, const vec4& dist) {
+  wsModel* myModel = models->retrieve(wsHash(modelName));
+  if (myModel == WS_NULL) { return; }
+  myModel->move(dist);
+  #if WS_PHYSICS_BACKEND == WS_BACKEND_BULLET
+    btRigidBody* myRigidBody;
+    char myAnim[512];
+    if (myModel->getCurrentAnimation() == NULL) {
+      myRigidBody = rigidBodies->retrieve(wsHash(modelName));
+    }
+    else {
+      strcpy(myAnim, modelName);
+      strcat(myAnim, myModel->getCurrentAnimationName());
+      myRigidBody = rigidBodies->retrieve(wsHash(myAnim));
+    }
+    if (myRigidBody == WS_NULL) { return; }
+    myRigidBody->setMotionState(myModel->getTransformp());
+  #endif
+}
+
+vec4 wsScene::moveModelBackward(const char* modelName, const f32 dist) {
+  wsModel* myModel = models->retrieve(wsHash(modelName));
+  if (myModel == WS_NULL) { return vec4(); }
+  vec4 myTranslation = myModel->moveBackward(dist);
+  #if WS_PHYSICS_BACKEND == WS_BACKEND_BULLET
+    btRigidBody* myRigidBody;
+    char myAnim[512];
+    if (myModel->getCurrentAnimation() == NULL) {
+      myRigidBody = rigidBodies->retrieve(wsHash(modelName));
+    }
+    else {
+      strcpy(myAnim, modelName);
+      strcat(myAnim, myModel->getCurrentAnimationName());
+      myRigidBody = rigidBodies->retrieve(wsHash(myAnim));
+    }
+    if (myRigidBody == WS_NULL) { return vec4(); }
+    myRigidBody->setMotionState(myModel->getTransformp());
+  #endif
+  return myTranslation;
+}
+
+vec4 wsScene::moveModelForward(const char* modelName, const f32 dist) {
+  wsModel* myModel = models->retrieve(wsHash(modelName));
+  if (myModel == WS_NULL) { return vec4(); }
+  vec4 myTranslation = myModel->moveForward(dist);
+  #if WS_PHYSICS_BACKEND == WS_BACKEND_BULLET
+    btRigidBody* myRigidBody;
+    char myAnim[512];
+    if (myModel->getCurrentAnimation() == NULL) {
+      myRigidBody = rigidBodies->retrieve(wsHash(modelName));
+    }
+    else {
+      strcpy(myAnim, modelName);
+      strcat(myAnim, myModel->getCurrentAnimationName());
+      myRigidBody = rigidBodies->retrieve(wsHash(myAnim));
+    }
+    if (myRigidBody == WS_NULL) { return vec4(); }
+    myRigidBody->setMotionState(myModel->getTransformp());
+  #endif
+  return myTranslation;
+}
+
 void wsScene::pauseAnimation(const char* modelName) {
   models->retrieve(wsHash(modelName))->pauseAnimation();
 }
@@ -194,6 +304,26 @@ void wsScene::pauseAnimations() {
     models->getArrayItem(it.mCurrentElement)->pauseAnimation();
     ++it;
   }
+}
+
+void wsScene::rotateModel(const char* modelName, const vec4& axis, const f32 angle) {
+  wsModel* myModel = models->retrieve(wsHash(modelName));
+  if (myModel == WS_NULL) { return; }
+  myModel->rotate(axis, angle);
+  #if WS_PHYSICS_BACKEND == WS_BACKEND_BULLET
+    btRigidBody* myRigidBody;
+    char myAnim[512];
+    if (myModel->getCurrentAnimation() == NULL) {
+      myRigidBody = rigidBodies->retrieve(wsHash(modelName));
+    }
+    else {
+      strcpy(myAnim, modelName);
+      strcat(myAnim, myModel->getCurrentAnimationName());
+      myRigidBody = rigidBodies->retrieve(wsHash(myAnim));
+    }
+    if (myRigidBody == WS_NULL) { return; }
+    myRigidBody->setMotionState(myModel->getTransformp());
+  #endif
 }
 
 void wsScene::setCameraMode(const char* cameraName, u32 cameraMode) {
@@ -228,6 +358,7 @@ void wsScene::updatePhysics(t32 increment) {
   #if WS_PHYSICS_BACKEND == WS_BACKEND_BULLET
   //*
     physicsWorld->stepSimulation(increment, 3);
+    /*
     btTransform transform;
     wsModel* myModel;
     btRigidBody* myBody;

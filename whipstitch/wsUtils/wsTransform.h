@@ -39,11 +39,34 @@
 #ifndef WS_TRANSFORM_H_
 #define WS_TRANSFORM_H_
 
+#include "../wsConfig.h"
 #include "wsOperations.h"
 #include "quat.h"
 #include "mat4.h"
 
-struct wsTransform {
+#if WS_PHYSICS_BACKEND == WS_BACKEND_BULLET
+  #include "btBulletDynamicsCommon.h"
+  #include "btBulletCollisionCommon.h"
+#endif
+
+#if WS_PHYSICS_BACKEND == WS_BACKEND_BULLET
+  class wsTransform : public btMotionState {
+    public:
+      virtual void getWorldTransform(btTransform& worldTrans) const {
+        worldTrans = btTransform(btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w),
+          btVector3(translationX, translationY, translationZ));
+      }
+      virtual void setWorldTransform(const btTransform& worldTrans) {
+        btQuaternion rot = worldTrans.getRotation();
+        btVector3 trans = worldTrans.getOrigin();
+        rotation.set(rot.x(), rot.y(), rot.z(), rot.w());
+        translationX = trans.x();
+        translationY = trans.y();
+        translationZ = trans.z();
+      }
+#else
+  struct wsTransform {
+#endif
     //  Member variables
     quat rotation;
     f32 translationX;
@@ -75,6 +98,8 @@ struct wsTransform {
     wsTransform& invert();
     wsTransform& operator*=(const wsTransform& other);
     wsTransform operator*(const wsTransform& other) const;
+    wsTransform& operator+=(const vec4& other);
+    wsTransform operator+(const vec4& other) const;
     //  Returns the blended SQT transform
     wsTransform blend(const wsTransform& other, f32 blendFactor) const;
     //  Sets this to the blended SQT transform

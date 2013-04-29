@@ -104,7 +104,7 @@ void wsGameLoop::iterateLoop() {
   t32 timeDiff = wsGetTime() - beginTime;
   t32 sleepTime = frameDuration - timeDiff;
   if (sleepTime > 0) {  //  Wait so the game won't run too fast
-    //wsLog("Slow down! Sleeping for %f seconds.", sleepTime);
+    //wsEcho("Slow down! Sleeping for %f seconds.", sleepTime);
     wsWait(sleepTime);
   }
   else {  //  Update the game as many times as is reasonable to catch up to the rendering.
@@ -114,7 +114,7 @@ void wsGameLoop::iterateLoop() {
       ++framesSkipped;
     }
   }
-  // wsLog(WS_LOG_MAIN, "Iteration time: %f seconds\n", (wsGetTime() - beginTime));
+  // wsEcho(WS_LOG_MAIN, "Iteration time: %f seconds\n", (wsGetTime() - beginTime));
 }
 
 void wsGameLoop::pauseLoop() {

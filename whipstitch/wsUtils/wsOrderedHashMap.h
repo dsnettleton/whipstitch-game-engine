@@ -165,7 +165,7 @@ class wsOrderedHashMap {
 template <class ClassType>
 wsOrderedHashMap<ClassType>::wsOrderedHashMap(u32 maxElements) {
   maxElements = wsNextPrime(maxElements);
-  wsLog(WS_LOG_UTIL, "Creating %u element ordered hashmap\n", maxElements);
+  wsEcho(WS_LOG_UTIL, "Creating %u element ordered hashmap\n", maxElements);
   wsAssert((maxElements > 0), "wsOrderedHashMap must have more than 0 elements.");
   length = 0;
   this->maxElements = maxElements;
@@ -195,7 +195,7 @@ typename wsOrderedHashMap<ClassType>::iterator wsOrderedHashMap<ClassType>::end(
 
 template <class ClassType>
 u32 wsOrderedHashMap<ClassType>::insert(u32 hashIndex, const ClassType& element, u32 orderPos) {
-  wsLog(WS_LOG_UTIL, "Inserting item\n");
+  wsEcho(WS_LOG_UTIL, "Inserting item\n");
   u32 moddedHash = hashIndex % maxElements;
   if (length != maxElements) {  //  If the hashMap is not full already
     u32 probeCount = 0, offset = 1;
@@ -243,11 +243,11 @@ u32 wsOrderedHashMap<ClassType>::insert(u32 hashIndex, const ClassType& element,
     }
     else {
       if (array[moddedHash].hashKey == hashIndex) {
-        wsLog(WS_LOG_UTIL, "Cannot enter duplicate key into ordered hash map.\n");
+        wsEcho(WS_LOG_UTIL, "Cannot enter duplicate key into ordered hash map.\n");
         return WS_FAIL;
       }
       else {
-        wsLog(WS_LOG_UTIL, "Could not insert element into ordered hash map.\n"
+        wsEcho(WS_LOG_UTIL, "Could not insert element into ordered hash map.\n"
                 "  key = %u\n"
                 "  moddedHash = %u\n"
                 "  array[moddedHash].hashKey = %u\n",
@@ -257,7 +257,7 @@ u32 wsOrderedHashMap<ClassType>::insert(u32 hashIndex, const ClassType& element,
     }
   }
   else {
-    wsLog(WS_LOG_UTIL, "Ordered Hashmap is full.\n");
+    wsEcho(WS_LOG_UTIL, "Ordered Hashmap is full.\n");
     return WS_FAIL;
   }
   return WS_SUCCESS;
@@ -265,10 +265,10 @@ u32 wsOrderedHashMap<ClassType>::insert(u32 hashIndex, const ClassType& element,
 
 template <class ClassType>
 void wsOrderedHashMap<ClassType>::print(u16 printLog) {
-  wsLog(printLog, "Ordered Hashmap Contents");
+  wsEcho(printLog, "Ordered Hashmap Contents");
   i32 current = first;
   while (current >= 0) {
-    wsLog(printLog, " Order %d - Key = %u", array[current].order, array[current].hashKey);
+    wsEcho(printLog, " Order %d - Key = %u", array[current].order, array[current].hashKey);
     current = array[current].next;
   }
 }
@@ -297,7 +297,7 @@ void wsOrderedHashMap<ClassType>::remove(u32 hashIndex) {
     --length;
   }
   else {
-    wsLog(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
+    wsEcho(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
   }
 }
 
@@ -355,7 +355,7 @@ void wsOrderedHashMap<ClassType>::replace(u32 hashIndex, const ClassType& elemen
     }
   }
   else {
-    //wsLog(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
+    //wsEcho(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
     insert(hashIndex, element);
   }
 }
@@ -377,7 +377,7 @@ const ClassType& wsOrderedHashMap<ClassType>::retrieve(u32 hashIndex) const {
     return array[moddedHash].object;
   }
   else {
-    wsLog(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
+    wsEcho(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
   }
   return array[moddedHash].object;
 }
@@ -400,7 +400,7 @@ bool wsOrderedHashMap<ClassType>::retrieve(u32 hashIndex, ClassType& element) co
     return true;
   }
   else {
-    wsLog(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
+    wsEcho(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
     return false;
   }
 }

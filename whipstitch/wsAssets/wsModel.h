@@ -35,11 +35,11 @@
 #ifndef WSMODEL_H_
 #define WSMODEL_H_
 
+#include "../wsConfig.h"
 #include "wsMesh.h"
 #include "wsAnimation.h"
 #include "../wsUtils.h"
-
-#define WS_DEFAULT_MAX_ANIMATIONS   11
+#include "../wsPrimitives.h"
 
 class wsModel: public wsAsset {
   private:
@@ -54,25 +54,32 @@ class wsModel: public wsAsset {
     wsAnimation* currentAnimation;
     vec4* jointLocations;
     quat* jointRotations;
+    wsModel* attachmentModel;
+    wsTransform* attachmentTransform;
     vec4* attachmentLoc;  //  Joint, if any, that this model is attached to
     quat* attachmentRot;  //  Joint, if any, that this model is attached to
-    vec4 bounds; //  Model's current bounding box
+    vec4 bounds; //  Model's default bounding box
+    wsCollisionShape* collisionShape;
     wsTransform transform;  //  Position, direction, and scale
-    f32 mass;
+    u64 collisionClass;
     t64 animTime;
+    f32 mass;
     f32 timeScale;
     u16 defaultAnimation;
-    bool looping;
-    bool animPaused;
+    u16 properties;
   public:
     /// Constructor and Destructor
-    wsModel(const char* filepath);
-    wsModel(const char* myName, wsMesh* myMesh, const u32 myMaxAnimations = WS_DEFAULT_MAX_ANIMATIONS, const f32 myMass = 0.0f);
+    wsModel(const char* myName, wsMesh* myMesh, const u32 myMaxAnimations = WS_DEFAULT_MAX_ANIMATIONS, const f32 myMass = 0.0f,
+      const u64 myCollisionClass = WS_NULL, const u16 myProperties = WS_NULL, wsCollisionShape* myCollisionShape = WS_NULL);
     ~wsModel();
     /// Setters and Getters
+    wsModel* getAttachmentModel() { return attachmentModel; }
+    wsTransform* getAttachmentTransform() { return attachmentTransform; }
     vec4* getAttachmentLoc() { return attachmentLoc; }
     quat* getAttachmentRot() { return attachmentRot; }
     const vec4& getBounds() { return bounds; }
+    const u64 getCollisionClass() { return collisionClass; }
+    wsCollisionShape* getCollisionShape() { return collisionShape; }
     wsIndexArray* getIndexArrays() { return indexArrays; }
     vec4* getJointLocations() { return jointLocations; }
     quat* getJointRotations() { return jointRotations; }
@@ -86,9 +93,11 @@ class wsModel: public wsAsset {
     u32 getNumIndexArrays() { return numIndexArrays; }
     u32 getNumJoints() { return mesh->getNumJoints(); }
     const vec4 getPos() { return vec4(transform.translationX, transform.translationY, transform.translationZ); }
+    const u16 getProperties() { return properties; }
     const quat& getRot() { return transform.rotation; }
     f32 getTimeScale() { return timeScale; }
     const wsTransform& getTransform() { return transform; }
+    wsTransform* getTransformp() { return &transform; }
     u32 getVertexArray() { return vertexArray; }
     void setFrame(f32 newFrame);
     void setMesh(wsMesh* my) { mesh = my; }
@@ -101,12 +110,27 @@ class wsModel: public wsAsset {
     /// Operational Methods
     void addAnimation(wsAnimation* anim);
     void applyAnimation();  //  Applies the current animation to the mesh vertices
+    void applyStaticAnimation();  //  Sets joint positions to their default values
     void attachModel(wsModel* myModel, const char* jointName);
     void beginAnimation(const char* animName);
     void continueAnimation();// Continues a paused animation
     void draw();
     void incrementAnimationTime(t32 increment);
+    void move(const vec4& dist) { transform += dist; }
+    vec4 moveBackward(const f32 dist) {
+      vec4 translation(0.0f, 0.0f, -dist);
+      translation.rotate(transform.rotation);
+      transform += translation;
+      return translation;
+    }
+    vec4 moveForward(const f32 dist) {
+      vec4 translation(0.0f, 0.0f, dist);
+      translation.rotate(transform.rotation);
+      transform += translation;
+      return translation;
+    }
     void pauseAnimation();
+    void rotate(const vec4& axis, const f32 angle) { transform.rotation.rotate(axis, angle); }
     void updateVbo();
 };
 

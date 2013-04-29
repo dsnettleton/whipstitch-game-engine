@@ -2,15 +2,14 @@
 //  This Animation is for use with the Whipstitch Game Engine
 //  For more information, email dsnettleton@whipstitchgames.com
 
-versionNumber 1.2
+versionNumber 1.3
 animationType 1
 animationName Walk
 framesPerSecond 24
 
 numJoints 36
 numKeyFrames 7
-bounds { 1.991211 6.472679 1.827859 }
-
+bounds { 2.246841 7.840123 2.793121 }
 joints {
   joint 0 {
     jointName Sacrum (root)

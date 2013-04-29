@@ -95,6 +95,7 @@ bool isPositive(f32 myFloat); //  Uses the i_f_hybrid, since integer sign tests 
 void clampZeroOne(f32 &myFloat);  //  Clamps the value to the range [0, 1]
 f32 wsAbs(f32 myFloat);
 f32 wsSqrt(f32 myFloat);
+f32 wsLog2(f32 myFloat);
 //  Minimums and Maximums
 f32 wsMax(f32 a, f32 b);
 f32 wsMin(f32 a, f32 b);

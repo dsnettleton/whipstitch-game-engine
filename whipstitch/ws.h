@@ -38,6 +38,7 @@
 #ifndef WS_H_
 #define WS_H_
 
+#include "wsConfig.h"
 #include "wsUtils.h"
 #include "wsGraphics.h"
 #include "wsAssets.h"
@@ -46,6 +47,7 @@
 
 void wsInit(const char* title, const i32 width, const i32 height, bool fullscreen,
                 u64 mainMem, u32 frameStackMem);
+void wsBegin(wsGame* myGame);
 void wsQuit();
 
 #endif /* WS_H_ */

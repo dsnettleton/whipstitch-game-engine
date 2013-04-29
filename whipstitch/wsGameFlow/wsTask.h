@@ -40,13 +40,13 @@ class wsTask {
     private:
     public:
         virtual ~wsTask() {}
-        virtual void run(u32 threadNum) = 0;//{ wsLog(WS_LOG_THREADS, "NULL Task Running."); }
+        virtual void run(u32 threadNum) = 0;//{ wsEcho(WS_LOG_THREADS, "NULL Task Running."); }
 };
 
 class wsTask_test : public wsTask {
     public:
         void run(u32 threadNum) {
-            wsLog(WS_LOG_MAIN, "Running thread %u", threadNum);
+            wsEcho(WS_LOG_MAIN, "Running thread %u", threadNum);
         }
 };
 

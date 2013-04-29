@@ -36,10 +36,30 @@
 #include <stdio.h>
 #include "../wsGraphics.h"
 
-wsMesh::wsMesh(const char* filepath) {
+wsMesh::wsMesh(const char* filepath, const u32 format) {
+  switch (format) {
+    default:
+    case WS_MESH_FORMAT_WHIPSTITCH:
+      loadWhipstitch(filepath);
+      break;
+    case WS_MESH_FORMAT_STL:
+      loadSTL(filepath);
+      break;
+  }
+}
+
+wsMesh::~wsMesh() {
+  //  Nothing to do here.
+}
+
+const void wsMesh::loadSTL(const char* filepath) {
+  wsEcho(WS_LOG_GRAPHICS, "STL loading is not yet supported.");
+}
+
+const void wsMesh::loadWhipstitch(const char* filepath) {
   u32 hasSkeleton = 0;
   assetType = WS_ASSET_TYPE_MESH;
-  wsLog(WS_LOG_GRAPHICS, "Loading Mesh from file \"%s\"\n", filepath);
+  wsEcho(WS_LOG_GRAPHICS, "Loading Mesh from file \"%s\"\n", filepath);
   FILE* pFile;
   pFile = fopen(filepath, "r");
   wsAssert( pFile, "Error Loading file." );
@@ -54,7 +74,7 @@ wsMesh::wsMesh(const char* filepath) {
   errorCheck( fscanf( pFile, "numMaterials %u\n", &numMaterials) );
   errorCheck( fscanf( pFile, "defaultPos { %f %f %f }\n", &defaultPos.x, &defaultPos.y, &defaultPos.z) );
   errorCheck( fscanf( pFile, "hasSkeleton %u\n\n", &hasSkeleton) );
-  wsLog(WS_LOG_GRAPHICS, "meshName = %s, numVertices = %u, numMaterials = %u, hasSkeleton = %u\n", nameBuffer, numVerts, numMaterials, hasSkeleton);
+  wsEcho(WS_LOG_GRAPHICS, "meshName = %s, numVertices = %u, numMaterials = %u, hasSkeleton = %u\n", nameBuffer, numVerts, numMaterials, hasSkeleton);
   //  Generate object arrays and place them on the current stack
   mats = wsNewArray(wsMaterial, numMaterials);
   verts = wsNewArray(wsVert, numVerts);
@@ -86,7 +106,7 @@ wsMesh::wsMesh(const char* filepath) {
               &joints[j].rot.z,
               &joints[j].rot.w ) );
       errorCheck( fscanf( pFile, "  }\n") );
-      wsLog(WS_LOG_GRAPHICS, "jointName = %s\n", nameBuffer);
+      wsEcho(WS_LOG_GRAPHICS, "jointName = %s\n", nameBuffer);
       jointIndices->insert(wsHash(nameBuffer), j);
       if (j >= 0) {
         //  Align to model rotation/location
@@ -113,13 +133,6 @@ wsMesh::wsMesh(const char* filepath) {
   }
   errorCheck( fscanf( pFile, "vertices {\n") );
   errorCheck( fscanf( pFile, "  bounds { %f %f %f }\n", &bounds.x, &bounds.y, &bounds.z) );
-  // f32 minX, minY, minZ, maxX, maxY, maxZ;
-  // errorCheck( fscanf( pFile, "    min { %f %f %f }\n", &minX, &minY, &minZ) );
-  // errorCheck( fscanf( pFile, "    max { %f %f %f }\n", &maxX, &maxY, &maxZ) );
-  // errorCheck( fscanf( pFile, "  }\n") );
-  // bounds.x = (minX+maxX)/4.0f;
-  // bounds.y = (minY+maxY)/4.0f;
-  // bounds.z = (minZ+maxZ)/4.0f;
   u32 currentIndex;
   for (u32 v = 0; v < numVerts; ++v) {
     errorCheck( fscanf( pFile, "  vert %u {\n", &currentIndex) );
@@ -151,7 +164,7 @@ wsMesh::wsMesh(const char* filepath) {
   }
   errorCheck( fscanf( pFile, "}\n\nmaterials {\n") );
   for (u32 m = 0; m < numMaterials; ++m) {
-    wsLog("Loading Mat %u\n", m);
+    wsEcho("Loading Mat %u\n", m);
     errorCheck( fscanf( pFile, "  mat %u {\n", &currentIndex) );
     wsAssert( (currentIndex == m), "Current index does not relate to current material.");
     errorCheck( fscanf( pFile, "    name %s\n", nameBuffer) );
@@ -228,21 +241,17 @@ wsMesh::wsMesh(const char* filepath) {
     }
     errorCheck( fscanf( pFile, "    }\n") );
     errorCheck( fscanf( pFile, "  }\n") );
-    wsLog(WS_LOG_GRAPHICS, "Mesh Loaded.");
+    wsEcho(WS_LOG_GRAPHICS, "Mesh Loaded.");
   }
   errorCheck( fscanf( pFile, "}\n") );
   if (fclose(pFile) == EOF) {
-    wsLog(WS_LOG_ERROR, "Failed to close mesh file");
+    wsEcho(WS_LOG_ERROR, "Failed to close mesh file");
   }
-}
-
-wsMesh::~wsMesh() {
-  //  Nothing to do here.
 }
 
 void wsMesh::errorCheck(const i32 my) {
   if (my == EOF) {
-    wsLog(WS_LOG_ERROR, "Error: premature end of file.");
+    wsEcho(WS_LOG_ERROR, "Error: premature end of file.");
   }
 }
 

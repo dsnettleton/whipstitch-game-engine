@@ -76,7 +76,7 @@ wsScreen::wsScreen(wsScreenSettings mySettings) {
 
         visualInfo = glXChooseVisual(xDisp, 0, winAttr);
         wsAssert((visualInfo != NULL) ,"X Visual Info could not be initialized");
-        wsLog(WS_LOG_GRAPHICS, "Visual Id %p selected", (void *)visualInfo->visualid);
+        wsEcho(WS_LOG_GRAPHICS, "Visual Id %p selected", (void *)visualInfo->visualid);
 
         colorMap = XCreateColormap(xDisp, rootWindow, visualInfo->visual, AllocNone);
         xWinAttributesStruct.colormap = colorMap;

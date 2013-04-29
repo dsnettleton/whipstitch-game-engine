@@ -35,12 +35,8 @@
 #ifndef WS_MESH_H_
 #define WS_MESH_H_
 
+#include "../wsConfig.h"
 #include "wsAsset.h"
-
-#define WS_TEXTURE_MAP_COLOR    0x0001
-#define WS_TEXTURE_MAP_NORMAL   0x0002
-
-#define WS_MAX_JOINT_INFLUENCES   8
 
 struct wsVert {
   vec4 pos; //  (BUFFER OFFSET = 0)
@@ -92,9 +88,11 @@ class wsMesh: public wsAsset {
     u32 numVerts;
     u32 numMaterials;
     u32 numJoints;
+    const void loadSTL(const char* filepath);
+    const void loadWhipstitch(const char* filepath);
   public:
     //  Constructor
-    wsMesh(const char* filepath);
+    wsMesh(const char* filepath, const u32 format = WS_MESH_FORMAT_WHIPSTITCH);
     ~wsMesh();
     //  Getters
     const vec4* getBounds() const { return &bounds; }

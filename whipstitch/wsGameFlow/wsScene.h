@@ -37,33 +37,17 @@
 #include "../wsAssets.h"
 #include "../wsGraphics/wsCamera.h"
 #include "../wsPrimitives.h"
-
-#define WS_BACKEND_BULLET     0 //  Bullet physics engine
-
-#ifndef WS_PHYSICS_BACKEND
- #define WS_PHYSICS_BACKEND WS_BACKEND_BULLET
-#endif
-
+#include "../wsConfig.h"
+ 
 #if WS_PHYSICS_BACKEND == WS_BACKEND_BULLET
   #include "btBulletDynamicsCommon.h"
   #include "btBulletCollisionCommon.h"
 #endif
 
-#ifndef WS_MAX_MODELS
-  #define WS_MAX_MODELS 101
-#endif
-
-#ifndef WS_MAX_CAMERAS
-  #define WS_MAX_CAMERAS 17
-#endif
-
-#ifndef WS_MAX_PRIMITIVES
-  #define WS_MAX_PRIMITIVES 101
-#endif
-
 class wsScene {
   private:
     //  Private Data Members
+    u64 collisionClasses[WS_NUM_COLLISION_CLASSES];
     vec4 gravity;
     wsHashMap<wsCamera*>* cameras;
     wsHashMap<wsModel*>* models;
@@ -87,18 +71,24 @@ class wsScene {
     wsHashMap<wsModel*>* getModels() { return models; }
     u32 getNumPrimitives() { return numPrimitives; }
     wsPrimitive** getPrimitives() { return primitives; }
+    void setCollisionClass(const u64 classID, const u64 collidesWithBitflag) {
+      collisionClasses[(u32)wsLog2(classID)] = collidesWithBitflag;
+    }
     //  Operational Methods
     void addAnimation(wsAnimation* myAnim, const char* modelName);
     u32 addCamera(wsCamera* myCam);
-    u32 addModel(const char* filepath); //  Adds a 3D model and returns its index
-    u32 addModel(const char* modelName, wsMesh* myMesh, u32 maxAnimations = 7);
     u32 addModel(wsModel* myModel);
     u32 addPrimitive(wsPrimitive* myPrimitive);
+    void attachModel(const char* modelSource, const char* modelDest, const char* jointName);
     void beginAnimation(const char* modelName, const char* animName);
     void continueAnimation(const char* modelName);
     void continueAnimations();
+    void moveModel(const char* modelName, const vec4& dist);
+    vec4 moveModelBackward(const char* modelName, const f32 dist);
+    vec4 moveModelForward(const char* modelName, const f32 dist);
     void pauseAnimation(const char* modelName);
     void pauseAnimations();
+    void rotateModel(const char* modelName, const vec4& axis, f32 angle);
     void setCameraMode(const char* cameraName, u32 cameraMode);
     void setPos(const char* modelName, const vec4& pos);
     void setRotation(const char* modelName, const quat& rot);

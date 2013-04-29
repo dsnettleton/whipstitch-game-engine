@@ -43,7 +43,7 @@
 #include "../wsGraphics/wsRenderSystem.h"
 
 wsFont::wsFont(const char* filePath, f32 fontHeight) {
-  wsLog(WS_LOG_UTIL, "Loading Font %s\n", filePath);
+  wsEcho(WS_LOG_UTIL, "Loading Font %s\n", filePath);
   height = fontHeight;
   assetType = WS_ASSET_TYPE_FONT;
 
@@ -56,7 +56,7 @@ wsFont::wsFont(const char* filePath, f32 fontHeight) {
 
   error = FT_New_Face(fontLibrary, filePath, 0, &typeFace); //  The zero indicates that we are loading the first face index (not bold, italic, etc.)
   if (error) {
-    wsLog(WS_LOG_ERROR, "Problem loading file: %s\n", filePath);
+    wsEcho(WS_LOG_ERROR, "Problem loading file: %s\n", filePath);
   }
 
   //  Assume a screen resolution of 96 dpi.
@@ -91,9 +91,9 @@ void wsFont::generateTexture(FT_Face typeFace, u8 index) {
   i32 error;
 
   error = FT_Load_Glyph(typeFace, FT_Get_Char_Index(typeFace, index), FT_LOAD_RENDER );
-  if (error) { wsLog(WS_LOG_ERROR, "Error loading character: %c\n", index); }
+  if (error) { wsEcho(WS_LOG_ERROR, "Error loading character: %c\n", index); }
   error = FT_Get_Glyph(typeFace->glyph, &glyph);
-  if (error) { wsLog(WS_LOG_ERROR, "Could not load glyph for character: %c\n", index); }
+  if (error) { wsEcho(WS_LOG_ERROR, "Could not load glyph for character: %c\n", index); }
 
   FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
   FT_BitmapGlyph bmpGlyph = (FT_BitmapGlyph)glyph;

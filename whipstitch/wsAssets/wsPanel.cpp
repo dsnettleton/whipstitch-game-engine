@@ -61,10 +61,10 @@ void wsPanel::checkMouse(f32 mouseX, f32 mouseY, bool buttonDown) {
     f32 relX = mouseX - rectangle.rectX;
     f32 relY = WS_HUD_HEIGHT - mouseY - rectangle.rectY;
     if (relX >= 0 && relY >= 0 && relX <= rectangle.rectW && relY <= rectangle.rectH) {
-      // wsLog("Checking Mouse: %f, %f, %u\n", relX, relY, (buttonDown)?1:0);
+      // wsEcho("Checking Mouse: %f, %f, %u\n", relX, relY, (buttonDown)?1:0);
       //  Check buttons and other inputs
       for (wsOrderedHashMap<wsPanelElement*>::iterator it = elements->begin(); it.get() != WS_NULL; ++it) {
-        // wsLog("Ping");
+        // wsEcho("Ping");
         if (it.get()->getType() == WS_ELEMENT_BUTTON) {
           wsButton* my = (wsButton*)it.get();
           switch (my->getState()) {
@@ -109,7 +109,7 @@ void wsPanel::checkMouse(f32 mouseX, f32 mouseY, bool buttonDown) {
               break;
             default:
             case WS_BUTTON_STATE_INACTIVE:
-              wsLog("INACTIVE");
+              wsEcho("INACTIVE");
               break;
           }
         }

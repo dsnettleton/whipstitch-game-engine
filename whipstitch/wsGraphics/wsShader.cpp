@@ -87,12 +87,12 @@
     glCompileShader(vertShader);
     glGetObjectParameterivARB(vertShader, GL_COMPILE_STATUS, &compiled);
     if (!compiled) {
-      wsLog(WS_LOG_SHADER, "Vertex Shader did not compile\n");
+      wsEcho(WS_LOG_SHADER, "Vertex Shader did not compile\n");
       i32 logSize, charsWritten;
       glGetShaderiv(vertShader, GL_INFO_LOG_LENGTH, &logSize);
       char* shaderLog = wsNewArrayTmp(char, logSize);
       glGetShaderInfoLog(vertShader, logSize, &charsWritten, shaderLog);
-      wsLog(WS_LOG_SHADER, "%s\n", shaderLog);
+      wsEcho(WS_LOG_SHADER, "%s\n", shaderLog);
       vertShader = 0;
       return false;
     }
@@ -123,12 +123,12 @@
     glCompileShader(fragShader);
     glGetObjectParameterivARB(fragShader, GL_COMPILE_STATUS, &compiled);
     if (!compiled) {
-      wsLog(WS_LOG_SHADER, "Fragment Shader did not compile\n");
+      wsEcho(WS_LOG_SHADER, "Fragment Shader did not compile\n");
       i32 logSize, charsWritten;
       glGetShaderiv(fragShader, GL_INFO_LOG_LENGTH, &logSize);
       char* shaderLog = wsNewArrayTmp(char, logSize);
       glGetShaderInfoLog(fragShader, logSize, &charsWritten, shaderLog);
-      wsLog(WS_LOG_SHADER, "%s\n", shaderLog);
+      wsEcho(WS_LOG_SHADER, "%s\n", shaderLog);
       fragShader = 0;
       return false;
     }
@@ -139,22 +139,22 @@
   }
 
   bool wsShader::install() {
-    wsLog(WS_LOG_SHADER, "Installing Shader Program.\n");
+    wsEcho(WS_LOG_SHADER, "Installing Shader Program.\n");
     glLinkProgram(shaderProgram);
-    wsLog(WS_LOG_SHADER, "  Shader linked\n");
+    wsEcho(WS_LOG_SHADER, "  Shader linked\n");
     i32 linked;
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linked);
-    wsLog(WS_LOG_SHADER, "  Link status retrieved...\n");
+    wsEcho(WS_LOG_SHADER, "  Link status retrieved...\n");
     if (!linked) {
-      wsLog(WS_LOG_SHADER, "  Shader failed to link.\n");
+      wsEcho(WS_LOG_SHADER, "  Shader failed to link.\n");
       i32 logSize, charsWritten;
       glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logSize);
       char* shaderLog = wsNewArrayTmp(char, logSize);
       glGetProgramInfoLog(shaderProgram, logSize, &charsWritten, shaderLog);
-      wsLog(WS_LOG_SHADER, "  %s\n", shaderLog);
+      wsEcho(WS_LOG_SHADER, "  %s\n", shaderLog);
       return false;
     }
-    wsLog(WS_LOG_SHADER, "Shader installed.\n");
+    wsEcho(WS_LOG_SHADER, "Shader installed.\n");
     return true;
   }
 

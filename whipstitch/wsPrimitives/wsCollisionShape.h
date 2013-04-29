@@ -1,12 +1,11 @@
 /**
- *  wsCube.h
- *  March 17, 2013
+ *  wsCollisionShape.h
+ *  April 24, 2013
  *  D. Scott Nettleton
  *
- *  This file declares the class wsCube, which inherits the abstract
- *  base class wsPrimitive. A cube in this context may actually be
- *  a rectangular prism, but it is a static piece of scenery which
- *  contains a bounding box.
+ *  This file declares the abstract base class wsCollisionShape,
+ *  which defines a primitive shape type to be accessed by the
+ *  physics implementation.
  *
  *  This software is provided under the terms of the MIT license
  *  Copyright (c) D. Scott Nettleton, 2013
@@ -31,36 +30,24 @@
  *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *  OTHER DEALINGS IN THE SOFTWARE.
 */
-#ifndef WS_CUBE_H_
-#define WS_CUBE_H_
+#ifndef WS_COLLISION_SHAPE_H_
+#define WS_COLLISION_SHAPE_H_
 
-#include "wsPrimitive.h"
+#include "../wsConfig.h"
+#include "../wsUtils.h"
 
-class wsCube : public wsPrimitive {
-  private:
+class wsCollisionShape {
+  protected:
     //  Private Data Members
-    vec4 dimensions;
-    vec4 pos;
-    quat rot;
-    wsPrimVert verts[24]; //  vertices are repeated once per cube face for normal/uv purposes
-    #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
-      wsIndexArray indexArray;
-      u32 numIndexArrays;
-      u32 vertexArray;
-    #endif
+    f32 dimensions[4];
+    u32 type;
   public:
-    //  Constructors and Deconstructors
-    wsCube(const f32 width, const f32 height, const f32 length, const vec4& myPos = vec4(0.0f, 0.0f, 0.0f, 1.0f),
-      const quat& myRot = quat(0.0f, 0.0f, 0.0f, 1.0f), const u32 myProperties = WS_PRIMITIVE_VISIBLE,
-      const u64 myCollisionClass = 0, const f32 textureScaleS = 1.0f, const f32 textureScaleT = 1.0f,
-      const char* myColorMap = "", const char* myNormalMap = "");
     //  Setters and Getters
-    vec4 getDimensions() { return dimensions; }
-    vec4 getPos() { return pos; }
-    quat getRot() { return rot; }
-    //  Operational Methods
-    void draw();
-    void drawBounds();
+    f32 getDim0() { return dimensions[0]; }
+    f32 getDim1() { return dimensions[1]; }
+    f32 getDim2() { return dimensions[0]; }
+    f32 getDim3() { return dimensions[1]; }
+    u32 getType() { return type; }
 };
 
-#endif //  WS_CUBE_H_
+#endif //  WS_COLLISION_SHAPE_H_

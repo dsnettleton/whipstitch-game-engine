@@ -48,7 +48,7 @@ wsSound::wsSound(const char* filePath) {
     soundBuffer = alutCreateBufferFromFile(filePath);
     errorType = alutGetError();
     if (errorType) {
-      wsLog(WS_LOG_SOUND | WS_LOG_ERROR, "Error Loading Sound file \"%s\": %s\n", filePath, alutGetErrorString(errorType));
+      wsEcho(WS_LOG_SOUND | WS_LOG_ERROR, "Error Loading Sound file \"%s\": %s\n", filePath, alutGetErrorString(errorType));
     }
     alSourcei(soundSource, AL_BUFFER, soundBuffer);
   #endif
@@ -58,16 +58,16 @@ wsSound::~wsSound() {
   #if WS_SOUND_BACKEND == WS_BACKEND_OPENAL
     alDeleteSources(1, &soundSource);
     int error = alGetError();
-    if(error != AL_NO_ERROR) { wsLog(WS_LOG_SOUND | WS_LOG_ERROR, "OpenAL error was raised."); }
+    if(error != AL_NO_ERROR) { wsEcho(WS_LOG_SOUND | WS_LOG_ERROR, "OpenAL error was raised."); }
     alDeleteBuffers(1, &soundBuffer);
     error = alGetError();
-    if(error != AL_NO_ERROR) { wsLog(WS_LOG_SOUND | WS_LOG_ERROR, "OpenAL error was raised."); }
+    if(error != AL_NO_ERROR) { wsEcho(WS_LOG_SOUND | WS_LOG_ERROR, "OpenAL error was raised."); }
   #endif
 }
 
 void wsSound::play() {
   #if WS_SOUND_BACKEND == WS_BACKEND_OPENAL
-    wsLog(WS_LOG_SOUND, "Playing Sound.");
+    wsEcho(WS_LOG_SOUND, "Playing Sound.");
     update();
     alSourcePlay(soundSource);
   #endif

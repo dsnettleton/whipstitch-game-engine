@@ -42,6 +42,7 @@ class wsDemo : public wsGame {
     //  Private Data Members
     wsScene* scene;
     wsCamera* cam;
+    wsModel* Griswald;
     bool quit;
     bool animationsPaused;
   public:

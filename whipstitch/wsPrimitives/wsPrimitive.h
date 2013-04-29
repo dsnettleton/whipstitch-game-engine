@@ -38,6 +38,7 @@
 #define WS_PRIMITIVE_H_
 
 #include "../wsUtils.h"
+#include "../wsConfig.h"
 
 //  Potential types of primitives; not all have
 //  been implemented.
@@ -54,9 +55,6 @@
 #define WS_PRIMITIVE_VISIBLE    0x0002
 #define WS_PRIMITIVE_TRIGGER    0x0004
 
-#ifndef WS_MAX_PRIM_MATERIAL_PROPERTIES
-  #define WS_MAX_PRIM_MATERIAL_PROPERTIES   11
-#endif
 
 //  vertex structure for primitive objects in the Whipstitch game engine.
 //  static positions/normals which are not modified by skeletons
@@ -96,10 +94,12 @@ class wsPrimitive {
   protected:
     //  Private Data Members
     wsPrimMaterial mat;
+    u64 collisionClass;
     u32 primType;
     u32 properties;
   public:
     //  Setters and getters
+    const u64 getCollisionClass() { return collisionClass; }
     u32 getType() { return primType; }
     bool hasProperty(const u32 myProp) { return (properties & myProp); }
     //  Purely Virtual Methods

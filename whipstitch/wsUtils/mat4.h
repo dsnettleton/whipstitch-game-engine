@@ -112,6 +112,7 @@ struct mat4 {
     mat4& setScale(f32 scaleX, f32 scaleY, f32 scaleZ);
     mat4& setTranslation(const vec4& trans);
     mat4& setTranslation(f32 transX, f32 transY, f32 transZ);
+    mat4& translate(const vec4& location);
     mat4& transpose();
     mat4 getTranspose() const;
     mat4& operator+=(const mat4& other);

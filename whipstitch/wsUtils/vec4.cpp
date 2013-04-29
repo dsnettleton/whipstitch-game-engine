@@ -310,7 +310,7 @@ const vec4 WS_Z_AXIS(0.0f, 0.0f, 1.0f, 1.0f);
   }
 
   void vec4::print(u16 printLog) const {
-    wsLog(printLog, "{ %f, %f, %f, %f }\n", x, y, z, w);
+    wsEcho(printLog, "{ %f, %f, %f, %f }\n", x, y, z, w);
   }
 
 #else   //  If SSE4 is not supported
@@ -621,7 +621,7 @@ const vec4 WS_Z_AXIS(0.0f, 0.0f, 1.0f, 1.0f);
   }
 
   void vec4::print(u16 printLog) const {
-    wsLog(printLog, "{ %f, %f, %f, %f }\n", x, y, z, w);
+    wsEcho(printLog, "{ %f, %f, %f, %f }\n", x, y, z, w);
   }
 
 #endif  /*  WS_SUPPORTS_SSE4  */

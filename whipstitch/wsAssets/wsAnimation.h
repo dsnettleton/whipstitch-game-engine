@@ -35,11 +35,8 @@
 #ifndef WS_ANIMATION_H_
 #define WS_ANIMATION_H_
 
+#include "../wsConfig.h"
 #include "wsAsset.h"
-
-#define WS_ANIM_TYPE_KEYFRAME 1
-
-#define WS_MAX_JOINTS 128
 
 struct wsAnimJoint {
     char name[127];
@@ -58,9 +55,6 @@ struct wsKeyframe {
     f32 frameIndex;
     u32 numJointsModified;
     wsJointMod* mods;
-    //  Bounding box information
-    // f32 minX, minY, minZ;
-    // f32 maxX, maxY, maxZ;
 };
 
 class wsAnimation: public wsAsset {

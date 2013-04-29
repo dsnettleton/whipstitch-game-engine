@@ -41,14 +41,12 @@
 #ifndef WS_GAME_LOOP_H_
 #define WS_GAME_LOOP_H_
 
+#include "../wsConfig.h"
 #include "../wsUtils.h"
 #include "../wsAssets.h"
 #include "../wsGraphics.h"
 #include "wsGame.h"
 #include "wsEventManager.h"
-
-#define WS_DEFAULT_FPS 60.0
-#define WS_MAX_FRAME_SKIPS 5
 
 class wsGameLoop {
   private:

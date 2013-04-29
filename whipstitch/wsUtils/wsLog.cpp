@@ -24,7 +24,7 @@
 char wsLogBuffer[WS_MAX_LOG_CHARS + 1];
 u16 wsActiveLogs = 0xFFFF;  //  All logs active by default
 
-void wsLog(u16 channels, const char* str, va_list args) {
+void wsEcho(u16 channels, const char* str, va_list args) {
     vsnprintf(wsLogBuffer, WS_MAX_LOG_CHARS, str, args);
     wsLogBuffer[WS_MAX_LOG_CHARS] = '\0';
 
@@ -75,22 +75,22 @@ void wsLog(u16 channels, const char* str, va_list args) {
     fflush(stdout); // Will now print everything in the stdout buffer
 }
 
-void wsLog(const char* str, ...) {
+void wsEcho(const char* str, ...) {
     if (wsActiveLogs & WS_LOG_MAIN) {
         va_list args;
         va_start(args, str);
-        wsLog(WS_LOG_MAIN, str, args);
+        wsEcho(WS_LOG_MAIN, str, args);
         va_end(args);
         printf("\n");
     }
     fflush(stdout); // Will now print everything in the stdout buffer
 }
 
-void wsLog(u16 channels, const char*str, ...) {
+void wsEcho(u16 channels, const char*str, ...) {
     if (wsActiveLogs & channels) {
         va_list args;
         va_start(args, str);
-        wsLog(channels, str, args);
+        wsEcho(channels, str, args);
         va_end(args);
         printf("\n");
     }

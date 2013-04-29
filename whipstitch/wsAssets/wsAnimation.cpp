@@ -38,7 +38,7 @@
 
 wsAnimation::wsAnimation(const char* filepath) {
   assetType = WS_ASSET_TYPE_ANIM;
-  wsLog(WS_LOG_GRAPHICS, "Loading Animation from file \"%s\"\n", filepath);
+  wsEcho(WS_LOG_GRAPHICS, "Loading Animation from file \"%s\"\n", filepath);
   FILE* pFile;
   pFile = fopen(filepath, "r");
   wsAssert( pFile, "Error Loading file." );
@@ -101,7 +101,7 @@ wsAnimation::wsAnimation(const char* filepath) {
   errorCheck( fscanf( pFile, "}\n") );
   if (numKeyframes) { animLength = keyframes[numKeyframes-1].frameIndex / framesPerSecond; }
   if (fclose(pFile) == EOF) {
-    wsLog(WS_LOG_ERROR, "Failed to close animation file \"%s\"", filepath);
+    wsEcho(WS_LOG_ERROR, "Failed to close animation file \"%s\"", filepath);
   }
 }// End wsAnimation constructor
 
@@ -111,6 +111,6 @@ wsAnimation::~wsAnimation() {
 
 void wsAnimation::errorCheck(const i32 my) {
   if (my == EOF) {
-    wsLog(WS_LOG_ERROR, "Error: premature end of file.");
+    wsEcho(WS_LOG_ERROR, "Error: premature end of file.");
   }
 }

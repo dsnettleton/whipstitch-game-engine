@@ -55,13 +55,13 @@ void wsInputManager::startUp() {
     initKeyboardMaps();
     initMouseButtonMap();
     glfwSetKeyCallback(wsKeyboardCallback);
-    glfwEnable(GLFW_KEY_REPEAT);
+    glfwDisable(GLFW_KEY_REPEAT);
     glfwSetMousePosCallback(wsMouseMotionCallback);
     glfwSetMouseButtonCallback(wsMouseButtonCallback);
   #endif
   numControllers = 0;
   pollDevices();
-  wsLog(WS_LOG_HID, "Number of Controllers: %u\n", numControllers);
+  wsEcho(WS_LOG_HID, "Number of Controllers: %u\n", numControllers);
 }
 
 #if (WS_SCREEN_BACKEND == WS_BACKEND_X11)
@@ -201,7 +201,7 @@ void wsInputManager::startUp() {
   }
   void GLFWCALL wsKeyboardCallback(i32 key, i32 action) {
     wsKeyArray my;
-    if (action == GLFW_PRESS) wsLog(WS_LOG_HID, "Key Down: %d\n", key);
+    if (action == GLFW_PRESS) wsEcho(WS_LOG_HID, "Key Down: %d\n", key);
     u64 btnState = 0;
     bool specialKey = false;
     if (key > 0 && key <= GLFW_KEY_LAST) {
@@ -250,7 +250,7 @@ void wsInputManager::startUp() {
   }
   void GLFWCALL wsMouseButtonCallback(i32 button, i32 action) {
     u32 btnState = 0;
-    if (action == GLFW_PRESS) { wsLog(WS_LOG_HID, "Mouse Button Down: %d\n", button); }
+    if (action == GLFW_PRESS) { wsEcho(WS_LOG_HID, "Mouse Button Down: %d\n", button); }
     if (button >= 0 && button <= GLFW_MOUSE_BUTTON_LAST) {
       btnState = wsMouseButtonMap[button];
     }
@@ -281,12 +281,12 @@ void wsInputManager::pollDevices() {
         controllers[i].setPlayerNumber(i);
         u32 numAxes = glfwGetJoystickParam(i, GLFW_AXES);
         u32 numButtons = glfwGetJoystickParam(i, GLFW_BUTTONS);
-        wsLog(WS_LOG_HID,  "Controller %u has been plugged in.\nNumAxes = %u\nNumButtons=%u\n", i, numAxes, numButtons);
+        wsEcho(WS_LOG_HID,  "Controller %u has been plugged in.\nNumAxes = %u\nNumButtons=%u\n", i, numAxes, numButtons);
       }
       else if (!glfwGetJoystickParam(i, GLFW_PRESENT) && controllers[i].getPluggedIn()) {
         controllers[i].setPluggedIn(false);
         --numControllers;
-        wsLog(WS_LOG_HID, "Controller %u has been unplugged.\n", i);
+        wsEcho(WS_LOG_HID, "Controller %u has been unplugged.\n", i);
       }
     }
     glfwPollEvents();

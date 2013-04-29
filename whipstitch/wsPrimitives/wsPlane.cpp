@@ -35,13 +35,13 @@
 #include "wsPlane.h"
 #include "../wsGraphics/wsRenderSystem.h"
 
-wsPlane::wsPlane(const vec4& normal, const f32 distFromOrigin, const u32 myProperties) {
+wsPlane::wsPlane(const vec4& normal, const f32 distFromOrigin, const u32 myProperties, const u64 myCollisionClass) {
   properties = myProperties;
   primType = WS_PRIM_TYPE_PLANE;
 
   posData = normal;
   posData.w = distFromOrigin;
-
+  collisionClass = myCollisionClass;
 }
 
 void wsPlane::draw() {

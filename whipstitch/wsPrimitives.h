@@ -37,5 +37,10 @@
 #include "wsPrimitives/wsPrimitive.h"
 #include "wsPrimitives/wsPlane.h"
 #include "wsPrimitives/wsCube.h"
+#include "wsPrimitives/wsCollisionShape.h"
+#include "wsPrimitives/wsCollisionCapsule.h"
+#include "wsPrimitives/wsCollisionCube.h"
+#include "wsPrimitives/wsCollisionCylinder.h"
+#include "wsPrimitives/wsCollisionSphere.h"
 
 #endif /* WS_PRIMITIVES_H_ */

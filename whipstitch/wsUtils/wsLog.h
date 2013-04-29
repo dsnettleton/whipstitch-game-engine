@@ -45,8 +45,8 @@
 extern char wsLogBuffer[WS_MAX_LOG_CHARS+1];
 extern u16 wsActiveLogs;
 
-void wsLog(const char* str, ...);
-void wsLog(u16 channels, const char* str, ...);
+void wsEcho(const char* str, ...);
+void wsEcho(u16 channels, const char* str, ...);
 void wsLogAssertionFailure(const char* expr, const char* file, u32 line);
 void wsLogAssertionFailure(const char* expr, const char* file, u32 line, const char* msg);
 

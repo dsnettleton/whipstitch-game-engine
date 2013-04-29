@@ -48,13 +48,13 @@
         _ws_function_profile_structure(const char* myName) {
             name = myName;
             startTime = wsGetTime();
-            wsLog(WS_LOG_PROFILING, "Beginning Function:  \"%s\"\n", myName);
+            wsEcho(WS_LOG_PROFILING, "Beginning Function:  \"%s\"\n", myName);
         }
         //  Destructor is called when the profile structure goes out of scope (when the
         //  function ends).
         ~_ws_function_profile_structure() {
             t64 timePassed = wsGetTime() - startTime;
-            wsLog(WS_LOG_PROFILING, "  Ending Function:  \"%s\"\n    Time Spent = %f\n",
+            wsEcho(WS_LOG_PROFILING, "  Ending Function:  \"%s\"\n    Time Spent = %f\n",
                             myName, timePassed);
         }
     };

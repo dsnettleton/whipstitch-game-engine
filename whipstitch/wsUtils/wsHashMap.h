@@ -164,7 +164,7 @@ inline ClassType wsHashMap<ClassType>::iterator::operator--() {
 template <class ClassType>
 wsHashMap<ClassType>::wsHashMap(u32 maxElements) {
   maxElements = wsNextPrime(maxElements);
-  wsLog(WS_LOG_UTIL, "Creating %u element hashmap\n", maxElements);
+  wsEcho(WS_LOG_UTIL, "Creating %u element hashmap\n", maxElements);
   wsAssert((maxElements > 0), "wsHashMap must have more than 0 elements.");
   length = 0;
   this->maxElements = maxElements;
@@ -219,7 +219,7 @@ bool wsHashMap<ClassType>::contains(u32 hashIndex) {
 
 template <class ClassType>
 u32 wsHashMap<ClassType>::insert(u32 hashIndex, const ClassType& element) {
-  //wsLog(WS_LOG_UTIL, "Inserting item\n");
+  //wsEcho(WS_LOG_UTIL, "Inserting item\n");
   u32 moddedHash = hashIndex % maxElements;
   if (length != maxElements) {  //  If the hashMap is not full already
     u32 probeCount = 0, offset = 1;
@@ -303,11 +303,11 @@ u32 wsHashMap<ClassType>::insert(u32 hashIndex, const ClassType& element) {
     }
     else {
       if (array[moddedHash].hashKey == hashIndex) {
-        wsLog(WS_LOG_UTIL, "Cannot enter duplicate key into hash map.\n");
+        wsEcho(WS_LOG_UTIL, "Cannot enter duplicate key into hash map.\n");
         return WS_FAIL;
       }
       else {
-        wsLog(WS_LOG_UTIL, "Could not insert element into hash map.\n"
+        wsEcho(WS_LOG_UTIL, "Could not insert element into hash map.\n"
                 "  key = %u\n"
                 "  moddedHash = %u\n"
                 "  array[moddedHash].hashKey = %u\n",
@@ -317,7 +317,7 @@ u32 wsHashMap<ClassType>::insert(u32 hashIndex, const ClassType& element) {
     }
   }
   else {
-    wsLog(WS_LOG_UTIL, "Hashmap is full.\n");
+    wsEcho(WS_LOG_UTIL, "Hashmap is full.\n");
     return WS_FAIL;
   }
   return WS_SUCCESS;
@@ -325,10 +325,10 @@ u32 wsHashMap<ClassType>::insert(u32 hashIndex, const ClassType& element) {
 
 template <class ClassType>
 void wsHashMap<ClassType>::print(u16 printLog) {
-  wsLog(printLog, "Hashmap Contents\n");
+  wsEcho(printLog, "Hashmap Contents\n");
   for (u32 i = 0; i < maxElements; ++i) {
     if (array[i].hashKey != WS_NULL) {
-      wsLog(printLog, " Pos %u - Key = %u\n", i, array[i].hashKey);
+      wsEcho(printLog, " Pos %u - Key = %u\n", i, array[i].hashKey);
     }
   }
 }
@@ -357,7 +357,7 @@ void wsHashMap<ClassType>::remove(u32 hashIndex) {
     --length;
   }
   else {
-    wsLog(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
+    wsEcho(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
   }
 }
 
@@ -378,7 +378,7 @@ void wsHashMap<ClassType>::replace(u32 hashIndex, const ClassType& element) {
     array[moddedHash].object = element;
   }
   else {
-    //wsLog(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
+    //wsEcho(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
     insert(hashIndex, element);
   }
 }
@@ -400,7 +400,7 @@ const ClassType& wsHashMap<ClassType>::retrieve(u32 hashIndex) const {
     return array[moddedHash].object;
   }
   else {
-    wsLog(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
+    wsEcho(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
   }
   return array[moddedHash].object;
 }
@@ -423,7 +423,7 @@ bool wsHashMap<ClassType>::retrieve(u32 hashIndex, ClassType& element) const {
     return true;
   }
   else {
-    wsLog(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
+    wsEcho(WS_LOG_UTIL, "No suitable match found for hash key: %u\n", hashIndex);
     return false;
   }
 }

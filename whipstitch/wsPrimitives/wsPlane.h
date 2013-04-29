@@ -42,7 +42,7 @@ class wsPlane : public wsPrimitive {
   public:
     //  Constructors and Deconstructors
     wsPlane(const vec4& normal = vec4(0.0f, 1.0f, 0.0f, 0.0f), const f32 distFromOrigin = 0.0f,
-      const u32 myProperties = WS_PRIMITIVE_VISIBLE);
+      const u32 myProperties = WS_PRIMITIVE_VISIBLE, const u64 myCollisionClass = 0);
     //  Getters and Setters
     f32 getDistFromOrigin() { return posData.w; }
     vec4 getNormal() { return vec4(posData.x, posData.y, posData.z, 0.0f); }

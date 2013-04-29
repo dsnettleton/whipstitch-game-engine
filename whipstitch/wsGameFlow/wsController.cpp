@@ -91,12 +91,12 @@ void wsController::poll() {
                     if (axisValues[i] < 0) {
                         if (!(buttonStates & WS_D_PAD_LEFT)) {
                             //  Activate D-pad left, deactivate right
-                            wsLog(WS_LOG_HID, "D-Pad Left Pressed.");
+                            wsEcho(WS_LOG_HID, "D-Pad Left Pressed.");
                             wsEvents.push(wsEvent(WS_EVENT_INPUT, WS_INPUT_TYPE_CONTROLLER, playerNumber,
                                 WS_D_PAD_LEFT, WS_PRESS));
                             buttonStates |= WS_D_PAD_LEFT;
                             if (buttonStates & WS_D_PAD_RIGHT) {
-                                wsLog(WS_LOG_HID, "D-Pad Right Released.");
+                                wsEcho(WS_LOG_HID, "D-Pad Right Released.");
                                 wsEvents.push(wsEvent(WS_EVENT_INPUT, WS_INPUT_TYPE_CONTROLLER,
                                     playerNumber, WS_D_PAD_RIGHT, WS_RELEASE));
                                 buttonStates ^= WS_D_PAD_RIGHT;
@@ -106,12 +106,12 @@ void wsController::poll() {
                     else if (axisValues[i] > 0) {
                         if (!(buttonStates & WS_D_PAD_RIGHT)) {
                             //  Activate D-pad right, deactivate left
-                            wsLog(WS_LOG_HID, "D-Pad Right Pressed.");
+                            wsEcho(WS_LOG_HID, "D-Pad Right Pressed.");
                             buttonStates |= WS_D_PAD_RIGHT;
                             wsEvents.push(wsEvent(WS_EVENT_INPUT, WS_INPUT_TYPE_CONTROLLER, playerNumber,
                                 WS_D_PAD_RIGHT, WS_PRESS));
                             if (buttonStates & WS_D_PAD_LEFT) {
-                                wsLog(WS_LOG_HID, "D-Pad Left Released.");
+                                wsEcho(WS_LOG_HID, "D-Pad Left Released.");
                                 buttonStates ^= WS_D_PAD_LEFT;
                                 wsEvents.push(wsEvent(WS_EVENT_INPUT, WS_INPUT_TYPE_CONTROLLER,
                                     playerNumber, WS_D_PAD_LEFT, WS_RELEASE));
@@ -120,13 +120,13 @@ void wsController::poll() {
                     }
                     else {
                         if (buttonStates & WS_D_PAD_LEFT) {
-                            wsLog(WS_LOG_HID, "D-Pad Left Released.");
+                            wsEcho(WS_LOG_HID, "D-Pad Left Released.");
                             buttonStates ^= WS_D_PAD_LEFT;
                             wsEvents.push(wsEvent(WS_EVENT_INPUT, WS_INPUT_TYPE_CONTROLLER,
                                 playerNumber, WS_D_PAD_LEFT, WS_RELEASE));
                         }
                         if (buttonStates & WS_D_PAD_RIGHT) {
-                            wsLog(WS_LOG_HID, "D-Pad Right Released.");
+                            wsEcho(WS_LOG_HID, "D-Pad Right Released.");
                             buttonStates ^= WS_D_PAD_RIGHT;
                             wsEvents.push(wsEvent(WS_EVENT_INPUT, WS_INPUT_TYPE_CONTROLLER,
                                 playerNumber, WS_D_PAD_RIGHT, WS_RELEASE));
@@ -138,12 +138,12 @@ void wsController::poll() {
                     if (axisValues[i] > 0) {
                         if (!(buttonStates & WS_D_PAD_DOWN)) {
                             //  Activate D-pad down, deactivate up
-                            wsLog(WS_LOG_HID, "D-Pad Down Pressed.");
+                            wsEcho(WS_LOG_HID, "D-Pad Down Pressed.");
                             buttonStates |= WS_D_PAD_DOWN;
                             wsEvents.push(wsEvent(WS_EVENT_INPUT, WS_INPUT_TYPE_CONTROLLER,
                                 playerNumber, WS_D_PAD_DOWN, WS_PRESS));
                             if (buttonStates & WS_D_PAD_UP) {
-                                wsLog(WS_LOG_HID, "D-Pad Up Released.");
+                                wsEcho(WS_LOG_HID, "D-Pad Up Released.");
                                 buttonStates ^= WS_D_PAD_UP;
                                 wsEvents.push(wsEvent(WS_EVENT_INPUT, WS_INPUT_TYPE_CONTROLLER,
                                     playerNumber, WS_D_PAD_UP, WS_RELEASE));
@@ -153,12 +153,12 @@ void wsController::poll() {
                     else if (axisValues[i] < 0) {
                         if (!(buttonStates & WS_D_PAD_UP)) {
                             //  Activate D-pad up, deactivate down
-                            wsLog(WS_LOG_HID, "D-Pad Up Pressed.");
+                            wsEcho(WS_LOG_HID, "D-Pad Up Pressed.");
                             buttonStates |= WS_D_PAD_UP;
                             wsEvents.push(wsEvent(WS_EVENT_INPUT, WS_INPUT_TYPE_CONTROLLER,
                                 playerNumber, WS_D_PAD_UP, WS_PRESS));
                             if (buttonStates & WS_D_PAD_DOWN) {
-                                wsLog(WS_LOG_HID, "D-Pad Down Released.");
+                                wsEcho(WS_LOG_HID, "D-Pad Down Released.");
                                 buttonStates ^= WS_D_PAD_DOWN;
                                 wsEvents.push(wsEvent(WS_EVENT_INPUT, WS_INPUT_TYPE_CONTROLLER,
                                     playerNumber, WS_D_PAD_DOWN, WS_RELEASE));
@@ -167,13 +167,13 @@ void wsController::poll() {
                     }
                     else {
                         if (buttonStates & WS_D_PAD_DOWN) {
-                            wsLog(WS_LOG_HID, "D-Pad Down Released.");
+                            wsEcho(WS_LOG_HID, "D-Pad Down Released.");
                             buttonStates ^= WS_D_PAD_DOWN;
                             wsEvents.push(wsEvent(WS_EVENT_INPUT, WS_INPUT_TYPE_CONTROLLER,
                                 playerNumber, WS_D_PAD_DOWN, WS_RELEASE));
                         }
                         if (buttonStates & WS_D_PAD_UP) {
-                            wsLog(WS_LOG_HID, "D-Pad Up Released.");
+                            wsEcho(WS_LOG_HID, "D-Pad Up Released.");
                             buttonStates ^= WS_D_PAD_UP;
                             wsEvents.push(wsEvent(WS_EVENT_INPUT, WS_INPUT_TYPE_CONTROLLER,
                                 playerNumber, WS_D_PAD_UP, WS_RELEASE));
@@ -182,7 +182,7 @@ void wsController::poll() {
                 }
                 else {  //  Analog Axis
                     if (analogAxes[analogAxisCounter].set(axisValues[i])) {
-                        wsLog(WS_LOG_HID, "Axis %u: Value = %f\n", i, analogAxes[analogAxisCounter].value);
+                        wsEcho(WS_LOG_HID, "Axis %u: Value = %f\n", i, analogAxes[analogAxisCounter].value);
                         wsEvents.push(wsEvent(WS_EVENT_INPUT, WS_INPUT_TYPE_CONTROLLER, playerNumber, axesMap[i], WS_ANALOG,
                                 analogAxes[analogAxisCounter].value));
                     }
@@ -196,14 +196,14 @@ void wsController::poll() {
             for (u32 i = 0; i < numButtons; ++i) {
                 if (!(controllerMap[i] & analogMask)) { //  Ignore button press events for analog inputs
                     if (buttonValues[i] == GLFW_PRESS && !(controllerMap[i] & buttonStates)) {
-                        wsLog(WS_LOG_HID, "Button %u pressed", i);
+                        wsEcho(WS_LOG_HID, "Button %u pressed", i);
                         buttonStates |= controllerMap[i];
                         wsEvents.push(wsEvent(WS_EVENT_INPUT, WS_INPUT_TYPE_CONTROLLER, playerNumber, controllerMap[i],
                             WS_PRESS));
                     }
                 }
                 if (buttonValues[i] == GLFW_RELEASE && (controllerMap[i] & buttonStates)) {
-                    wsLog(WS_LOG_HID, "Button %u released", i);
+                    wsEcho(WS_LOG_HID, "Button %u released", i);
                     buttonStates ^= controllerMap[i];
                     wsEvents.push(wsEvent(WS_EVENT_INPUT, WS_INPUT_TYPE_CONTROLLER,playerNumber, controllerMap[i],
                         WS_RELEASE));

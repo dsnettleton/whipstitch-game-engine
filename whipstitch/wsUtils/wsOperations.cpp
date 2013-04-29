@@ -73,6 +73,10 @@ f32 wsSqrt(f32 myFloat) {
     return my;
 }
 
+f32 wsLog2(f32 myFloat) {
+  return log(myFloat) / log(2.0);
+}
+
 f32 wsMax(f32 a, f32 b) {
     return (a > b) ? a : b;
 }
@@ -153,7 +157,7 @@ u32 wsInitialRandomSeed = 0;
 //  This initializes the randomizer with a special seed.
 void wsInitRandomizer(u32 seed) {
     WS_PROFILE();
-    wsLog(WS_LOG_UTIL, "Initial Random Seed: %u\n", seed);
+    wsEcho(WS_LOG_UTIL, "Initial Random Seed: %u\n", seed);
     wsInitialRandomSeed = seed;
     ws_mt_array[0] = seed;
     for (i32 i = 1; i < WS_MERSENNE_TWISTER_SIZE; ++i) {

@@ -92,7 +92,7 @@ void wsMemoryStack::startUp(const u64 numBytes_primaryStack,
     mPrimaryStackSize = numBytes_primaryStack;
     mFrameStackSize = numBytes_frameStack;
     //  Log the data
-    wsLog(WS_LOG_MEMORY,    "Initializing Memory Stack\n    Primary Stack Size = %u\n"
+    wsEcho(WS_LOG_MEMORY,    "Initializing Memory Stack\n    Primary Stack Size = %u\n"
                             "    Frame Stack Size = %u\n",
                             mPrimaryStackSize, mFrameStackSize);
     //  Create a byte array encompassing both stacks
@@ -139,7 +139,7 @@ void wsMemoryStack::startUp(const u64 numBytes_primaryStack,
 
 /*  Define the shutDown(...) function for this Engine Subsystem  */
 void wsMemoryStack::shutDown() {
-    wsLog(WS_LOG_MEMORY, "Shutting down Memory Stack\n");
+    wsEcho(WS_LOG_MEMORY, "Shutting down Memory Stack\n");
     wsAssert((mFullByteArray != NULL), "Pointer to Primary Stack is NULL");
     delete [] mFullByteArray;
 }
@@ -148,13 +148,13 @@ void wsMemoryStack::shutDown() {
 
 //  Allocate memory from the current tier of the Primary Stack; return its memory address.
 void* wsMemoryStack::allocatePrimary(const u32 numBytes) {
-    wsLog(WS_LOG_MEMORY, "Allocating %u bytes\n", numBytes);
+    wsEcho(WS_LOG_MEMORY, "Allocating %u bytes\n", numBytes);
     wsAssert(mPrimaryStackSize, "Has the Primary Stack been initialized?");
     void* memAddress;
     switch (mCurrentPrimaryTier) {
         case PRIMARY_GLOBAL:
             if (mGlobalMarker + numBytes > mRearMarker) {
-                wsLog(  (WS_LOG_MEMORY | WS_LOG_ERROR),
+                wsEcho(  (WS_LOG_MEMORY | WS_LOG_ERROR),
                         "Cannot allocate %u bytes to Primary Global Stack\n"
                         "  GlobalMarker = %u, RearMarker = %u\n",
                         numBytes, mGlobalMarker, mRearMarker);
@@ -166,7 +166,7 @@ void* wsMemoryStack::allocatePrimary(const u32 numBytes) {
             break;
         case PRIMARY_REAR:
             if (mRearMarker - numBytes < mFrontMarker) {
-                wsLog(  (WS_LOG_MEMORY | WS_LOG_ERROR),
+                wsEcho(  (WS_LOG_MEMORY | WS_LOG_ERROR),
                         "Cannot allocate %u bytes to Primary Rear Stack\n", numBytes);
                 return (void*)NULL;
             }
@@ -176,7 +176,7 @@ void* wsMemoryStack::allocatePrimary(const u32 numBytes) {
             break;
         case PRIMARY_FRONT:
             if (mFrontMarker + numBytes > mRearMarker) {
-                wsLog(  (WS_LOG_MEMORY | WS_LOG_ERROR),
+                wsEcho(  (WS_LOG_MEMORY | WS_LOG_ERROR),
                         "Cannot allocate %u bytes to Primary Front Stack\n", numBytes);
                 return (void*)NULL;
             }
@@ -185,30 +185,30 @@ void* wsMemoryStack::allocatePrimary(const u32 numBytes) {
             mFrontMarker += numBytes;
             break;
         default:
-            wsLog((WS_LOG_MEMORY | WS_LOG_ERROR), "Unsupported value for Primary tier.\n");
+            wsEcho((WS_LOG_MEMORY | WS_LOG_ERROR), "Unsupported value for Primary tier.\n");
             memAddress = (void*)NULL;
             break;
     }
-    wsLog(WS_LOG_MEMORY, "Memory Allocated.\n");
+    wsEcho(WS_LOG_MEMORY, "Memory Allocated.\n");
     return memAddress;
 }
 
 //  Completely clear the Primary Memory Stack
 void wsMemoryStack::clearPrimaryStack() {
-    wsLog(WS_LOG_MEMORY, "Clearing Primary Stack.\n");
+    wsEcho(WS_LOG_MEMORY, "Clearing Primary Stack.\n");
     mFrontMarker = mGlobalMarker = 0;
     mRearMarker = mPrimaryStackSize;
 }
 
 //  Free the Front tier of the Primary Memory stack up to the Global tier
 void wsMemoryStack::freePrimaryFront() {
-    wsLog(WS_LOG_MEMORY, "Freeing Front Tier of Primary Stack\n");
+    wsEcho(WS_LOG_MEMORY, "Freeing Front Tier of Primary Stack\n");
     mFrontMarker = mGlobalMarker;
 }
 
 //  Free the Rear tier of the Primary Memory Stack
 void wsMemoryStack::freePrimaryRear() {
-    wsLog(WS_LOG_MEMORY, "Freeing Rear Tier of Primary Stack\n");
+    wsEcho(WS_LOG_MEMORY, "Freeing Rear Tier of Primary Stack\n");
     mRearMarker = mPrimaryStackSize;
 
 }
@@ -216,7 +216,7 @@ void wsMemoryStack::freePrimaryRear() {
 //  Free the Front and Rear tiers of the Primary Memory Stack,
 //  leaving the Global tier intact
 void wsMemoryStack::freePrimaryToGlobal() {
-    wsLog(WS_LOG_MEMORY, "Freeing Front and Rear Tiers of Primary Stack\n");
+    wsEcho(WS_LOG_MEMORY, "Freeing Front and Rear Tiers of Primary Stack\n");
     mFrontMarker = mGlobalMarker;
     mRearMarker = mPrimaryStackSize;
 
@@ -225,10 +225,10 @@ void wsMemoryStack::freePrimaryToGlobal() {
 //  Set the current tier for the Primary stack. If the tier is set to Global, the Front
 //  tier is automatically cleared.
 void wsMemoryStack::setTier(_ws_memstack_tier myTier) {
-    wsLog(WS_LOG_MEMORY, "Changing Primary Stack Tier\n");
+    wsEcho(WS_LOG_MEMORY, "Changing Primary Stack Tier\n");
     mCurrentPrimaryTier = myTier;
     if (mCurrentPrimaryTier == PRIMARY_GLOBAL) {
-        wsLog(WS_LOG_MEMORY, "  Clearing Front Tier of Primary Stack\n");
+        wsEcho(WS_LOG_MEMORY, "  Clearing Front Tier of Primary Stack\n");
         mFrontMarker = mGlobalMarker;
     }
 }
@@ -237,13 +237,13 @@ void wsMemoryStack::setTier(_ws_memstack_tier myTier) {
 
 //  Allocate Memory from the Current tier of the Frame Stack; return its address
 void* wsMemoryStack::allocateFrame_current(u32 numBytes) {
-    wsLog(WS_LOG_MEMORY, "Allocating %u bytes for the current frame\n");
+    wsEcho(WS_LOG_MEMORY, "Allocating %u bytes for the current frame\n");
     wsAssert(mFrameStackSize, "Has the Frame Stack been initialized?");
     void* memAddress;
     switch (mCurrentFrameTier) {
         case FRAME_FRONT:
             if (mFrontMarker_f + numBytes > mRearMarker_f) {
-                wsLog((WS_LOG_MEMORY | WS_LOG_ERROR),
+                wsEcho((WS_LOG_MEMORY | WS_LOG_ERROR),
                                 "Cannot allocate %u bytes to Frame Stack.\n", numBytes);
                 return NULL;
             }
@@ -253,7 +253,7 @@ void* wsMemoryStack::allocateFrame_current(u32 numBytes) {
             break;
         case FRAME_REAR:
             if (mRearMarker_f - numBytes < mFrontMarker_f) {
-                wsLog((WS_LOG_MEMORY | WS_LOG_ERROR),
+                wsEcho((WS_LOG_MEMORY | WS_LOG_ERROR),
                                 "Cannot allocate %u bytes to Frame Stack.\n", numBytes);
                 return NULL;
             }
@@ -262,7 +262,7 @@ void* wsMemoryStack::allocateFrame_current(u32 numBytes) {
             memAddress = &mFrameStackBytes[mRearMarker_f];
             break;
         default:
-            wsLog((WS_LOG_MEMORY | WS_LOG_ERROR), "Unsupported value for Frame tier\n");
+            wsEcho((WS_LOG_MEMORY | WS_LOG_ERROR), "Unsupported value for Frame tier\n");
             return NULL;
     }
     return memAddress;
@@ -271,7 +271,7 @@ void* wsMemoryStack::allocateFrame_current(u32 numBytes) {
 //  Allocate memory from the tier of the Frame stack opposite to the current tier.
 //  Return its address.
 void* wsMemoryStack::allocateFrame_next(u32 numBytes) {
-    wsLog(WS_LOG_MEMORY, "Allocating %u bytes for the current frame\n");
+    wsEcho(WS_LOG_MEMORY, "Allocating %u bytes for the current frame\n");
     wsAssert(mFrameStackSize, "Has the Frame Stack been initialized?");
     void* memAddress;
     switch (mCurrentFrameTier) {
@@ -279,7 +279,7 @@ void* wsMemoryStack::allocateFrame_next(u32 numBytes) {
             //  If the current tier is the back end of the frame stack, we'll operate
             //  on the front end.
             if (mFrontMarker_f + numBytes > mRearMarker_f) {
-                wsLog((WS_LOG_MEMORY | WS_LOG_ERROR),
+                wsEcho((WS_LOG_MEMORY | WS_LOG_ERROR),
                                 "Cannot allocate %u bytes to Frame Stack.\n", numBytes);
                 return NULL;
             }
@@ -291,7 +291,7 @@ void* wsMemoryStack::allocateFrame_next(u32 numBytes) {
             //  If the current tier is the front end of the frame stack, we'll operate
             //  on the back end.
             if (mRearMarker_f - numBytes < mFrontMarker_f) {
-                wsLog((WS_LOG_MEMORY | WS_LOG_ERROR),
+                wsEcho((WS_LOG_MEMORY | WS_LOG_ERROR),
                                 "Cannot allocate %u bytes to Frame Stack.\n", numBytes);
                 return NULL;
             }
@@ -300,7 +300,7 @@ void* wsMemoryStack::allocateFrame_next(u32 numBytes) {
             memAddress = &mFrameStackBytes[mRearMarker_f];
             break;
         default:
-            wsLog((WS_LOG_MEMORY | WS_LOG_ERROR), "Unsupported value for Frame tier\n");
+            wsEcho((WS_LOG_MEMORY | WS_LOG_ERROR), "Unsupported value for Frame tier\n");
             return NULL;
     }
     return memAddress;
@@ -308,7 +308,7 @@ void* wsMemoryStack::allocateFrame_next(u32 numBytes) {
 
 //  Completely clear the Frame Stack
 void wsMemoryStack::clearFrameStack() {
-    wsLog(WS_LOG_MEMORY, "Clearing Frame Stack.\n");
+    wsEcho(WS_LOG_MEMORY, "Clearing Frame Stack.\n");
     mFrontMarker_f = 0;
     mRearMarker_f = mFrameStackSize;
 }
@@ -319,7 +319,7 @@ void wsMemoryStack::swapFrames() {
     if (mFrameStackSize == 0) {
         return;
     }
-    wsLog(WS_LOG_MEMORY, "Swapping frames in Frame Stack.\n");
+    wsEcho(WS_LOG_MEMORY, "Swapping frames in Frame Stack.\n");
     switch (mCurrentFrameTier) {
         case FRAME_FRONT:
             mFrontMarker_f = 0;
@@ -330,14 +330,14 @@ void wsMemoryStack::swapFrames() {
             mCurrentFrameTier = FRAME_FRONT;
             break;
         default:
-            wsLog((WS_LOG_MEMORY | WS_LOG_ERROR), "Unsupported value for Frame tier\n");
+            wsEcho((WS_LOG_MEMORY | WS_LOG_ERROR), "Unsupported value for Frame tier\n");
             break;
     }
 }
 
 //  Print Helpful information about the Primary and Frame stacks
 void wsMemoryStack::print(u16 printLog) {
-    wsLog(  printLog,
+    wsEcho(  printLog,
             "Whipstitch Memory Stacks\n"
             "    Primary Stack:\n"
             "      Total Size:    %u bytes\n"

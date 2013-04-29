@@ -40,16 +40,12 @@ int main(int argc, char** argv) {
     // wsActiveLogs = WS_LOG_ALL;
     wsActiveLogs = WS_LOG_MAIN | WS_LOG_SHADER;
   #endif
+
   wsInit("Whipstitch Game Engine", 1280, 720, false, 512*wsMB, 32*wsMB);  //  512MB, 32MB
 
   wsDemo* demoGame = wsNew(wsDemo, wsDemo());
+  
+  wsBegin(demoGame);
 
-  demoGame->onStart();
-
-  wsLoop.beginGame(demoGame);
-
-  demoGame->onExit();
-
-  wsQuit();
   return 0;
 }

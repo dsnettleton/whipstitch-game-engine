@@ -36,27 +36,17 @@
 #include "../wsGraphics/wsRenderSystem.h"
 #include "../wsGameFlow/wsThreadPool.h"
 
-wsModel::wsModel(const char* filepath) {
-  //Function stub
-  assetType = WS_ASSET_TYPE_MODEL;
-  mesh = NULL;
-  defaultAnimation = 0;
-  animTime = 0.0;
-  currentAnimation = NULL;
-  animations = wsNew(wsHashMap<wsAnimation*>, wsHashMap<wsAnimation*>(WS_DEFAULT_MAX_ANIMATIONS));
-  looping = false;
-  timeScale = 1.0f;
-  animPaused = false;
-}
-
-wsModel::wsModel(const char* myName, wsMesh* myMesh, const u32 myMaxAnimations, const f32 myMass) {
+wsModel::wsModel(const char* myName, wsMesh* myMesh, const u32 myMaxAnimations, const f32 myMass,
+    const u64 myCollisionClass, const u16 myProperties, wsCollisionShape* myCollisionShape) {
   assetType = WS_ASSET_TYPE_MODEL;
   mesh = myMesh;
   name = myName;
   bounds = *mesh->getBounds();
   defaultAnimation = 0;
+  collisionClass = myCollisionClass;
   animTime = 0.0;
   currentAnimation = NULL;
+  properties = myProperties;
   if (myMaxAnimations) {
     animations = wsNew(wsHashMap<wsAnimation*>, wsHashMap<wsAnimation*>(wsNextPrime(myMaxAnimations)));
   }
@@ -65,12 +55,17 @@ wsModel::wsModel(const char* myName, wsMesh* myMesh, const u32 myMaxAnimations, 
   }
   jointLocations = wsNewArray(vec4, myMesh->getNumJoints());
   jointRotations = wsNewArray(quat, myMesh->getNumJoints());
+  if (myMesh->getNumJoints()) {
+    applyStaticAnimation();
+  }
+  attachmentModel = WS_NULL;
+  attachmentTransform = WS_NULL;
   attachmentLoc = WS_NULL;
   attachmentRot = WS_NULL;
-  looping = false;
   timeScale = 1.0f;
-  animPaused = false;
   mass = myMass;
+  collisionShape = myCollisionShape;
+  transform.setTranslation(myMesh->getDefaultPos());
   //  Initialize Drawing variables
   const wsMaterial* mats = myMesh->getMats();
   #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
@@ -108,13 +103,16 @@ wsModel::~wsModel() {
 
 void wsModel::addAnimation(wsAnimation* anim) {
   wsAssert( (anim != NULL), "Cannot add a null animation to the model.");
-  wsLog("Adding animation %s to model %s - animHash = %u\n", anim->getName(), name, wsHash(anim->getName()));
+  wsEcho("Adding animation %s to model %s - animHash = %u\n", anim->getName(), name, wsHash(anim->getName()));
   animations->insert(wsHash(anim->getName()), anim);
 }
 
 void wsModel::applyAnimation() {
-  if (currentAnimation == NULL) { return; }   //  Error checking
-  if (mesh->getNumJoints() == 0) { return; }
+  if (mesh->getNumJoints() == 0) { return; }  //  Error checking
+  if (currentAnimation == NULL) {
+    applyStaticAnimation();
+    return;
+  }
   const wsKeyframe* frames = currentAnimation->getKeyframes();
   while (animTime > currentAnimation->getAnimLength()) {
     animTime -= currentAnimation->getAnimLength();
@@ -135,7 +133,7 @@ void wsModel::applyAnimation() {
     }
   }
   f32 blendFactor = wsBlendFactor(frames[prevKeyframe].frameIndex, frameNum, frames[nextKeyframe].frameIndex);
-  wsLog(WS_LOG_GRAPHICS, "animation keyframe = %f, blendFactor = %f\n", frameNum, blendFactor);
+  wsEcho(WS_LOG_GRAPHICS, "animation keyframe = %f, blendFactor = %f\n", frameNum, blendFactor);
   wsJoint* joints = (wsJoint*)mesh->getJoints();
   //  Place this on the frame stack (it will be cleared next frame)
   wsJointMod* mods = wsNewArrayTmp(wsJointMod, mesh->getNumJoints());
@@ -159,39 +157,52 @@ void wsModel::applyAnimation() {
   }
 }
 
+void wsModel::applyStaticAnimation() {
+  if (mesh->getNumJoints() == 0) { return; }  //  Error checking
+  wsEcho(WS_LOG_GRAPHICS, "Applying Static Animation");
+  vec4* meshJointLocations = (vec4*)mesh->getJointLocations();
+  quat* meshJointRotations = (quat*)mesh->getJointRotations();
+  for (u32 i = 0; i < mesh->getNumJoints(); ++i) {
+    jointLocations[i] = meshJointLocations[i];
+    jointRotations[i] = meshJointRotations[i];
+  }
+}
+
 void wsModel::attachModel(wsModel* myModel, const char* jointName) {
   wsAssert(myModel != NULL, "Cannot attach a null model");
-  //u32 nameHash = wsHash(jointName);
   u32 index = mesh->getJointIndex(jointName);
-  myModel->attachmentLoc = &jointLocations[index];   //(wsJoint*)mesh->getJoint(jointName);
+  myModel->attachmentModel = this;
+  myModel->attachmentTransform = &transform;
+  myModel->attachmentLoc = &jointLocations[index];
   myModel->attachmentRot = &jointRotations[index];
+  myModel->properties &= WS_MODEL_ATTACHED;
 }
 
 void wsModel::beginAnimation(const char* animName) {
   currentAnimation = animations->retrieve(wsHash(animName));
   animTime = 0.0;
   //  Update bounding box
-  //*
   bounds = currentAnimation->getBounds();
-  //*/
   applyAnimation();
 }
 
 void wsModel::continueAnimation() {
-  wsLog("continuing animation");
-  animPaused = false;
+  wsEcho("continuing animation");
+  u16 animPaused = WS_MODEL_ANIM_PAUSED;
+  animPaused ^= properties;
+  properties &= animPaused;
 }
 
 void wsModel::incrementAnimationTime(t32 increment) {
-  if (animPaused) { return; }
+  if (properties & WS_MODEL_ANIM_PAUSED) { return; }
   increment *= timeScale;
   animTime += increment;
   applyAnimation();
 }
 
 void wsModel::pauseAnimation() {
-  wsLog("pausing animation");
-  animPaused = true;
+  wsEcho("pausing animation");
+  properties &= WS_MODEL_ANIM_PAUSED;
 }
 
 void wsModel::setFrame(f32 newFrame) {

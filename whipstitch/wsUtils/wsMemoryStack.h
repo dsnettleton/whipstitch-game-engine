@@ -181,7 +181,7 @@ extern wsMemoryStack wsMem;
 //  using the function set_new_handler(). Basically, this logs the problem
 //  and pauses the operation, much like wsAssert().
 inline void wsNewHandler() {
-    wsLog((WS_LOG_ERROR | WS_LOG_MEMORY),
+    wsEcho((WS_LOG_ERROR | WS_LOG_MEMORY),
                     "Could not allocate the requested memory.\n"
                     "    File: %s\n    Line: %s\n",
                     __FILE__, __LINE__);

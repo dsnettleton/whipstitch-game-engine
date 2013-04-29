@@ -83,7 +83,7 @@ void wsMusic::clear() {
 }
 
 void wsMusic::displayInfo() {
-  wsLog(WS_LOG_SOUND, "Version          %d\n"
+  wsEcho(WS_LOG_SOUND, "Version          %d\n"
                       "Channels         %d\n"
                       "Rate (Hz)        %ld\n"
                       "Nominal Bitrate  %ld\n",
@@ -94,7 +94,7 @@ void wsMusic::errorCheck() {
   #if WS_SOUND_BACKEND == WS_BACKEND_OPENAL
     i32 error = alGetError();
     if (error != AL_NO_ERROR) {
-      wsLog(WS_LOG_SOUND | WS_LOG_ERROR, "OpenAL error occurred.\n");
+      wsEcho(WS_LOG_SOUND | WS_LOG_ERROR, "OpenAL error occurred.\n");
     }
   #endif
 }
@@ -121,7 +121,7 @@ void wsMusic::loadOGG(const char* filePath) {
     if(vorbisInfo->channels == 1) { format = AL_FORMAT_MONO16; }
     else { format = AL_FORMAT_STEREO16;}
     update();
-    wsLog(WS_LOG_SOUND, "Opened music file %s\n", filePath);
+    wsEcho(WS_LOG_SOUND, "Opened music file %s\n", filePath);
     //displayInfo();
   #endif
 }

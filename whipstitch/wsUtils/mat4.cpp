@@ -283,7 +283,7 @@ const mat4 MAT4_IDENTITY(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0
   }
 
   void mat4::print(u16 printLog) const {
-    wsLog(printLog, "  [ %f %f %f %f ]\n"
+    wsEcho(printLog, "  [ %f %f %f %f ]\n"
             "    [ %f %f %f %f ]\n"
             "    [ %f %f %f %f ]\n"
             "    [ %f %f %f %f ]\n", data[0], data[1], data[2], data[3], data[4],
@@ -871,7 +871,7 @@ mat4& mat4::loadIdentity() {
 }
 
 void mat4::print(u16 printLog) const {
-  wsLog( printLog,
+  wsEcho( printLog,
           "  [ %f %f %f %f ]\n"
           "    [ %f %f %f %f ]\n"
           "    [ %f %f %f %f ]\n"
@@ -965,6 +965,13 @@ mat4& mat4::setTranslation(f32 transX, f32 transY, f32 transZ) {
   data[13] = transY;
   data[14] = transZ;
 
+  return *this;
+}
+
+mat4& mat4::translate(const vec4& location) {
+  data[12] += location.x;
+  data[13] += location.y;
+  data[14] += location.z;
   return *this;
 }
 

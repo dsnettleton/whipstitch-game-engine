@@ -86,11 +86,11 @@ void wsRenderSystem::startUp() {
   #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
     GLenum glewStatus = glewInit();
     if (glewStatus != GLEW_OK) {
-      wsLog(WS_LOG_ERROR | WS_LOG_GRAPHICS, "Could not initialize GLEW: %s\n", glewGetErrorString(glewStatus));
+      wsEcho(WS_LOG_ERROR | WS_LOG_GRAPHICS, "Could not initialize GLEW: %s\n", glewGetErrorString(glewStatus));
     }
     i32 maxColorAttachments;
     glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments);
-    wsLog(WS_LOG_MAIN | WS_LOG_GRAPHICS,  "GLEW Initialized\n"
+    wsEcho(WS_LOG_MAIN | WS_LOG_GRAPHICS,  "GLEW Initialized\n"
                                           "  Vendor: %s\n"
                                           "  Renderer: %s\n"
                                           "  OpenGL Version: %s\n"
@@ -105,9 +105,9 @@ void wsRenderSystem::startUp() {
     glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
     glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
     glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
-    wsLog(WS_LOG_GRAPHICS, "Supported OpenGL Extensions:");
+    wsEcho(WS_LOG_GRAPHICS, "Supported OpenGL Extensions:");
     for (int i = 0; i < numExtensions; ++i) {
-      wsLog(WS_LOG_GRAPHICS, "  %s\n", (char*)glGetStringi(GL_EXTENSIONS, i));
+      wsEcho(WS_LOG_GRAPHICS, "  %s\n", (char*)glGetStringi(GL_EXTENSIONS, i));
     }
     wsAssert(versionMajor >= 3, "The Whipstitch Engine only supports OpenGL versions 3.0 and up.");
 
@@ -295,34 +295,34 @@ u32 wsRenderSystem::addPanel(const char* panelName, wsPanel* myPanel) {
 void wsRenderSystem::checkExtensions() {
   wsAssert(_mInitialized, "Must initialize the rendering system before checking extensions.");
   if (GLEW_EXT_framebuffer_object) {
-    wsLog(WS_LOG_GRAPHICS, "Framebuffer Supported.\n");
+    wsEcho(WS_LOG_GRAPHICS, "Framebuffer Supported.\n");
   }
   else {
-    wsLog(WS_LOG_GRAPHICS, "Frambuffer Not Supported.\n");
+    wsEcho(WS_LOG_GRAPHICS, "Frambuffer Not Supported.\n");
   }
   if (GLEW_EXT_vertex_array) {
-    wsLog(WS_LOG_GRAPHICS, "Vertex Arrays Supported.\n");
+    wsEcho(WS_LOG_GRAPHICS, "Vertex Arrays Supported.\n");
   }
   else {
-    wsLog(WS_LOG_GRAPHICS, "Vertex Arrays Not Supported.\n");
+    wsEcho(WS_LOG_GRAPHICS, "Vertex Arrays Not Supported.\n");
   }
   if (GLEW_ARB_vertex_buffer_object) {
-    wsLog(WS_LOG_GRAPHICS, "Vertex Buffer Objects Supported.\n");
+    wsEcho(WS_LOG_GRAPHICS, "Vertex Buffer Objects Supported.\n");
   }
   else {
-    wsLog(WS_LOG_GRAPHICS, "Vertex Buffer Objects Not Supported.\n");
+    wsEcho(WS_LOG_GRAPHICS, "Vertex Buffer Objects Not Supported.\n");
   }
   if (GLEW_ARB_vertex_shader) {
-    wsLog(WS_LOG_GRAPHICS, "Vertex Shaders supported.\n");
+    wsEcho(WS_LOG_GRAPHICS, "Vertex Shaders supported.\n");
   }
   else {
-    wsLog(WS_LOG_GRAPHICS, "Vertex shaders not supported. :(\n");
+    wsEcho(WS_LOG_GRAPHICS, "Vertex shaders not supported. :(\n");
   }
   if (GLEW_ARB_fragment_shader) {
-    wsLog(WS_LOG_GRAPHICS, "Fragment Shaders supported.\n");
+    wsEcho(WS_LOG_GRAPHICS, "Fragment Shaders supported.\n");
   }
   else {
-    wsLog(WS_LOG_GRAPHICS, "Fragment shaders not supported. :(\n");
+    wsEcho(WS_LOG_GRAPHICS, "Fragment shaders not supported. :(\n");
   }
 }
 
@@ -367,12 +367,14 @@ void wsRenderSystem::drawModels(wsHashMap<wsModel*>* models) {
     // glPointSize(3.0f);
     glEnableVertexAttribArray(WS_VERT_ATTRIB_NUM_WEIGHTS);
   #endif
+  mat4 transform;
+  vec4 defaultPos;
   for (wsHashMap<wsModel*>::iterator mod = models->begin(); mod.get() != WS_NULL; ++mod) {
     my = models->getArrayItem(mod.mCurrentElement);
     wsAssert(my != NULL, "Cannot draw mesh; empty reference.");
     const wsMaterial* mats = my->getMesh()->getMats();
     wsAssert(mats != NULL, "Cannot use material; empty reference.");
-    mat4 transform = my->getTransform().toMatrix();
+    transform = my->getTransform().toMatrix();
     #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
       wsAssert((my->getNumJoints() <= WS_MAX_JOINTS), "Cannot have more than the max number of joints in a skeleton.");
       shaders[WS_SHADER_INITIAL]->setUniformVec4Array("baseBoneLocs", my->getMesh()->getJointLocations(), my->getNumJoints());
@@ -382,7 +384,15 @@ void wsRenderSystem::drawModels(wsHashMap<wsModel*>* models) {
 
       glPushMatrix();
         glMultMatrixf((GLfloat*)&transform);
-        if (my->getAttachmentLoc() != WS_NULL && my->getAttachmentRot() != WS_NULL) {   //  This is attached to another model
+        defaultPos = -my->getMesh()->getDefaultPos();
+        glTranslatef(defaultPos.x, defaultPos.y, defaultPos.z);
+        if (my->getAttachmentTransform() != WS_NULL) {   //  This is attached to another model
+          wsAssert(my->getAttachmentLoc() != WS_NULL, "Model has null attachment location");
+          wsAssert(my->getAttachmentRot() != WS_NULL, "Model has null attachment rotation");
+          // transform.loadIdentity();
+          transform = my->getAttachmentTransform()->toMatrix();
+          transform.translate(-my->getAttachmentModel()->getMesh()->getDefaultPos());
+          glMultMatrixf((GLfloat*)&transform);
           transform.loadIdentity();
           transform.setRotation(*my->getAttachmentRot());
           transform.setTranslation(*my->getAttachmentLoc());
@@ -708,13 +718,13 @@ void wsRenderSystem::loadTexture(u32* index, const char* filename, bool autoSmoo
     if (!imageIndices->contains(fileHash)) {
       *index = SOIL_load_OGL_texture(filename, SOIL_LOAD_AUTO, *index, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y);
       if (!(*index)) {
-        wsLog(WS_LOG_ERROR, "Could not locate texture file: \"%s\"\n  SOIL error: %s\n", filename, SOIL_last_result());
+        wsEcho(WS_LOG_ERROR, "Could not locate texture file: \"%s\"\n  SOIL error: %s\n", filename, SOIL_last_result());
         if (strcmp(filename, "textures/wsDefaultTexture.png")) {
           loadTexture(index, "textures/wsDefaultTexture.png", autoSmooth);
         }
       }
       else {
-        wsLog(WS_LOG_GRAPHICS, "Loaded texture file: \"%s\"\n", filename);
+        wsEcho(WS_LOG_GRAPHICS, "Loaded texture file: \"%s\"\n", filename);
         imageIndices->insert(fileHash, *index);
         if (autoSmooth) {
           glBindTexture(GL_TEXTURE_2D, *index);
@@ -747,7 +757,7 @@ void wsRenderSystem::loadTexture(u32* index, const char* filename, bool autoSmoo
       }
     }// End if this index is not in the hashmap
     else {
-      wsLog(WS_LOG_GRAPHICS, "Texture file \"%s\" has already been loaded.\n", filename);
+      wsEcho(WS_LOG_GRAPHICS, "Texture file \"%s\" has already been loaded.\n", filename);
       *index = imageIndices->retrieve(fileHash);
     }
   #endif

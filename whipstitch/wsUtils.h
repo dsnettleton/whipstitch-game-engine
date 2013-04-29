@@ -39,6 +39,7 @@
 #include "wsUtils/wsHashMap.h"
 #include "wsUtils/wsQueue.h"
 #include "wsUtils/wsStack.h"
+#include "wsUtils/wsOperations.h"
 #include "wsUtils/vec4.h"
 #include "wsUtils/mat4.h"
 #include "wsUtils/quat.h"

@@ -242,7 +242,7 @@ struct wsEvent {
         f64 f1 = 0.0f, f32 f2 = 0.0f, f32 f3 = 0.0f) : eventType(type), eventSubType(subType),
         uVal1(u1), uVal2(u2), uVal3(u3), fVal1(f1), fVal2(f2), fVal3(f3) { }
     void print(u32 logs = WS_LOG_EVENTS) {
-        wsLog(logs, "Type     %u\n  Subtype  %u\n  uVal1    %lu\n  uVal2    %lu\n  uVal3    %u\n  fVal1    %f\n  fVal2    %f\n"
+        wsEcho(logs, "Type     %u\n  Subtype  %u\n  uVal1    %lu\n  uVal2    %lu\n  uVal3    %u\n  fVal1    %f\n  fVal2    %f\n"
         "  fVal3    %f\n", eventType, eventSubType, uVal1, uVal2, uVal3, fVal1, fVal2, fVal3);
     }
 };

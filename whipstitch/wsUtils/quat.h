@@ -106,6 +106,7 @@ struct quat {
     quat normal() const;
     quat& normalize();
     void print(u16 printLog = WS_LOG_MAIN) const;
+    quat& rotate(const vec4& axis, const f32 angle);
 };
 
 #endif /* WS_QUAT_H_ */
