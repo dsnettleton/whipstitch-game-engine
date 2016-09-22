@@ -111,7 +111,7 @@ void wsFont::generateTexture(FT_Face typeFace, u8 index) {
 
   for(i32 i = 0; i < bmpH; ++i) {
     for(i32 j = 0; j < bmpW; ++j) {
-      if (j >= bmpGlyph->bitmap.width || i >= bmpGlyph->bitmap.rows) {
+      if (j >= (i32)bmpGlyph->bitmap.width || i >= (i32)bmpGlyph->bitmap.rows) {
         bmpData[2 * (j + i * bmpW)] = 0;
         bmpData[2 * (j + i * bmpW)+1] = 0;
       }

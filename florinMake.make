@@ -15,9 +15,9 @@ COMPILER_NAME=GNU G++
 WIN_COMPILER_NAME=Minimalist GNU Win32 Compiler
 REMOVAL_BIN=/bin/rm -f
 
-PROJECT_NAME = Florin
-DEBUG_NAME = Florin_dbg
-PROFILE_NAME = Florin_profile
+PROJECT_NAME = Florin.bin
+DEBUG_NAME = Florin_dbg.bin
+PROFILE_NAME = Florin_profile.bin
 WIN_NAME = Florin.exe
 INCLUDE_DIRS = -I/usr/include/freetype2 -I/usr/include/bullet
 RELEASE_OPTIONS= -O3 -DNDEBUG
