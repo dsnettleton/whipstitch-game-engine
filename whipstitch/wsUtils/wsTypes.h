@@ -2,16 +2,16 @@
  * wsTypes.h
  *
  *  Created on: Jul 2, 2012
- *      Author: dsnettleton
+ *    Author: dsnettleton
  *
- *      This file declares the various types to be used by the whipstitch
- *      game engine. Because memory management is so important to reliable
- *      engine performance, the data types are built to be the same size
- *      on any platform. It is the intention that these data types are used
- *      for all operations within the engine.
+ *    This file declares the various types to be used by the whipstitch
+ *    game engine. Because memory management is so important to reliable
+ *    engine performance, the data types are built to be the same size
+ *    on any platform. It is the intention that these data types are used
+ *    for all operations within the engine.
  *
  *  This software is provided under the terms of the MIT license
- *  Copyright (c) D. Scott Nettleton, 2013
+ *  Copyright (c) D. Scott Nettleton, 2013-2016
  *
  *  Permission is hereby granted, free of charge, to any person
  *  obtaining a copy of this software and associated documentation
@@ -44,9 +44,9 @@
 #include <stdint.h>//  Custom reliably-sized data types
 #include "boost/filesystem.hpp"
 
-#define wsKB    1024
-#define wsMB    1048576
-#define wsGB    1073741824
+#define wsKB  1024
+#define wsMB  1048576
+#define wsGB  1073741824
 
 typedef int8_t    i8;   //  8-bit signed integer
 typedef uint8_t   u8;   //  8-bit unsigned integer
@@ -68,28 +68,28 @@ struct wsIndexArray {
 //  The following is a hybrid 32-bit int/float format, useful
 //  for some lightning-fast floating point operations
 union i_f_hybrid {
-    i32 i;
-    f32 f;
-    i_f_hybrid(f32 val = 0.0f) : f(val) {}
-    i_f_hybrid(i32 val) : i(val) {}
+  i32 i;
+  f32 f;
+  i_f_hybrid(f32 val = 0.0f) : f(val) {}
+  i_f_hybrid(i32 val) : i(val) {}
 };
 union u_f_hybrid {
-    u32 u;
-    f32 f;
-    u_f_hybrid(f32 val = 0.0f) : f(val) {}
-    u_f_hybrid(u32 val) : u(val) {}
+  u32 u;
+  f32 f;
+  u_f_hybrid(f32 val = 0.0f) : f(val) {}
+  u_f_hybrid(u32 val) : u(val) {}
 };
 union i_f_hybrid64 {
-    i64 i;
-    f64 f;
-    i_f_hybrid64(f64 val = 0.0f) : f(val) {}
-    i_f_hybrid64(i64 val) : i(val) {}
+  i64 i;
+  f64 f;
+  i_f_hybrid64(f64 val = 0.0f) : f(val) {}
+  i_f_hybrid64(i64 val) : i(val) {}
 };
 union u_f_hybrid64 {
-    u64 u;
-    f64 f;
-    u_f_hybrid64(f64 val = 0.0f) : f(val) {}
-    u_f_hybrid64(u64 val) : u(val) {}
+  u64 u;
+  f64 f;
+  u_f_hybrid64(f64 val = 0.0f) : f(val) {}
+  u_f_hybrid64(u64 val) : u(val) {}
 };
 
 extern const i_f_hybrid BIAS_POS;  //  1 * 2^23

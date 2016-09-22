@@ -45,7 +45,7 @@
 #include "../wsAssets.h"
 #include "../wsPrimitives.h"
 #include "../wsGameFlow/wsScene.h"
- 
+
 #ifndef WS_GLEW_INCLUDED_
   #include "GL/glew.h"
   #define WS_GLEW_INCLUDED_

@@ -4,9 +4,9 @@
 #	This is the C++ makefile for the Whipstitch Game Engine,
 #	codenamed Project Florin.
 #	For more information, email:
-# 		dsnettleton at whipstitchgames dot com
+# 		dsnettleton at gmail dot com
 
-#     Copyright D. Scott Nettleton, 2013
+#     Copyright D. Scott Nettleton, 2013-2016
 #     This software is released under the terms of the MIT license
 
 CC=g++
