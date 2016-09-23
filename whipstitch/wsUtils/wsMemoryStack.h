@@ -99,93 +99,89 @@
     (classtype*)wsMem.allocateFrame_current( sizeof(classtype) * arraySize )
 
 class wsMemoryStack {
-    public:
-        /*  Enumerated Memory Stack tiers */
-        enum _ws_memstack_tier {
-            PRIMARY_GLOBAL,
-            PRIMARY_FRONT,
-            PRIMARY_REAR
-        };
-        enum _ws_memstack_frame_tier {
-            FRAME_FRONT,
-            FRAME_REAR
-        };
-        /*  Default Constructor and Deconstructor */
-        //  As an engine subsystem, the memory stack takes no action until explicitly
-        //  initialized via the startUp(...) function.
-        //  uninitialized via the shutDown() function.
-        wsMemoryStack() {}
-        ~wsMemoryStack() {}
-        /*  Accessors  */
-        _ws_memstack_tier getCurrentTier() const { return mCurrentPrimaryTier; }
-        //  Returns the total size of the Frame Stack
-        u32 getFrameStackSize() const { return mFrameStackSize; }
-        //  Returns the total space left in the Frame Stack
-        u32 getFrameStackSpace() const {return (mRearMarker_f - mFrontMarker_f);}
-        //  Returns the total size of the Primary Stack
-        u64 getPrimaryStackSize() const { return mPrimaryStackSize; }
-        //  Returns the total space left in the Primary Stack
-        u64 getPrimaryStackSpace() const { return (mRearMarker - mFrontMarker); }
-        /*  Operational Member functions  */
-        //  Allocate space in the Current Frame Stack and return a pointer to the memory
-        void* allocateFrame_current(const u32 numBytes);
-        //  Allocate space in the Next Frame Stack and return a pointer to the memory
-        void* allocateFrame_next(const u32 numBytes);
-        //  Allocate space in the Primary Stack and return a pointer to the memory
-        void* allocatePrimary(const u32 numBytes);
-        //  Clear both ends of the Frame Stack
-        void clearFrameStack();
-        //  Clear both ends of the Primary Stack
-        void clearPrimaryStack();
-        //  Free the Front end of the Primary Stack back to the Global Tier
-        void freePrimaryFront();
-        //  Free the Rear end of the Primary Stack
-        void freePrimaryRear();
-        //  Free both ends the Primary Stack back to the Global Tier
-        void freePrimaryToGlobal();
-        //  Print Information about the Primary and Frame stacks
-        void print(u16 printLog = WS_LOG_MAIN);
-        //  Sets the tier for the Primary Stack, freeing space if necessary.
-        void setTier(_ws_memstack_tier myTier);
-        //  Initialize the Primary and Frame Stacks to the given sizes
-        void startUp(const u64 numBytes_primaryStack, const u32 numBytes_frameStack);
-        //  Free the memory by closing down the stack
-        void shutDown();
-        //  Swap the current frame on the Frame Stack
-        void swapFrames();
-    private:
-        //  Total size of the Primary Stack
-        u64 mPrimaryStackSize;
-        //  Primary Stack Markers
-        u64 mGlobalMarker;
-        u64 mFrontMarker;
-        u64 mRearMarker;
-        //  Frame Stack Markers
-        u32 mFrontMarker_f;
-        u32 mRearMarker_f;
-        //  Pointers for dynamic byte arrays
-        u8* mFullByteArray;
-        u8* mPrimaryStackBytes;
-        u8* mFrameStackBytes;
-        //  Total size of the frame stack
-        u32 mFrameStackSize;
-        //  Current tiers used by their respective stacks
-        _ws_memstack_tier mCurrentPrimaryTier;
-        _ws_memstack_frame_tier mCurrentFrameTier;
+  public:
+    /*  Enumerated Memory Stack tiers */
+    enum _ws_memstack_tier {
+      PRIMARY_GLOBAL,
+      PRIMARY_FRONT,
+      PRIMARY_REAR
+    };
+    enum _ws_memstack_frame_tier {
+      FRAME_FRONT,
+      FRAME_REAR
+    };
+    /*  Default Constructor and Deconstructor */
+    //  As an engine subsystem, the memory stack takes no action until explicitly
+    //  initialized via the startUp(...) function.
+    //  uninitialized via the shutDown() function.
+    wsMemoryStack() {}
+    ~wsMemoryStack() {}
+    /*  Accessors  */
+    _ws_memstack_tier getCurrentTier() const { return mCurrentPrimaryTier; }
+    //  Returns the total size of the Frame Stack
+    u32 getFrameStackSize() const { return mFrameStackSize; }
+    //  Returns the total space left in the Frame Stack
+    u32 getFrameStackSpace() const {return (mRearMarker_f - mFrontMarker_f);}
+    //  Returns the total size of the Primary Stack
+    u64 getPrimaryStackSize() const { return mPrimaryStackSize; }
+    //  Returns the total space left in the Primary Stack
+    u64 getPrimaryStackSpace() const { return (mRearMarker - mFrontMarker); }
+    /*  Operational Member functions  */
+    //  Allocate space in the Current Frame Stack and return a pointer to the memory
+    void* allocateFrame_current(const u32 numBytes);
+    //  Allocate space in the Next Frame Stack and return a pointer to the memory
+    void* allocateFrame_next(const u32 numBytes);
+    //  Allocate space in the Primary Stack and return a pointer to the memory
+    void* allocatePrimary(const u32 numBytes);
+    //  Clear both ends of the Frame Stack
+    void clearFrameStack();
+    //  Clear both ends of the Primary Stack
+    void clearPrimaryStack();
+    //  Free the Front end of the Primary Stack back to the Global Tier
+    void freePrimaryFront();
+    //  Free the Rear end of the Primary Stack
+    void freePrimaryRear();
+    //  Free both ends the Primary Stack back to the Global Tier
+    void freePrimaryToGlobal();
+    //  Print Information about the Primary and Frame stacks
+    void print(u16 printLog = WS_LOG_MAIN);
+    //  Sets the tier for the Primary Stack, freeing space if necessary.
+    void setTier(_ws_memstack_tier myTier);
+    //  Initialize the Primary and Frame Stacks to the given sizes
+    void startUp(const u64 numBytes_primaryStack, const u32 numBytes_frameStack);
+    //  Free the memory by closing down the stack
+    void shutDown();
+    //  Swap the current frame on the Frame Stack
+    void swapFrames();
+  private:
+    //  Total size of the Primary Stack
+    u64 mPrimaryStackSize;
+    //  Primary Stack Markers
+    u64 mGlobalMarker;
+    u64 mFrontMarker;
+    u64 mRearMarker;
+    //  Frame Stack Markers
+    u32 mFrontMarker_f;
+    u32 mRearMarker_f;
+    //  Pointers for dynamic byte arrays
+    u8* mFullByteArray;
+    u8* mPrimaryStackBytes;
+    u8* mFrameStackBytes;
+    //  Total size of the frame stack
+    u32 mFrameStackSize;
+    //  Current tiers used by their respective stacks
+    _ws_memstack_tier mCurrentPrimaryTier;
+    _ws_memstack_frame_tier mCurrentFrameTier;
 };
 
 extern wsMemoryStack wsMem;
-
 
 //  This is referrenced by a function pointer when wsMem starts up,
 //  using the function set_new_handler(). Basically, this logs the problem
 //  and pauses the operation, much like wsAssert().
 inline void wsNewHandler() {
-    wsEcho((WS_LOG_ERROR | WS_LOG_MEMORY),
-                    "Could not allocate the requested memory.\n"
-                    "    File: %s\n    Line: %s\n",
-                    __FILE__, __LINE__);
-    WS_DEBUG_BREAK();
+  wsEcho((WS_LOG_ERROR | WS_LOG_MEMORY), "Could not allocate the requested memory.\n    File: %s\n    Line: %s\n", __FILE__, __LINE__);
+  WS_DEBUG_BREAK();
 }
 
 #endif /* WS_MEMORYSTACK_H_ */

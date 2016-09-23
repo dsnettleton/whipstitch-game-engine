@@ -31,21 +31,17 @@
 #include "ws.h"
 
 void wsInit(const char* title, const i32 width, const i32 height, bool fullscreen, u64 mainMem, u32 frameStackMem) {
-  wsAssert(wsFile::exists(ws_path_cwd),
-    "Current Working Directory could not be determined.");
-  wsAssert(wsFile::exists(ws_path_home),
-    "Current Home Directory could not be determined.");
+  wsAssert(wsFile::exists(ws_path_cwd), "Current Working Directory could not be determined.");
+  wsAssert(wsFile::exists(ws_path_home), "Current Home Directory could not be determined.");
   if (!exists(ws_path_log_dir)) {
-    #ifndef NDEBUG  
-      wsAssert(wsFile::create_directory(ws_path_log_dir),
-              "Could not create Log directory");
+    #ifndef NDEBUG
+      wsAssert(wsFile::create_directory(ws_path_log_dir), "Could not create Log directory");
     #else
       wsFile::create_directory(ws_path_log_dir);
     #endif
   }
   wsEcho("Initializing Whipstitch Engine\n");
-  wsEcho("  CWD =  %s\n  HOME = %s\n  LOGS = %s\n", ws_path_cwd.string().c_str(),
-          ws_path_home.string().c_str(), ws_path_log_dir.string().c_str());
+  wsEcho("  CWD =  %s\n  HOME = %s\n  LOGS = %s\n", ws_path_cwd.string().c_str(), ws_path_home.string().c_str(), ws_path_log_dir.string().c_str());
   switch (WS_CURRENT_MODE) {
     case WS_MODE_DEBUG:
       wsEcho((WS_LOG_MAIN | WS_LOG_PLATFORM), "MODE = DEBUG\n");
@@ -103,8 +99,7 @@ void wsInit(const char* title, const i32 width, const i32 height, bool fullscree
       wsEcho(WS_LOG_PLATFORM, "Architecture: Unknown\n");
       break;
   }
-  wsAssert((WS_BIT_ENVIRONMENT == 32 || WS_BIT_ENVIRONMENT == 64),
-          "Only 32-bit and 64-bit systems are supported.");
+  wsAssert((WS_BIT_ENVIRONMENT == 32 || WS_BIT_ENVIRONMENT == 64), "Only 32-bit and 64-bit systems are supported.");
   wsEcho((WS_LOG_MAIN | WS_LOG_PLATFORM), "Environment: %u bits\n", WS_BIT_ENVIRONMENT);
   if (WS_SUPPORTS_SSE4) {
     wsEcho(WS_LOG_PLATFORM, "Supports SSE4\n");
@@ -131,6 +126,7 @@ void wsInit(const char* title, const i32 width, const i32 height, bool fullscree
   wsScreens.startUp(title, width, height, fullscreen);
   wsRenderer.startUp();
   wsSounds.startUp();
+  wsNetworking.startUp();
   wsEvents.startUp();
   wsInputs.startUp();
   wsLoop.startUp();
@@ -149,6 +145,7 @@ void wsQuit() {
   wsLoop.shutDown();
   wsInputs.shutDown();
   wsEvents.shutDown();
+  wsNetworking.shutDown();
   wsSounds.shutDown();
   wsRenderer.shutDown();
   wsScreens.shutDown();

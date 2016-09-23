@@ -30,10 +30,11 @@ OBJ_ASSETS = whipstitch/wsAssets/wsAnimation.o whipstitch/wsAssets/wsAsset.o whi
 OBJ_AUDIO = whipstitch/wsAudio/wsSoundManager.o whipstitch/wsAudio/wsSound.o whipstitch/wsAudio/wsMusic.o
 OBJ_GAME_FLOW = whipstitch/wsGameFlow/wsController.o whipstitch/wsGameFlow/wsEventManager.o whipstitch/wsGameFlow/wsGameLoop.o whipstitch/wsGameFlow/wsInputManager.o whipstitch/wsGameFlow/wsKeyboardInput.o whipstitch/wsGameFlow/wsPointerInput.o whipstitch/wsGameFlow/wsScene.o whipstitch/wsGameFlow/wsThreadPool.o
 OBJ_GRAPHICS = whipstitch/wsGraphics/wsCamera.o whipstitch/wsGraphics/wsRenderSystem.o whipstitch/wsGraphics/wsScreen.o whipstitch/wsGraphics/wsScreenManager.o whipstitch/wsGraphics/wsShader.o
+OBJ_NETWORKING = whipstitch/wsNetworking/wsNetworkManager.o
 OBJ_PRIMITIVES = whipstitch/wsPrimitives/wsCube.o whipstitch/wsPrimitives/wsPlane.o
 OBJ_UTILS = whipstitch/wsUtils/mat4.o whipstitch/wsUtils/quat.o whipstitch/wsUtils/vec4.o whipstitch/wsUtils/wsLog.o whipstitch/wsUtils/wsMemoryStack.o whipstitch/wsUtils/wsOperations.o whipstitch/wsUtils/wsProfileManager.o whipstitch/wsUtils/wsTime.o whipstitch/wsUtils/wsTransform.o whipstitch/wsUtils/wsTrig.o whipstitch/wsUtils/wsTypes.o
 OBJ_WHIPSTITCH = whipstitch/ws.o
-OBJS = $(OBJ_UTILS) $(OBJ_GRAPHICS) $(OBJ_GAME_FLOW) $(OBJ_ASSETS) $(OBJ_PRIMITIVES) $(OBJ_AUDIO) $(OBJ_WHIPSTITCH) ./main.o ./wsDemo.o
+OBJS = $(OBJ_UTILS) $(OBJ_GRAPHICS) $(OBJ_GAME_FLOW) $(OBJ_ASSETS) $(OBJ_PRIMITIVES) $(OBJ_AUDIO) $(OBJ_NETWORKING) $(OBJ_WHIPSTITCH) ./main.o ./wsDemo.o
 
 BULLET_LIBS = -lBulletDynamics -lBulletCollision -lLinearMath
 LIBS = -lfreetype -lgomp -lpthread -lboost_system -lboost_filesystem -lglfw -lGL -lGLEW -lGLU -lSOIL -lalut -lopenal -lvorbisfile $(BULLET_LIBS)
@@ -63,7 +64,7 @@ profile: executable
 
 # windows: CC = $(WIN_CC)
 windows: COMPILER_NAME = $(WIN_COMPILER_NAME)
-windows: OPTIONS += -lmingw32
+windows: OPTIONS += -lmingw32 -lwsock32
 windows: PROJECT_NAME = $(WIN_NAME)
 windows: release
 

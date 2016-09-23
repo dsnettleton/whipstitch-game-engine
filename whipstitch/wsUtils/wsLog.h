@@ -16,7 +16,7 @@
 //	Copyright D. Scott Nettleton, 2013
 //	This software is released under the terms of the
 //	Lesser GNU Public License (LGPL).
- 
+
 #ifndef WS_LOG_H_
 #define WS_LOG_H_
 
@@ -39,6 +39,7 @@
 #define WS_LOG_EVENTS       0x0800
 #define WS_LOG_SHADER       0x1000
 #define WS_LOG_SOUND        0x2000
+#define WS_LOG_NETWORKING   0x4000
 
 #define WS_MAX_LOG_CHARS 511
 

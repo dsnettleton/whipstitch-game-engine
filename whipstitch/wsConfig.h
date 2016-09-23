@@ -5,6 +5,8 @@
 #ifndef WS_CONFIG_
 #define WS_CONFIG_
 
+#define WS_UDP_PORT 42042
+
 #define WS_NUM_COLLISION_CLASSES 5
 #define WS_NUM_FBO_TEX 8
 #define WS_NUM_FRAMEBUFFERS 2

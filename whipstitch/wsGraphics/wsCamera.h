@@ -73,8 +73,7 @@ class wsCamera {
   public:
     //  Constructors and Deconstructors
     wsCamera(const char* myName, u32 myCameraMode = WS_CAMERA_MODE_PERSP);
-    wsCamera(const char* myName, const vec4& myPos, const vec4& myDir, const vec4& myUpDir, const vec4& myScreenCoords,
-     const u32 myCameraMode, const f32 myFov, const f32 myAspectRatio, const f32 myZNear, const f32 myZFar);
+    wsCamera(const char* myName, const vec4& myPos, const vec4& myDir, const vec4& myUpDir, const vec4& myScreenCoords, const u32 myCameraMode, const f32 myFov, const f32 myAspectRatio, const f32 myZNear, const f32 myZFar);
     //  Setters and Getters
     const vec4& getPos() const { return pos; }
     const vec4& getDir() { return dir; }

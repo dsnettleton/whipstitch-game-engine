@@ -1,18 +1,14 @@
 /*
- * ws.h
+ * wsNetworking.h
  *
- *  Created on: Jul 12, 2012
+ *  Created on: April 4, 2012
  *      Author: dsnettleton
  *
- *      Includes all necessary functions, definitions, and subheaders for the
- *      Whipstitch Game Engine.
- *
- *      Linking requires the necessary library options (g++):
- *          -lgomp
- *          -lboost_system
+ *      This file contains references to multiple files necessary to the
+ *      networking utilities used by the Whipstitch Game Engine.
  *
  *  This software is provided under the terms of the MIT license
- *  Copyright (c) D. Scott Nettleton, 2013
+ *  Copyright (c) D. Scott Nettleton, 2016
  *
  *  Permission is hereby granted, free of charge, to any person
  *  obtaining a copy of this software and associated documentation
@@ -35,20 +31,9 @@
  *  OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef WS_H_
-#define WS_H_
+#ifndef WS_NETWORKING_H_
+#define WS_NETWORKING_H_
 
-#include "wsConfig.h"
-#include "wsUtils.h"
-#include "wsGraphics.h"
-#include "wsAssets.h"
-#include "wsGameFlow.h"
-#include "wsAudio.h"
-#include "wsNetworking.h"
+#include "wsNetworking/wsNetworkManager.h"
 
-void wsInit(const char* title, const i32 width, const i32 height, bool fullscreen,
-                u64 mainMem, u32 frameStackMem);
-void wsBegin(wsGame* myGame);
-void wsQuit();
-
-#endif /* WS_H_ */
+#endif /* WS_NETWORKING_H_ */

@@ -1,18 +1,13 @@
-/*
- * ws.h
+/**
+ *  wsNetworkManager.cpp
+ *  Sep 22, 2016
+ *  D. Scott Nettleton
  *
- *  Created on: Jul 12, 2012
- *      Author: dsnettleton
- *
- *      Includes all necessary functions, definitions, and subheaders for the
- *      Whipstitch Game Engine.
- *
- *      Linking requires the necessary library options (g++):
- *          -lgomp
- *          -lboost_system
+ *  This file implements the class wsNetworkManager, which contains all the logic
+ *  and subclasses necessary for networking between servers, clients, and P2P.
  *
  *  This software is provided under the terms of the MIT license
- *  Copyright (c) D. Scott Nettleton, 2013
+ *  Copyright (c) D. Scott Nettleton, 2016
  *
  *  Permission is hereby granted, free of charge, to any person
  *  obtaining a copy of this software and associated documentation
@@ -33,22 +28,16 @@
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *  OTHER DEALINGS IN THE SOFTWARE.
-*/
+ */
 
-#ifndef WS_H_
-#define WS_H_
+#include "wsNetworkManager.h"
 
-#include "wsConfig.h"
-#include "wsUtils.h"
-#include "wsGraphics.h"
-#include "wsAssets.h"
-#include "wsGameFlow.h"
-#include "wsAudio.h"
-#include "wsNetworking.h"
+wsNetworkManager wsNetworking;
 
-void wsInit(const char* title, const i32 width, const i32 height, bool fullscreen,
-                u64 mainMem, u32 frameStackMem);
-void wsBegin(wsGame* myGame);
-void wsQuit();
+void wsNetworkManager::startUp() {
+  _mInitialized = true;
+  socket = wsNew(wsNetworkSocket, wsNetworkSocket());
+}// End Engine Subsystem startup method
 
-#endif /* WS_H_ */
+void wsNetworkManager::shutDown() {
+}// End Engine Subsystem shutdown method

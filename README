@@ -22,6 +22,9 @@
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
   OTHER DEALINGS IN THE SOFTWARE.
 
+If on a debian based distro, install the necessary libraries with the command:
+sudo apt-get install libalut-dev libopenal-dev libboost-filesystem-dev libbullet-dev libglfw-dev libglew-dev libogg-dev libvorbis-dev libsoil-dev libasio-dev
+
 Make this file with command:
 	make -f florinMake.make
 	make -f florinMake.make release
