@@ -7,10 +7,6 @@
 
 #define WS_UDP_PORT 42042
 
-#define WS_NUM_COLLISION_CLASSES 5
-#define WS_NUM_FBO_TEX 8
-#define WS_NUM_FRAMEBUFFERS 2
-#define WS_NUM_SHADERS 4
 
 #define WS_MAX_CAMERAS 16
 #define WS_MAX_FRAME_SKIPS 4
@@ -25,6 +21,7 @@
 #define WS_DEFAULT_MAX_ANIMATIONS 32
 
 //  Shapes
+#define WS_NUM_COLLISION_CLASSES 4
 enum {
   WS_SHAPE_SPHERE,
   WS_SHAPE_CYLINDER,
@@ -38,6 +35,7 @@ enum {
   WS_MESH_FORMAT_STL
 };// End enum Mesh Formats
 
+#define WS_NUM_SHADERS 7
 enum {
   WS_SHADER_INITIAL,
   WS_SHADER_FINAL,
@@ -48,6 +46,7 @@ enum {
   WS_SHADER_DEBUG
 };//  End enum Shaders
 
+#define WS_NUM_FBO_TEX 7
 enum {
   WS_FBO_TEX_POS,
   WS_FBO_TEX_NORM,
@@ -58,6 +57,7 @@ enum {
   WS_FBO_TEX_FINAL_B
 };//  End fbo textures
 
+#define WS_NUM_FRAMEBUFFERS 3
 enum {
   WS_FBO_PRIMARY,
   WS_FBO_POST_A,
