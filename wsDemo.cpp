@@ -94,7 +94,7 @@ void wsDemo::onStart() {
   wsEcho("Animation Name = \"%s\"", anim_idle->getName());
   scene->beginAnimation("Griswald", "Idle");
   //*/
-  wsFont* fntUbuntu = wsNew(wsFont, wsFont("/home/dsnettleton/Documents/Programming/Eclipse/workspace/Florin/fonts/Ubuntu-B.ttf", 30));
+  wsFont* fntUbuntu = wsNew(wsFont, wsFont("fonts/Ubuntu-B.ttf", 30));
   wsText* txtHello = wsNew(wsText, wsText(vec4(16, 240, 1024, 256), "Hello World!", fntUbuntu, 0, WS_HUD_VISIBLE));
   wsText* txtLine2 = wsNew(wsText, wsText(vec4(16, 204, 1024, 256), "ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789", fntUbuntu, 1, WS_HUD_VISIBLE));
   wsText* txtLine3 = wsNew(wsText, wsText(vec4(16, 168, 1024, 256), "abcdefghijklmnopqrstuvwxyz", fntUbuntu, 2, WS_HUD_VISIBLE));

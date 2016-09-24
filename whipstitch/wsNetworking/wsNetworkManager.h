@@ -38,7 +38,7 @@
 
 class wsNetworkManager {
   private:
-    wsNetworkSocket socket;
+    wsNetworkSocket* socket;
     bool _mInitialized;
   public:
     /*  Default Constructor and Deconstructor */

@@ -40,13 +40,14 @@ wsNetworkSocket::wsNetworkSocket() {
       wsEcho(WS_LOG_ERROR, "Error initializing network sockets.");
     }
   #endif
+  //  socket(int domain, int type, int protocol)
   socketHandle = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-  wsAssert(socketHandle <= 0, "Failed to create socket.");
+  wsAssert(socketHandle > 0, "Failed to create socket.");
   //  Bind the UDP socket to our engine's port number
   address.sin_family = AF_INET;
   address.sin_addr.s_addr = INADDR_ANY;
   address.sin_port = htons((u16)WS_UDP_PORT);
-  wsAssert(bind(socketHandle, (const sockaddr*) &address, sizeof(sockaddr_in)) < 0, "Failed to bind socket");
+  wsAssert(bind(socketHandle, (const sockaddr*) &address, sizeof(sockaddr_in)) >= 0, "Failed to bind socket");
   //  Set our socket to non-blocking mode for asynchronous operation
   #ifdef WS_OS_FAMILY_UNIX
     i32 nonBlocking = 1;

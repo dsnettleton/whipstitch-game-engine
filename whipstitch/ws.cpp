@@ -124,11 +124,17 @@ void wsInit(const char* title, const i32 width, const i32 height, bool fullscree
   wsScreenWidth = (u32)width;
   wsScreenHeight = (u32)height;
   wsScreens.startUp(title, width, height, fullscreen);
+  wsEcho(WS_LOG_MAIN, "Starting wsRenderer");
   wsRenderer.startUp();
+  wsEcho(WS_LOG_MAIN, "Starting wsSounds");
   wsSounds.startUp();
+  wsEcho(WS_LOG_MAIN, "Starting wsNetworking");
   wsNetworking.startUp();
+  wsEcho(WS_LOG_MAIN, "Starting wsEvents");
   wsEvents.startUp();
+  wsEcho(WS_LOG_MAIN, "Starting wsInputs");
   wsInputs.startUp();
+  wsEcho(WS_LOG_MAIN, "Starting wsLoop");
   wsLoop.startUp();
 }
 

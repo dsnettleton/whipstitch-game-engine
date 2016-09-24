@@ -1,1 +1,1 @@
-sudo apt-get install libalut-dev libopenal-dev libboost-filesystem-dev libbullet-dev libglfw-dev libglew-dev libogg-dev libvorbis-dev libsoil-dev
+sudo apt-get install libalut-dev libopenal-dev libboost-filesystem-dev libbullet-dev libglfw-dev libglew-dev libogg-dev libvorbis-dev libsoil-dev libfreetype6-dev

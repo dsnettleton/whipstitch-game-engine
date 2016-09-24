@@ -6,7 +6,7 @@
  *  lookups.
  *
  *  This software is provided under the terms of the MIT license
- *  Copyright (c) D. Scott Nettleton, 2013
+ *  Copyright (c) D. Scott Nettleton, 2013-2016
  *
  *  Permission is hereby granted, free of charge, to any person
  *  obtaining a copy of this software and associated documentation
@@ -35,16 +35,16 @@ int main(int argc, char** argv) {
   #ifdef _PROFILE
     wsActiveLogs = (WS_LOG_PROFILING | WS_LOG_MAIN | WS_LOG_UTIL | WS_LOG_ERROR);
   #else
-    // wsActiveLogs = (WS_LOG_MAIN | WS_LOG_ERROR);
-    // wsActiveLogs = (WS_LOG_DEBUG | WS_LOG_ERROR | WS_LOG_UTIL | WS_LOG_SHADER);
+    // wsActiveLogs = (WS_LOG_MAIN | WS_LOG_ERROR | WS_LOG_DEBUG);
+    wsActiveLogs = (WS_LOG_MAIN | WS_LOG_DEBUG | WS_LOG_ERROR | WS_LOG_UTIL | WS_LOG_SHADER);
     // wsActiveLogs = WS_LOG_ALL;
-    wsActiveLogs = WS_LOG_MAIN | WS_LOG_SHADER;
+    // wsActiveLogs = WS_LOG_MAIN | WS_LOG_SHADER;
   #endif
 
   wsInit("Whipstitch Game Engine", 1280, 720, false, 512*wsMB, 32*wsMB);  //  512MB, 32MB
 
   wsDemo* demoGame = wsNew(wsDemo, wsDemo());
-  
+
   wsBegin(demoGame);
 
   return 0;
