@@ -16,7 +16,7 @@
  //    Copyright D. Scott Nettleton, 2013
  //    This software is released under the terms of the
  //    Lesser GNU Public License (LGPL).
- 
+
 #include "wsLog.h"
 
 #include <stdio.h>
@@ -81,7 +81,7 @@ void wsEcho(const char* str, ...) {
         va_start(args, str);
         wsEcho(WS_LOG_MAIN, str, args);
         va_end(args);
-        printf("\n");
+        // printf("\n");
     }
     fflush(stdout); // Will now print everything in the stdout buffer
 }
@@ -92,7 +92,7 @@ void wsEcho(u16 channels, const char*str, ...) {
         va_start(args, str);
         wsEcho(channels, str, args);
         va_end(args);
-        printf("\n");
+        // printf("\n");
     }
     fflush(stdout); // Will now print everything in the stdout buffer
 }
@@ -103,7 +103,7 @@ void wsLogAssertionFailure(const char* expr, const char* file, u32 line) {
         printf("    Expression:  ( %s )\n", expr);
         printf("    File:        %s\n", file);
         printf("    Line:        %u\n", line);
-        printf("\n");
+        // printf("\n");
     }
     fflush(stdout); // Will now print everything in the stdout buffer
 }
@@ -115,7 +115,7 @@ void wsLogAssertionFailure(const char* expr, const char* file, u32 line, const c
         printf("    Expression:  ( %s )\n", expr);
         printf("    File:        %s\n", file);
         printf("    Line:        %u\n", line);
-        printf("\n");
+        // printf("\n");
     }
     fflush(stdout); // Will now print everything in the stdout buffer
 }
