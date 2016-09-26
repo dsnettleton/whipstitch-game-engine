@@ -17,27 +17,7 @@
  *      since the last call to benchmarkBegin().
  *
  *  This software is provided under the terms of the MIT license
- *  Copyright (c) D. Scott Nettleton, 2013
- *
- *  Permission is hereby granted, free of charge, to any person
- *  obtaining a copy of this software and associated documentation
- *  files (the "Software"), to deal in the Software without
- *  restriction, including without limitation the rights to use, copy,
- *  modify, merge, publish, distribute, sublicense, and/or sell copies
- *  of the Software, and to permit persons to whom the Software is
- *  furnished to do so, subject to the following conditions:
- *
- *  The above copyright notice and this permission notice shall be
- *  included in all copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- *  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- *  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- *  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- *  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- *  OTHER DEALINGS IN THE SOFTWARE.
+ *  Copyright (c) D. Scott Nettleton, 2013-2016
 */
 
 #include "wsTime.h"
@@ -45,28 +25,28 @@
 #include <time.h>
 
 t64 wsGetTime() {
-    timespec myTime;
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &myTime);
-    //  Convert nanoseconds to seconds (decimal)
-    return t64(myTime.tv_sec + (f64)myTime.tv_nsec/1000);
+  timespec myTime;
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &myTime);
+  //  Convert nanoseconds to seconds (decimal)
+  return t64(myTime.tv_sec + (f64)myTime.tv_nsec/1000);
 }
 /*/
 #include <omp.h>
 
 t64 wsGetTime() {
-    return omp_get_wtime();
+  return omp_get_wtime();
 }
 //*/
 
 void wsWait(t64 waitTime) {
-    t64 startTime = wsGetTime();
-    while (wsGetTime() - startTime < waitTime) {}   //  Do nothing
+  t64 startTime = wsGetTime();
+  while (wsGetTime() - startTime < waitTime) {}   //  Do nothing
 }
 
 t64 wsBenchmark_time = 0.0;
 void wsBenchmarkBegin() {
-    wsBenchmark_time = wsGetTime();
+  wsBenchmark_time = wsGetTime();
 }
 t64 wsBenchmarkEnd() {
-    return wsGetTime() - wsBenchmark_time;
+  return wsGetTime() - wsBenchmark_time;
 }

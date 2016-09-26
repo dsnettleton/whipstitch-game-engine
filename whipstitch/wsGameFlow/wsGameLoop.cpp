@@ -15,7 +15,7 @@
  *    wsInit().
  *
  *  This software is provided under the terms of the MIT license
- *  Copyright (c) D. Scott Nettleton, 2013
+ *  Copyright (c) D. Scott Nettleton, 2012-2016
  *
  *  Permission is hereby granted, free of charge, to any person
  *  obtaining a copy of this software and associated documentation
@@ -41,6 +41,7 @@
 #include "wsGameLoop.h"
 #include "wsInputManager.h"
 #include "../wsAudio/wsSoundManager.h"
+#include "../wsNetworking/wsNetworkManager.h"
 
 wsGameLoop wsLoop;
 
@@ -126,6 +127,7 @@ void wsGameLoop::updateGameState() {
   wsAssert(_mInitialized, "The object wsGame must be initialized via the startUp() method before use.");
 
   wsSounds.updateStreams();
+  wsNetworking.updateSockets();
   game->onLoop();
   handleInputs();
   //  Update physics
