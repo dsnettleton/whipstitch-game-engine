@@ -61,7 +61,9 @@ class wsNetworkSocket {
     wsNetworkSocket();
     ~wsNetworkSocket();
     //  Setters and Getters
+    void setAddress(u8 a = 127, u8 b = 0, u8 c = 0, u8 d = 1, u16 port = WS_UDP_PORT);
     //  Operational Methods
+    void receivePackets();
     void sendPacket(const char* packetData, i32 packetLength);
 };//  End class wsNetworkSocket
 

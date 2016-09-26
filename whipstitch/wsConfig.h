@@ -7,7 +7,7 @@
 
 #define WS_UDP_PORT 42042
 
-
+#define WS_MAX_PACKET_SIZE 256  //  256 Bytes
 #define WS_MAX_CAMERAS 16
 #define WS_MAX_FRAME_SKIPS 4
 #define WS_MAX_JOINT_INFLUENCES 8

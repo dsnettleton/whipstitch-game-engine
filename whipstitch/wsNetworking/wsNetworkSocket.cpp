@@ -32,6 +32,8 @@
 
 #include "wsNetworkSocket.h"
 
+//  CONSTRUCTOR & DESTRUCTOR  /////////////////////////////////////////
+
 wsNetworkSocket::wsNetworkSocket() {
   #ifdef WS_OS_FAMILY_WINDOWS
     //  Initialize sockets
@@ -63,6 +65,33 @@ wsNetworkSocket::~wsNetworkSocket() {
     WSACleanup();
   #endif
 }// End Destructor
+
+//  SETTERS AND GETTERS     ///////////////////////////////////////////
+
+void wsNetworkSocket::setAddress(u8 a = 127, u8 b = 0, u8 c = 0, u8 d = 1, u16 port = WS_UDP_PORT) {
+  u32 newAddress = ((u32)a << 24) | ((u32)b << 16) | ((u32)c << 8) | (u32)d;
+  address.sin_addr.s_addr = htonl(newAddress);
+  address.sin_port = htons(port);
+}// End public method setAddress
+
+//  OPERATIONAL METHODS     ///////////////////////////////////////////
+
+void wsNetworkSocket::receivePackets() {
+  u8 packetData[WS_MAX_PACKET_SIZE];
+  u32 maxPacketSize = sizeof(packetData);
+  #ifdef WS_OS_FAMILY_WINDOWS
+    typedef i32 socklen_t;
+  #endif
+  sockaddr_in from;
+  socklen_t fromLength = sizeof(from);
+  i32 bytes = recvfrom(socketHandle, (u8*)packetData, maxPacketSize, 0, (sockaddr*)&from, &fromLength);
+  if (bytes <= 0) {
+    return;
+  }
+  u32 fromAddr = ntohl(from.sin_addr.s_addr);
+  u16 fromPort = ntohs(from.sin_port);
+  //  Process Received Packet
+}// End public method receivePackets
 
 void wsNetworkSocket::sendPacket(const char* packetData, i32 packetLength) {
   i32 bytesSent = sendto(socketHandle, packetData, packetLength, 0, (sockaddr*)&address, sizeof(sockaddr_in));
