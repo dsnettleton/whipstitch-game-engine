@@ -12,26 +12,6 @@
  *
  *  This software is provided under the terms of the MIT license
  *  Copyright (c) D. Scott Nettleton, 2013-2016
- *
- *  Permission is hereby granted, free of charge, to any person
- *  obtaining a copy of this software and associated documentation
- *  files (the "Software"), to deal in the Software without
- *  restriction, including without limitation the rights to use, copy,
- *  modify, merge, publish, distribute, sublicense, and/or sell copies
- *  of the Software, and to permit persons to whom the Software is
- *  furnished to do so, subject to the following conditions:
- *
- *  The above copyright notice and this permission notice shall be
- *  included in all copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- *  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- *  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- *  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- *  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- *  OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #ifndef WS_TYPES_H_
@@ -48,16 +28,17 @@
 #define wsMB  1048576
 #define wsGB  1073741824
 
-typedef int8_t    i8;   //  8-bit signed integer
-typedef uint8_t   u8;   //  8-bit unsigned integer
-typedef int16_t   i16;  //  16-bit signed integer
-typedef uint16_t  u16;  //  16-bit unsigned integer
-typedef int32_t   i32;  //  32-bit signed integer
-typedef uint32_t  u32;  //  32-bit unsigned integer
-typedef int64_t   i64;  //  64-bit signed integer
-typedef uint64_t  u64;  //  64-bit unsigned integer
-typedef float     f32;  //  32-bit floating point value
-typedef double    f64;  //  64-bit floating point value
+typedef int8_t    i8;     //  8-bit signed integer
+typedef uint8_t   u8;     //  8-bit unsigned integer
+typedef uint8_t   wsByte; //  8-bit unsigned integer
+typedef int16_t   i16;    //  16-bit signed integer
+typedef uint16_t  u16;    //  16-bit unsigned integer
+typedef int32_t   i32;    //  32-bit signed integer
+typedef uint32_t  u32;    //  32-bit unsigned integer
+typedef int64_t   i64;    //  64-bit signed integer
+typedef uint64_t  u64;    //  64-bit unsigned integer
+typedef float     f32;    //  32-bit floating point value
+typedef double    f64;    //  64-bit floating point value
 
 struct wsIndexArray {
   u32* indices;

@@ -14,27 +14,7 @@
  *  is that the ranges are clipped to accomodate non-widescreen aspect ratios.
  *
  *  This software is provided under the terms of the MIT license
- *  Copyright (c) D. Scott Nettleton, 2013
- *
- *  Permission is hereby granted, free of charge, to any person
- *  obtaining a copy of this software and associated documentation
- *  files (the "Software"), to deal in the Software without
- *  restriction, including without limitation the rights to use, copy,
- *  modify, merge, publish, distribute, sublicense, and/or sell copies
- *  of the Software, and to permit persons to whom the Software is
- *  furnished to do so, subject to the following conditions:
- *
- *  The above copyright notice and this permission notice shall be
- *  included in all copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- *  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- *  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- *  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- *  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- *  OTHER DEALINGS IN THE SOFTWARE.
+ *  Copyright (c) D. Scott Nettleton, 2013-2016
 */
 
 #include "wsFont.h"
@@ -77,14 +57,14 @@ wsFont::wsFont(const char* filePath, f32 fontHeight) {
 
   FT_Done_Face(typeFace);
   FT_Done_FreeType(fontLibrary);
-}
+}// End Constructor
 
 wsFont::~wsFont() {
   #if WS_GRAPHICS_BACKEND == WS_BACKEND_OPENGL
     glDeleteLists(displayLists, WS_NUM_FONT_TEXTURES);
     glDeleteTextures(WS_NUM_FONT_TEXTURES, charTextures);
   #endif
-}
+}// End Destructor
 
 void wsFont::generateTexture(FT_Face typeFace, u8 index) {
   FT_Glyph glyph;
@@ -161,6 +141,4 @@ void wsFont::generateTexture(FT_Face typeFace, u8 index) {
   #endif
 
   charWidths[index] = w ? w : height/3.0f;  //  pushes the width of the character in pixels, or one half the height if the width is zero
-}
-
-
+}// End private method generateTexture
