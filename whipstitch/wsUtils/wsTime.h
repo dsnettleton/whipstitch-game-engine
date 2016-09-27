@@ -30,6 +30,7 @@ typedef f64 t64;    //  Stores time in seconds with a double floating point
 
 t64 wsGetTime();
 void wsWait(t64 waitTime);
+t64 wsWaitAsync(t64 duration);
 
 extern t64 wsBenchmark_time;
 void wsBenchmarkBegin();

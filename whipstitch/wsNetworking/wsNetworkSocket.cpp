@@ -59,14 +59,14 @@ void wsNetworkSocket::setAddress(wsNetworkAddress* ipAddress, u16 port = WS_UDP_
 //  OPERATIONAL METHODS     ///////////////////////////////////////////
 
 void wsNetworkSocket::receivePackets() {
-  u8 packetData[WS_MAX_PACKET_SIZE];
+  wsByte packetData[WS_MAX_PACKET_SIZE];
   u32 maxPacketSize = sizeof(packetData);
   #ifdef WS_OS_FAMILY_WINDOWS
     typedef i32 socklen_t;
   #endif
   sockaddr_in from;
   socklen_t fromLength = sizeof(from);
-  i32 bytes = recvfrom(socketHandle, (u8*)packetData, maxPacketSize, 0, (sockaddr*)&from, &fromLength);
+  i32 bytes = recvfrom(socketHandle, (wsByte*)packetData, maxPacketSize, 0, (sockaddr*)&from, &fromLength);
   if (bytes <= 0) {
     return;
   }

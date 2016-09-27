@@ -21,26 +21,26 @@
 */
 
 #include "wsTime.h"
- /*
-#include <time.h>
 
-t64 wsGetTime() {
-  timespec myTime;
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &myTime);
-  //  Convert nanoseconds to seconds (decimal)
-  return t64(myTime.tv_sec + (f64)myTime.tv_nsec/1000);
-}
-/*/
 #include <omp.h>
 
 t64 wsGetTime() {
   return omp_get_wtime();
 }
-//*/
 
 void wsWait(t64 waitTime) {
   t64 startTime = wsGetTime();
   while (wsGetTime() - startTime < waitTime) {}   //  Do nothing
+}
+
+t64 wsTimeElapsed(t64 startTime) {
+  return wsGetTime() - startTime;
+}
+
+//  Returns zero if wait time is expired. Otherwise returns a positive t64
+t64 wsWaitAsync(t64 duration) {
+  duration = wsGetTime() - duration;
+  return duration > 0.0 ? duration : 0.0;
 }
 
 t64 wsBenchmark_time = 0.0;

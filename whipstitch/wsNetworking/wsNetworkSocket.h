@@ -13,15 +13,12 @@
 #define WS_NETWORK_SOCKET_H_
 
 #define WS_BACKEND_SOCKETS 0x0001
-#define WS_BACKEND_ASIO    0x0002
 
 #define WS_NETWORKING_BACKEND WS_BACKEND_SOCKETS
 
 #include "../wsUtils.h"
 
-#if WS_NETWORKING_BACKEND == WS_BACKEND_ASIO
-  #include "asio.h"
-#elif WS_NETWORKING_BACKEND == WS_BACKEND_SOCKETS
+#if WS_NETWORKING_BACKEND == WS_BACKEND_SOCKETS
   #ifdef WS_OS_FAMILY_WINDOWS
     #include <winsock2.h>
     #pragma comment( lib, "wsock32.lib" )
@@ -31,12 +28,6 @@
     #include <fcntl.h>
   #endif
 #endif
-
-//  Define a unique protocol ID used to filter packets.
-//  All packets will have this value as their first four bytes.
-// #define WS_PROTOCOL_ID 0xC0FFEE42
-#define WS_PROTOCOL_ID 0x47616D65 //  Game
-// #define WS_PROTOCOL_ID 0x57533031 //  WS01
 
 struct wsNetworkAddress {
   u8 a = 127;
