@@ -51,9 +51,8 @@ wsNetworkSocket::~wsNetworkSocket() {
 
 //  SETTERS AND GETTERS     ///////////////////////////////////////////
 
-void wsNetworkSocket::setAddress(u8 a = 127, u8 b = 0, u8 c = 0, u8 d = 1, u16 port = WS_UDP_PORT) {
-  u32 newAddress = ((u32)a << 24) | ((u32)b << 16) | ((u32)c << 8) | (u32)d;
-  address.sin_addr.s_addr = htonl(newAddress);
+void wsNetworkSocket::setAddress(wsNetworkAddress* ipAddress, u16 port = WS_UDP_PORT) {
+  address.sin_addr.s_addr = htonl(ipAddress->compact());
   address.sin_port = htons(port);
 }// End public method setAddress
 

@@ -38,6 +38,14 @@
 #define WS_PROTOCOL_ID 0x47616D65 //  Game
 // #define WS_PROTOCOL_ID 0x57533031 //  WS01
 
+struct wsNetworkAddress {
+  u8 a = 127;
+  u8 b = 0;
+  u8 c = 0;
+  u8 d = 1;
+  u32 compact() { return ((u32)a << 24) | ((u32)b << 16) | ((u32)c << 8) | (u32)d; }
+};
+
 class wsNetworkSocket {
   private:
     i32 socketHandle;
@@ -47,7 +55,7 @@ class wsNetworkSocket {
     wsNetworkSocket();
     ~wsNetworkSocket();
     //  Setters and Getters
-    void setAddress(u8 a = 127, u8 b = 0, u8 c = 0, u8 d = 1, u16 port = WS_UDP_PORT);
+    void setAddress(wsNetworkAddress* ipAddress, u16 port = WS_UDP_PORT);
     //  Operational Methods
     void receivePackets();
     void sendPacket(const char* packetData, i32 packetLength);
